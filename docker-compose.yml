@@ -1,0 +1,28 @@
+version: '3'
+services:
+    front:
+        image: nginx
+        volumes:
+            - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+            - .:/opt:ro
+        networks:
+            - default
+            - proxy
+        labels:
+            - traefik.enable=true
+            - traefik.frontend.rule=Host:${APP_HOST}
+        depends_on:
+            - app
+    app:
+        build: .
+        user: ${UID}:${GID}
+        volumes:
+            - .:/opt:rw
+        networks:
+            - default
+            - sso
+networks:
+    proxy:
+        external: true
+    sso:
+        external: true
