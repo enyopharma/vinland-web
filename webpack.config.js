@@ -29,9 +29,6 @@ Encore
     // create hashed filenames (e.g. app.abc123.css)
     .enableVersioning()
 
-    // allow legacy applications to use $/jQuery as a global variable
-    .autoProvidejQuery()
-
     // allow sass/scss files to be processed
     .enableSassLoader()
     ;
