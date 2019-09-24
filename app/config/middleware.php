@@ -13,6 +13,11 @@ use Psr\Container\ContainerInterface;
 return function (ContainerInterface $container): array {
     return [
         /**
+         * Parse json body.
+         */
+        new Middlewares\JsonPayload,
+
+        /**
          * Router.
          */
         new Zend\Expressive\Router\Middleware\RouteMiddleware(

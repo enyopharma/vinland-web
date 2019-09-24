@@ -24,8 +24,8 @@ return function (string $env, bool $debug): RequestHandlerInterface {
      * Build the container.
      */
     $files = array_merge(
-        (array) glob(__DIR__ . '/../../infrastructure/factories/*.php'),
-        (array) glob(__DIR__ . '/../../domain/factories/*.php'),
+        (array) glob(__DIR__ . '/../infrastructure/factories/*.php'),
+        (array) glob(__DIR__ . '/../domain/factories/*.php'),
         (array) glob(__DIR__ . '/factories/*.php')
     );
 

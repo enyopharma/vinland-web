@@ -16,7 +16,19 @@ return function (ContainerInterface $container): array {
             'name' => 'index',
             'handler' => fn () => new App\Http\Handlers\IndexHandler(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(League\Plates\Engine::class)
+                $container->get(League\Plates\Engine::class),
+            ),
+        ],
+
+        'POST /interactions' => [
+            'handler' => fn () => new App\Http\Handlers\Interactions\ShowHandler(
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+                new Domain\Input\QueryValidation(
+                    $container->get(PDO::class),
+                ),
+                new Domain\ReadModel\InteractionViewSql(
+                    $container->get(PDO::class),
+                ),
             ),
         ],
     ];
