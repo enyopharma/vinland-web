@@ -19,13 +19,16 @@ final class InteractionViewSql implements InteractionViewInterface
     {
         while ($interaction = $sth->fetch()) {
             yield [
+                'type' => $interaction['type'],
                 'protein1' => [
+                    'type' => $interaction['type1'],
                     'accession' => $interaction['accession1'],
                     'name' => $interaction['name1'],
                     'description' => $interaction['description1'],
                     'taxon' => 'Homo sapiens',
                 ],
                 'protein2' => [
+                    'type' => $interaction['type2'],
                     'accession' => $interaction['accession2'],
                     'name' => $interaction['name2'],
                     'description' => $interaction['description2'],
@@ -45,8 +48,8 @@ final class InteractionViewSql implements InteractionViewInterface
     {
         return Query::instance($this->pdo)
             ->select('DISTINCT i.id, i.type, i.protein1_id, i.protein2_id')
-            ->select('p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
+            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
+            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
             ->select('i.nb_publications, i.nb_methods')
             ->from('interactions AS i, proteins AS p1, proteins AS p2')
             ->where('p1.id = i.protein1_id AND p2.id = i.protein2_id')
@@ -62,8 +65,8 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_interactions_sth->execute([
             ...[\Domain\Interaction::HH, $publication, $method],
-            ...$accessions->values(),
-            ...$accessions->values(),
+            ...$accessions->uppercased(),
+            ...$accessions->uppercased(),
         ]);
 
         return new Statement($this->generator($select_interactions_sth));
@@ -79,7 +82,7 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_interactions_sth->execute([
             ...[\Domain\Interaction::HH, $publication, $method],
-            ...$accessions->values(),
+            ...$accessions->uppercased(),
         ]);
 
         return new Statement($this->generator($select_interactions_sth));
@@ -108,7 +111,7 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_interactions_sth->execute([
             ...[\Domain\Interaction::VH, $publication, $method],
-            ...$accessions->values(),
+            ...$accessions->uppercased(),
             ...$names->values(),
             ...$taxon
         ]);

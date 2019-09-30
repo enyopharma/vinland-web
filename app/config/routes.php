@@ -23,12 +23,15 @@ return function (ContainerInterface $container): array {
         'POST /interactions' => [
             'handler' => fn () => new App\Http\Handlers\Interactions\ShowHandler(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                new Domain\Input\QueryValidation(
-                    $container->get(PDO::class),
-                ),
-                new Domain\ReadModel\InteractionViewSql(
-                    $container->get(PDO::class),
-                ),
+                $container->get(Domain\Input\QueryValidation::class),
+                $container->get(Domain\ReadModel\InteractionViewInterface::class),
+            ),
+        ],
+
+        'GET /taxa' => [
+            'handler' => fn () => new App\Http\Handlers\Taxa\IndexHandler(
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+                $container->get(Domain\ReadModel\TaxaViewInterface::class),
             ),
         ],
     ];

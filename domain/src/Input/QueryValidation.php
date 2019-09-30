@@ -61,25 +61,25 @@ SQL;
         // return the results.
         return ValidationResult::success([
             'hh' => [
-                'show' => $data['hh']['show'],
-                'network' => $data['hh']['network'],
+                'show' => filter_var($data['hh']['show'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE]),
+                'network' => filter_var($data['hh']['network'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE]),
             ],
             'vh' => [
-                'show' => $data['vh']['show'],
+                'show' => filter_var($data['vh']['show'], FILTER_VALIDATE_BOOLEAN, ['flags' => FILTER_NULL_ON_FAILURE]),
             ],
             'human' => [
                 'accessions' => $data['human']['accessions'],
             ],
             'virus' => [
-                'left' => $data['virus']['left'],
-                'right' => $data['virus']['right'],
+                'left' => (int) $data['virus']['left'],
+                'right' => (int) $data['virus']['right'],
                 'names' => $names,
             ],
             'publications' => [
-                'threshold' => $data['publications']['threshold'],
+                'threshold' => (int) $data['publications']['threshold'],
             ],
             'methods' => [
-                'threshold' => $data['methods']['threshold'],
+                'threshold' => (int) $data['methods']['threshold'],
             ],
         ]);
     }
@@ -166,7 +166,7 @@ SQL;
         // invalid when more than one species between boundaries.
         $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
 
-        $select_taxon_sth->execute([\Domain\Taxon::MAX_NODE_RANK, $left, $right]);
+        $select_taxon_sth->execute([\Domain\Taxon::ROOT_NODE_RANK, $left, $right]);
 
         $species = ($nb = $select_taxon_sth->fetchColumn()) ? $nb : 0;
 

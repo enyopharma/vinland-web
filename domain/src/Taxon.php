@@ -8,5 +8,5 @@ final class Taxon
 {
     const NAME_CLASS = 'scientific name';
 
-    const MAX_NODE_RANK = 'species';
+    const ROOT_NODE_RANK = 'species';
 }

@@ -16,9 +16,9 @@ use Domain\ReadModel\InteractionViewInterface;
 
 final class ShowHandler implements RequestHandlerInterface
 {
-    const INVALID = 'invalid';
     const INCOMPLETE = 'incomplete';
-    const COMPLETE = 'complete';
+    const SUCCESS = 'success';
+    const FAILURE = 'failure';
 
     private $factory;
 
@@ -43,7 +43,7 @@ final class ShowHandler implements RequestHandlerInterface
         $result = $this->validation->result($body);
 
         if ($result->isFailure()) {
-            return $this->response(422, self::INVALID, $result->errors());
+            return $this->response(422, self::FAILURE, $result->errors());
         }
 
         ['hh' => $hh, 'vh' => $vh] = $result->data();
@@ -85,7 +85,7 @@ final class ShowHandler implements RequestHandlerInterface
 
         $interactions = array_merge(...array_map(fn ($sth) => $sth->fetchAll(), $sths));
 
-        return $this->response(200, self::COMPLETE, $interactions);
+        return $this->response(200, self::SUCCESS, $interactions);
     }
 
     private function response(int $code, string $status, array $data = []): ResponseInterface

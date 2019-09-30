@@ -22,4 +22,9 @@ final class StrCollection
     {
         return $this->strs;
     }
+
+    public function uppercased(): array
+    {
+        return array_map(fn ($v) => strtoupper($v), $this->strs);
+    }
 }
