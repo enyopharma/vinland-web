@@ -250,6 +250,18 @@ ALTER SEQUENCE public.proteins_id_seq OWNED BY public.proteins.id;
 
 
 --
+-- Name: proteins_xrefs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.proteins_xrefs (
+    protein_id integer NOT NULL,
+    source character varying NOT NULL,
+    ref character varying NOT NULL,
+    CONSTRAINT proteins_xrefs_source_check CHECK (((source)::text = ANY (ARRAY[('accession'::character varying)::text, ('name'::character varying)::text])))
+);
+
+
+--
 -- Name: publications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -452,6 +464,14 @@ ALTER TABLE ONLY public.proteins
 
 ALTER TABLE ONLY public.proteins
     ADD CONSTRAINT proteins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: proteins_xrefs proteins_xrefs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.proteins_xrefs
+    ADD CONSTRAINT proteins_xrefs_pkey PRIMARY KEY (protein_id, source, ref);
 
 
 --

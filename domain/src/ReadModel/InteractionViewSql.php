@@ -51,7 +51,8 @@ final class InteractionViewSql implements InteractionViewInterface
             ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
             ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
             ->select('i.nb_publications, i.nb_methods')
-            ->from('interactions AS i, proteins AS p1, proteins AS p2')
+            ->from('interactions AS i')
+            ->from('proteins AS p1, proteins AS p2')
             ->where('p1.id = i.protein1_id AND p2.id = i.protein2_id')
             ->where('i.type = ? AND i.nb_publications >= ? AND i.nb_methods >= ?');
     }
@@ -59,8 +60,10 @@ final class InteractionViewSql implements InteractionViewInterface
     public function HHNetwork(StrCollection $accessions, int $publication, int $method): Statement
     {
         $select_interactions_sth = $this->query()
-            ->in('p1.accession', $accessions->count())
-            ->in('p2.accession', $accessions->count())
+            ->from('proteins_xrefs AS x1, proteins_xrefs AS x2')
+            ->where('p1.id = x1.protein_id AND p2.id = x2.protein_id')
+            ->in('x1.ref', $accessions->count())
+            ->in('x2.ref', $accessions->count())
             ->prepare();
 
         $select_interactions_sth->execute([
@@ -75,9 +78,9 @@ final class InteractionViewSql implements InteractionViewInterface
     public function HHInteractions(StrCollection $accessions, int $publication, int $method): Statement
     {
         $select_interactions_sth = $this->query()
-            ->from('edges AS e, proteins AS s')
-            ->where('s.id = e.source_id')
-            ->in('s.accession', $accessions->count())
+            ->from('edges AS e, proteins_xrefs AS x')
+            ->where('e.source_id = x.protein_id')
+            ->in('x.ref', $accessions->count())
             ->prepare();
 
         $select_interactions_sth->execute([
@@ -90,16 +93,27 @@ final class InteractionViewSql implements InteractionViewInterface
 
     public function VHInteractions(StrCollection $accessions, int $left, int $right, StrCollection $names, int $publication, int $method): Statement
     {
-        $query = $this->query()
-            ->select('t.left_value, t.right_value, tn.name AS taxon_name')
+        $query = $this->query();
+
+        // add taxon name.
+        $query = $query
+            ->select('tn.name AS taxon_name')
             ->from('taxon AS t, taxon_name AS tn')
-            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
             ->where('t.taxon_id = tn.taxon_id')
-            ->in('p1.accession', $accessions->count())
-            ->in('p2.name', $names->count())
+            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
             ->where('tn.name_class = ?');
 
-        $taxon = [\Domain\Taxon::NAME_CLASS];
+        // add human ref filter.
+        $query = $query
+            ->from('proteins_xrefs AS x1')
+            ->where('p1.id = x1.protein_id')
+            ->in('x1.ref', $accessions->count());
+
+        // add viral name filter.
+        $query = $query->in('p2.name', $names->count());
+
+        // add viral taxon filter.
+        $taxon = [];
 
         if ($left > 0 && $right > 0) {
             array_push($taxon, $left, $right);
@@ -107,13 +121,15 @@ final class InteractionViewSql implements InteractionViewInterface
             $query = $query->where('t.left_value >= ? AND t.right_value <= ?');
         }
 
+        // prepare and execute the query.
         $select_interactions_sth = $query->prepare();
 
         $select_interactions_sth->execute([
             ...[\Domain\Interaction::VH, $publication, $method],
+            ...[\Domain\Taxon::NAME_CLASS],
             ...$accessions->uppercased(),
             ...$names->values(),
-            ...$taxon
+            ...$taxon,
         ]);
 
         return new Statement($this->generator($select_interactions_sth));
