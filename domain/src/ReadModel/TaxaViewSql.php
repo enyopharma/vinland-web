@@ -22,6 +22,7 @@ final class TaxaViewSql implements TaxaViewInterface
             ->from('taxon AS t, taxon_search AS ts')
             ->where('t.taxon_id = ts.taxon_id')
             ->where(...array_pad([], count($qs), 'ts.name ILIKE ?'))
+            ->orderby('nb_interactions DESC')
             ->sliced()
             ->prepare();
 

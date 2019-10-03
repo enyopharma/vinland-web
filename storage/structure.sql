@@ -328,7 +328,8 @@ CREATE TABLE public.taxon_name (
 
 CREATE TABLE public.taxon_search (
     taxon_id integer NOT NULL,
-    name character varying(255) NOT NULL
+    name character varying(255) NOT NULL,
+    nb_interactions integer NOT NULL
 );
 
 
@@ -585,4 +586,3 @@ ALTER TABLE ONLY public.taxon_name
 --
 -- PostgreSQL database dump complete
 --
-
