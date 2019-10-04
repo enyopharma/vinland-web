@@ -15,7 +15,7 @@ return function (ContainerInterface $container) {
         $container->get(Zend\Expressive\Router\RouterInterface::class)
     );
 
-    $routes = (require __DIR__ . '/../config/routes.php')($container);
+    $routes = (require __DIR__ . '/../routes.php')($container);
 
     foreach ($routes as $endpoint => $route) {
         $parts = (array) preg_split('/\s+/', $endpoint);

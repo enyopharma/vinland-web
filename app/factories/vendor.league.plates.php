@@ -19,7 +19,7 @@ return [
     },
 
     AssetsExtension::class => fn () => new AssetsExtension(
-        __DIR__ . '/../public/build/manifest.json'
+        __DIR__ . '/../../public/build/manifest.json'
     ),
 
     UrlExtension::class => fn ($c) => new UrlExtension(

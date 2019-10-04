@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "jsx": "react",
+        "baseUrl": "./frontend/js",
+        "paths": {
+            "form/*": [
+                "form/*"
+            ]
+        }
+    }
+}

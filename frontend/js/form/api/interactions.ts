@@ -1,0 +1,55 @@
+import { Query, Interaction } from 'form/types'
+
+export type QueryResult =
+    | IncompleteQueryResult
+    | SuccessfulQueryResult
+    | FailedQueryResult
+
+export enum QueryResultStatuses {
+    INCOMPLETE = 'incomplete',
+    SUCCESS = 'success',
+    FAILURE = 'failure',
+}
+
+interface IncompleteQueryResult {
+    status: typeof QueryResultStatuses.INCOMPLETE
+}
+
+interface SuccessfulQueryResult {
+    status: typeof QueryResultStatuses.SUCCESS
+    data: Interaction[]
+}
+
+interface FailedQueryResult {
+    status: typeof QueryResultStatuses.FAILURE
+    data: string[]
+}
+
+export const interactions = (query: Query): Promise<QueryResult> => {
+    return new Promise(async resolve => {
+        if (query.human.accessions.length == 0 && (query.virus.left == 0 || query.virus.right == 0)) {
+            resolve({ status: QueryResultStatuses.INCOMPLETE })
+            return
+        }
+
+        const response = await fetch('/interactions', {
+            method: 'POST',
+            body: JSON.stringify(query),
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+            }
+        })
+
+        try {
+            resolve(await response.json())
+        }
+
+        catch {
+            resolve({
+                status: QueryResultStatuses.FAILURE,
+                data: ['server error'],
+            })
+        }
+    })
+}
