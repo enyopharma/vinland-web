@@ -11,7 +11,7 @@ type Props = {
 }
 
 export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect }) => {
-    const limit = 10
+    const limit = 5
 
     const [query, setQuery] = useState<string>('');
     const [active, setActive] = useState<number>(null);
