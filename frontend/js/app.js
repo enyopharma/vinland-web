@@ -1,5 +1,2 @@
-require('../css/app');
-
+import '../css/app'
 import 'bootstrap/js/dist/collapse';
-
-window.$ = require('jquery')

@@ -2,7 +2,7 @@
 <?php $this->push('scripts'); ?>
 <script type="text/javascript" src="<?= $this->asset('form.js') ?>"></script>
 <script type="text/javascript">
-    $(document).ready(function () { form.init('interactions'); })
+    form.init('interactions');
 </script>
 <?php $this->end() ?>
 <div class="jumbotron">

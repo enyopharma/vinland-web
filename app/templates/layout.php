@@ -6,9 +6,6 @@
         </title>
         <link rel="stylesheet" href="<?= $this->asset('app.css') ?>" />
         <?= $this->section('styles') ?>
-        <script type="text/javascript" src="<?= $this->asset('runtime.js') ?>"></script>
-        <script type="text/javascript" src="<?= $this->asset('app.js') ?>"></script>
-        <?= $this->section('scripts') ?>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
@@ -29,5 +26,8 @@
         <div class="container">
             <?= $this->section('content') ?>
         </div>
+        <script type="text/javascript" src="<?= $this->asset('runtime.js') ?>"></script>
+        <script type="text/javascript" src="<?= $this->asset('app.js') ?>"></script>
+        <?= $this->section('scripts') ?>
     </body>
 </html>
