@@ -25,13 +25,12 @@ interface FailedQueryResult {
     data: string[]
 }
 
+export function isSuccessful(result: QueryResult): result is SuccessfulQueryResult {
+    return result.status == QueryResultStatuses.SUCCESS
+}
+
 export const interactions = (query: Query): Promise<QueryResult> => {
     return new Promise(async resolve => {
-        if (query.human.accessions.length == 0 && (query.virus.left == 0 || query.virus.right == 0)) {
-            resolve({ status: QueryResultStatuses.INCOMPLETE })
-            return
-        }
-
         const response = await fetch('/interactions', {
             method: 'POST',
             body: JSON.stringify(query),

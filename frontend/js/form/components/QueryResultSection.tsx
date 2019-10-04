@@ -5,10 +5,16 @@ import { Query } from 'form/types'
 import * as api from 'form/api/interactions'
 import { QueryResult, QueryResultStatuses } from 'form/api/interactions'
 
-import { InteractionList } from './InteractionList'
+import { QueryResultAlert } from './QueryResultAlert'
+import { InteractionTable } from './InteractionTable'
 
 type Props = {
     query: Query
+}
+
+const isQueryComplete = (query: Query): boolean => {
+    return query.human.accessions.length > 0
+        || (query.virus.left > 0 && query.virus.right > 0)
 }
 
 const areListsEqual = (l1: string[], l2: string[]): boolean => {
@@ -32,10 +38,14 @@ export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
     const [fetching, setFetching] = useState<boolean>(false)
 
     const [result, setResult] = useState<QueryResult>({
-        status: QueryResultStatuses.INCOMPLETE,
+        status: QueryResultStatuses.INCOMPLETE
     })
 
     useEffect(() => {
+        if (!isQueryComplete(query)) {
+            setResult({ status: QueryResultStatuses.INCOMPLETE })
+        }
+
         const timeout = setTimeout(() => {
             api.interactions(query).then(result => setResult(result))
         }, 500)
@@ -47,35 +57,20 @@ export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
 
     useEffect(() => { setFetching(false) }, [result])
 
-    if (fetching) {
-        return (
+    return fetching
+        ? (
             <div className="progress">
                 <div
                     style={{ width: '100%' }}
                     className="progress-bar progress-bar-striped progress-bar-animated"
                 ></div>
             </div>
+        ) : (
+            <div className="query-result">
+                <QueryResultAlert result={result} />
+                {api.isSuccessful(result) ? (
+                    <InteractionTable interactions={result.data} />
+                ) : null}
+            </div>
         )
-    }
-
-    switch (result.status) {
-        case QueryResultStatuses.INCOMPLETE:
-            return (
-                <div className="alert alert-info">
-                    Not enough information to query vinland.
-                </div>
-            )
-        case QueryResultStatuses.FAILURE:
-            return (
-                <div className="alert alert-danger">
-                    <ul>
-                        {result.data.map((error, i) => <li key={i}>{error}</li>)}
-                    </ul>
-                </div>
-            )
-        case QueryResultStatuses.SUCCESS:
-            return <InteractionList interactions={result.data} />
-        default:
-            return null
-    }
 }, arePropsEqual)

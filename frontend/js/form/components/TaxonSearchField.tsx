@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Taxon, TaxonSelection, isSelectedTaxon } from 'form/types'
 
 import * as api from 'form/api/taxa'
-import { QueryResultStatuses } from 'form/api/taxa'
 
 type Props = {
     selection: TaxonSelection,
@@ -12,7 +11,7 @@ type Props = {
 }
 
 export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect }) => {
-    const limit = 5
+    const limit = 10
 
     const [query, setQuery] = useState<string>('');
     const [active, setActive] = useState<number>(null);
@@ -21,8 +20,13 @@ export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect 
     const [taxa, setTaxa] = useState<Taxon[]>([]);
 
     useEffect(() => {
+        if (query.trim().length == 0) {
+            setTaxa([])
+            return
+        }
+
         const timeout = setTimeout(() => {
-            api.taxa(query).then(result => setTaxa(result.status == QueryResultStatuses.SUCCESS
+            api.taxa(query, limit).then(result => setTaxa(api.isSuccessful(result)
                 ? result.data
                 : []
             ))
@@ -31,13 +35,15 @@ export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect 
         return () => clearTimeout(timeout)
     }, [query])
 
+    useEffect(() => {
+        if (isSelectedTaxon(selection)) setDisplay(false)
+    }, [selection])
+
     useEffect(() => { setFetching(true) }, [query])
 
     useEffect(() => { setFetching(false) }, [taxa])
 
     useEffect(() => { setActive(taxa.length == 0 ? null : 0) }, [display])
-
-    useEffect(() => { if (isSelectedTaxon(selection)) setDisplay(false) }, [selection])
 
     const onBlur = e => setDisplay(false)
 

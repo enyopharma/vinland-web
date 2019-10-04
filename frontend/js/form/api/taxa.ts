@@ -21,14 +21,13 @@ interface FailedQueryResult {
     data: string[]
 }
 
-export const taxa = (q: string): Promise<QueryResult> => {
-    return new Promise(async resolve => {
-        if (q.trim().length == 0) {
-            resolve({ status: QueryResultStatuses.SUCCESS, data: [] })
-            return
-        }
+export function isSuccessful(result: QueryResult): result is SuccessfulQueryResult {
+    return result.status == QueryResultStatuses.SUCCESS
+}
 
-        const query = qs.encode({ q: q })
+export const taxa = (q: string, limit: number): Promise<QueryResult> => {
+    return new Promise(async resolve => {
+        const query = qs.encode({ q: q, limit: limit })
 
         const response = await fetch(`/taxa?${query}`, {
             headers: {
