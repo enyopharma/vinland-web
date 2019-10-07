@@ -68,7 +68,7 @@ export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
         ) : (
             <div className="query-result">
                 <QueryResultAlert result={result} />
-                {api.isSuccessful(result) ? (
+                {api.isSuccessful(result) && result.data.length > 0 ? (
                     <InteractionTable interactions={result.data} />
                 ) : null}
             </div>
