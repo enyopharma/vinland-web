@@ -1,11 +1,12 @@
 import { Dispatch } from 'redux'
 
-import { Query } from './types'
 import { AppState } from './types'
+import { IdentifiersMode } from './types'
 import { Annotation } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
+import { Query } from './types'
 
 import { AppAction } from './actions'
 import { AppActionTypes } from './actions'
@@ -38,6 +39,10 @@ export const mapStateToProps = (state: AppState) => {
 
 export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
     return {
+        updateIdentifiersMode: (mode: IdentifiersMode) => dispatch({
+            type: AppActionTypes.UPDATE_IDENTIFIERS_MODE,
+            mode: mode,
+        }),
         updateIdentifiers: (identifiers: string) => dispatch({
             type: AppActionTypes.UPDATE_ACCESSIONS,
             identifiers: identifiers,
@@ -83,12 +88,17 @@ export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
 
 export const mergeProps = (props: ReturnType<typeof mapStateToProps>, actions: ReturnType<typeof mapDispatchToProps>) => {
     return {
-        manual: {
-            identifiers: props.identifiers,
-            update: actions.updateIdentifiers,
-        },
-        annotations: {
-            selected: props.annotations,
+        identifiers: {
+            mode: props.mode,
+            update: actions.updateIdentifiersMode,
+            parsed: props.query.human.accessions,
+            manual: {
+                identifiers: props.identifiers,
+                update: actions.updateIdentifiers,
+            },
+            annotations: {
+                selected: props.annotations,
+            },
         },
         taxon: {
             selection: props.taxon,

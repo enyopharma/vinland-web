@@ -2,6 +2,7 @@
  * The whole app state.
  */
 export type AppState = {
+    mode: IdentifiersMode
     identifiers: string[]
     annotations: Annotation[]
     taxon: TaxonSelection
@@ -37,6 +38,14 @@ export type Query = {
     methods: {
         threshold: number
     }
+}
+
+/**
+ * The identifiers submission mode.
+ */
+export enum IdentifiersMode {
+    manual = 'manual',
+    annotations = 'annotations',
 }
 
 /**

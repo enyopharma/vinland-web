@@ -12,15 +12,5 @@ export const IdentifierField: React.FC<Props> = ({ identifiers, update }) => {
 
     const onChange = e => setValue(e.target.value)
 
-    return (
-        <React.Fragment>
-            <textarea className="form-control form-control-lg" value={value} onChange={onChange} />
-            <small className="form-text text-muted">
-                {identifiers.length == 0
-                    ? 'No identifier parsed'
-                    : identifiers.length + ' identifiers parsed'
-                }
-            </small>
-        </React.Fragment>
-    )
+    return <textarea className="form-control form-control-lg" value={value} onChange={onChange} />
 }

@@ -1,9 +1,11 @@
+import { IdentifiersMode } from './types'
 import { Annotation } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
 
 export enum AppActionTypes {
+    UPDATE_IDENTIFIERS_MODE,
     UPDATE_ACCESSIONS,
     ADD_ANNOTATION,
     UPDATE_ANNOTATION,
@@ -17,6 +19,7 @@ export enum AppActionTypes {
 }
 
 export type AppAction =
+    | UpdateIdentifiersMode
     | UpdateAccessions
     | AddAnnotation
     | UpdateAnnotation
@@ -28,52 +31,57 @@ export type AppAction =
     | UpdatePublicationsOptions
     | UpdateMethodsOptions
 
-interface UpdateAccessions {
+type UpdateIdentifiersMode = {
+    type: typeof AppActionTypes.UPDATE_IDENTIFIERS_MODE
+    mode: IdentifiersMode
+}
+
+type UpdateAccessions = {
     type: typeof AppActionTypes.UPDATE_ACCESSIONS
     identifiers: string
 }
 
-interface AddAnnotation {
+type AddAnnotation = {
     type: typeof AppActionTypes.ADD_ANNOTATION
     annotation: Annotation
 }
 
-interface UpdateAnnotation {
+type UpdateAnnotation = {
     type: typeof AppActionTypes.UPDATE_ANNOTATION
     i: number
     identifiers: string
 }
 
-interface RemoveAnnotation {
+type RemoveAnnotation = {
     type: typeof AppActionTypes.REMOVE_ANNOTATION
     i: number
 }
 
-interface SelectTaxon {
+type SelectTaxon = {
     type: typeof AppActionTypes.SELECT_TAXON
     taxon: TaxonSelection
 }
 
-interface UnselectTaxon {
+type UnselectTaxon = {
     type: typeof AppActionTypes.UNSELECT_TAXON
 }
 
-interface UpdateHHOptions {
+type UpdateHHOptions = {
     type: typeof AppActionTypes.UPDATE_HH_OPTIONS
     options: HHOptions
 }
 
-interface UpdateVHOptions {
+type UpdateVHOptions = {
     type: typeof AppActionTypes.UPDATE_VH_OPTIONS
     options: VHOptions
 }
 
-interface UpdatePublicationsOptions {
+type UpdatePublicationsOptions = {
     type: typeof AppActionTypes.UPDATE_PUBLICATIONS_OPTIONS
     options: PublicationsOptions
 }
 
-interface UpdateMethodsOptions {
+type UpdateMethodsOptions = {
     type: typeof AppActionTypes.UPDATE_METHODS_OPTIONS
     options: MethodsOptions
 }

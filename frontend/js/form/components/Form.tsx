@@ -2,7 +2,7 @@ import React from 'react'
 
 import { AppProps } from 'form/props';
 
-import { IdentifierField } from './IdentifierField'
+import { IdentifierSection } from './IdentifierSection'
 import { TaxonSearchField } from './TaxonSearchField'
 import { HHOptionsFields } from './Options/HHOptionsFields'
 import { VHOptionsFields } from './Options/VHOptionsFields'
@@ -19,7 +19,7 @@ export const Form: React.FC<AppProps> = (props) => {
                         <legend>Human protein identifiers</legend>
                         <div className="row">
                             <div className="col">
-                                <IdentifierField {...props.manual} />
+                                <IdentifierSection {...props.identifiers} />
                             </div>
                         </div>
                     </fieldset>
