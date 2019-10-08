@@ -15,7 +15,7 @@ type Props = {
 
 const limit = 5
 
-const init = { query: '', limit: limit, hints: [] }
+const init: SearchResult<Taxon> = { query: '', limit: limit, hints: [] }
 
 export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect }) => {
     const [query, setQuery] = useState<string>('');
@@ -24,6 +24,8 @@ export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect 
 
     useEffect(() => {
         if (query.trim().length > 0) {
+            setFetching(true)
+
             const timeout = setTimeout(() => {
                 api.taxa(query, limit).then(result => setResult(result))
             }, 300)
@@ -33,8 +35,6 @@ export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect 
 
         setResult(init)
     }, [query])
-
-    useEffect(() => { setFetching(true) }, [query])
 
     useEffect(() => { setFetching(false) }, [result])
 
