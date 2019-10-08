@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react'
+import React from 'react'
 
 import { Interaction } from 'form/types'
 

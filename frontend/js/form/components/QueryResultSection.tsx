@@ -6,11 +6,13 @@ import * as api from 'form/api/interactions'
 import { QueryResult, QueryResultStatuses } from 'form/api/interactions'
 
 import { QueryResultAlert } from './QueryResultAlert'
-import { InteractionTable } from './InteractionTable'
+import { InteractionSection } from './InteractionSection'
 
 type Props = {
     query: Query
 }
+
+const init: QueryResult = { status: QueryResultStatuses.INCOMPLETE }
 
 const isQueryComplete = (query: Query): boolean => {
     return query.human.accessions.length > 0
@@ -36,41 +38,43 @@ const arePropsEqual = (prev: Props, next: Props): boolean => {
 
 export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
     const [fetching, setFetching] = useState<boolean>(false)
-
-    const [result, setResult] = useState<QueryResult>({
-        status: QueryResultStatuses.INCOMPLETE
-    })
+    const [result, setResult] = useState<QueryResult>(init)
 
     useEffect(() => {
-        if (!isQueryComplete(query)) {
-            setResult({ status: QueryResultStatuses.INCOMPLETE })
+        if (isQueryComplete(query)) {
+            setFetching(true)
+
+            const timeout = setTimeout(() => {
+                api.interactions(query).then(result => setResult(result))
+            }, 500)
+
+            return () => clearTimeout(timeout)
         }
 
-        const timeout = setTimeout(() => {
-            api.interactions(query).then(result => setResult(result))
-        }, 500)
-
-        return () => clearTimeout(timeout)
+        setResult(init)
     }, [query])
-
-    useEffect(() => { setFetching(true) }, [query])
 
     useEffect(() => { setFetching(false) }, [result])
 
-    return fetching
-        ? (
+    if (fetching) {
+        return (
             <div className="progress">
                 <div
                     style={{ width: '100%' }}
                     className="progress-bar progress-bar-striped progress-bar-animated"
                 ></div>
             </div>
-        ) : (
-            <div className="query-result">
-                <QueryResultAlert result={result} />
-                {api.isSuccessful(result) && result.data.length > 0 ? (
-                    <InteractionTable interactions={result.data} />
-                ) : null}
-            </div>
         )
+    }
+
+    return (
+        <div className="queryresult">
+            <QueryResultAlert result={result} />
+            {
+                !api.isSuccessful(result) || result.data.length == 0 ? null : (
+                    <InteractionSection interactions={result.data} />
+                )
+            }
+        </div>
+    )
 }, arePropsEqual)

@@ -6,7 +6,7 @@ div.row {
     margin-bottom: $spacer;
 }
 
-div.row, ul, p, .alert {
+div.row, ul, p, table, .alert {
     &:last-child {
         margin-bottom: 0;
     }
