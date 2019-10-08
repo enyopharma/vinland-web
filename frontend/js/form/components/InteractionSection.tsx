@@ -16,13 +16,21 @@ export const InteractionSection: React.FC<Props> = ({ interactions }) => {
 
     return (
         <div className="interactions">
-            <p>
-                <PaginationRange offset={offset} total={interactions.length} limit={limit} update={setOffset} />
-            </p>
+            {
+                interactions.length > limit ? (
+                    <p>
+                        <PaginationRange offset={offset} total={interactions.length} limit={limit} update={setOffset} />
+                    </p>
+                ) : null
+            }
             <InteractionTable interactions={interactions.slice(offset, offset + limit)} />
-            <p>
-                <PaginationRange offset={offset} total={interactions.length} limit={limit} update={setOffset} />
-            </p>
-        </div>
+            {
+                interactions.length > limit ? (
+                    <p>
+                        <PaginationRange offset={offset} total={interactions.length} limit={limit} update={setOffset} />
+                    </p>
+                ) : null
+            }
+        </div >
     )
 }
