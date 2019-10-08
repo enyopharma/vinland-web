@@ -14,33 +14,6 @@ export type AppState = {
 }
 
 /**
- * Query type.
- */
-export type Query = {
-    human: {
-        accessions: string[]
-    }
-    virus: {
-        left: number
-        right: number
-        names: string[]
-    }
-    hh: {
-        show: boolean
-        network: boolean
-    }
-    vh: {
-        show: boolean
-    }
-    publications: {
-        threshold: number
-    }
-    methods: {
-        threshold: number
-    }
-}
-
-/**
  * The identifiers submission mode.
  */
 export enum IdentifiersMode {
@@ -87,6 +60,45 @@ export type PublicationsOptions = {
 
 export type MethodsOptions = {
     threshold: number
+}
+
+/**
+ * Search result.
+ */
+export type SearchResult<T> = {
+    query: string
+    limit: number
+    hints: Array<{
+        label: string
+        value: T
+    }>
+}
+
+/**
+ * Query type.
+ */
+export type Query = {
+    human: {
+        accessions: string[]
+    }
+    virus: {
+        left: number
+        right: number
+        names: string[]
+    }
+    hh: {
+        show: boolean
+        network: boolean
+    }
+    vh: {
+        show: boolean
+    }
+    publications: {
+        threshold: number
+    }
+    methods: {
+        threshold: number
+    }
 }
 
 /**

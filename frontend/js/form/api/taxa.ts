@@ -1,35 +1,13 @@
 import qs from 'querystring'
 
 import { Taxon } from 'form/types'
+import { SearchResult } from 'form/types'
 
-export type QueryResult =
-    | SuccessfulQueryResult
-    | FailedQueryResult
-
-export enum QueryResultStatuses {
-    SUCCESS = 'success',
-    FAILURE = 'failure',
-}
-
-interface SuccessfulQueryResult {
-    status: QueryResultStatuses.SUCCESS
-    data: Taxon[]
-}
-
-interface FailedQueryResult {
-    status: QueryResultStatuses.FAILURE
-    data: string[]
-}
-
-export function isSuccessful(result: QueryResult): result is SuccessfulQueryResult {
-    return result.status == QueryResultStatuses.SUCCESS
-}
-
-export const taxa = (q: string, limit: number): Promise<QueryResult> => {
+export const taxa = (query: string, limit: number): Promise<SearchResult<Taxon>> => {
     return new Promise(async resolve => {
-        const query = qs.encode({ q: q, limit: limit })
+        const querystr = qs.encode({ query: query, limit: limit })
 
-        const response = await fetch(`/taxa?${query}`, {
+        const response = await fetch(`/taxa?${querystr}`, {
             headers: {
                 'accept': 'application/json',
             },
@@ -39,15 +17,22 @@ export const taxa = (q: string, limit: number): Promise<QueryResult> => {
             const json = await response.json()
 
             resolve({
-                status: QueryResultStatuses.SUCCESS,
-                data: json.data,
+                query: query,
+                limit: limit,
+                hints: json.data.map(taxon => ({
+                    label: taxon.name,
+                    value: taxon,
+                })),
             })
         }
 
-        catch {
+        catch (error) {
+            console.log(error)
+
             resolve({
-                status: QueryResultStatuses.FAILURE,
-                data: ['server error']
+                query: query,
+                limit: limit,
+                hints: [],
             })
         }
     })

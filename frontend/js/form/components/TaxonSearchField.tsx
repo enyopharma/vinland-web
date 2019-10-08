@@ -1,92 +1,60 @@
 import React, { useState, useEffect } from 'react'
 
+import { SearchResult } from 'form/types'
 import { Taxon, TaxonSelection, isSelectedTaxon } from 'form/types'
 
 import * as api from 'form/api/taxa'
 
+import { SearchField } from './SearchField'
+
 type Props = {
     selection: TaxonSelection,
-    select: (taxon: TaxonSelection) => void
+    select: (taxon: Taxon) => void
     unselect: () => void
 }
 
-export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect }) => {
-    const limit = 5
+const limit = 5
 
+const init = { query: '', limit: limit, hints: [] }
+
+export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect }) => {
     const [query, setQuery] = useState<string>('');
-    const [active, setActive] = useState<number>(null);
-    const [display, setDisplay] = useState<boolean>(false);
     const [fetching, setFetching] = useState<boolean>(false);
-    const [taxa, setTaxa] = useState<Taxon[]>([]);
+    const [result, setResult] = useState<SearchResult<Taxon>>(init);
 
     useEffect(() => {
-        if (query.trim().length == 0) {
-            setTaxa([])
-            return
+        if (query.trim().length > 0) {
+            const timeout = setTimeout(() => {
+                api.taxa(query, limit).then(result => setResult(result))
+            }, 300)
+
+            return () => clearTimeout(timeout)
         }
 
-        const timeout = setTimeout(() => {
-            api.taxa(query, limit).then(result => setTaxa(api.isSuccessful(result)
-                ? result.data
-                : []
-            ))
-        }, 300)
-
-        return () => clearTimeout(timeout)
+        setResult(init)
     }, [query])
-
-    useEffect(() => {
-        if (isSelectedTaxon(selection)) setDisplay(false)
-    }, [selection])
 
     useEffect(() => { setFetching(true) }, [query])
 
-    useEffect(() => { setFetching(false) }, [taxa])
-
-    useEffect(() => { setActive(taxa.length == 0 ? null : 0) }, [display])
-
-    const onBlur = e => setDisplay(false)
-
-    const onFocus = e => setDisplay(true)
-
-    const onClick = e => setDisplay(true)
-
-    const onChange = e => setQuery(e.target.value)
-
-    const onKeyDown = e => {
-        switch (e.keyCode) {
-            case 13:
-                if (active != null) select(taxa[active])
-                break
-            case 27:
-                setDisplay(!display)
-                break
-            case 38:
-                active == null || active == 0
-                    ? setActive(Math.min(taxa.length, limit) - 1)
-                    : setActive(active - 1)
-                break
-            case 40:
-                active == null || active == Math.min(taxa.length, limit) - 1
-                    ? setActive(0)
-                    : setActive(active + 1)
-                break
-        }
-    }
+    useEffect(() => { setFetching(false) }, [result])
 
     if (isSelectedTaxon(selection)) {
+        const onClick = e => unselect()
+
         return (
             <div className="alert alert-danger">
                 {selection.name}
-                <button type="button" className="close" onClick={() => unselect()}>
+                <button type="button" className="close" onClick={onClick}>
                     &times;
                 </button>
             </div>
         )
     }
 
+    const onChange = e => setQuery(e.target.value)
+
     return (
-        <div style={{ position: 'relative' }} >
+        <SearchField<Taxon> result={result} select={select}>
             <div className="input-group">
                 <div className="input-group-prepend">
                     <span className="input-group-text">
@@ -96,32 +64,10 @@ export const TaxonSearchField: React.FC<Props> = ({ selection, select, unselect 
                 <input
                     type="text"
                     value={query}
-                    onBlur={onBlur}
-                    onFocus={onFocus}
-                    onClick={onClick}
                     onChange={onChange}
-                    onKeyDown={onKeyDown}
                     className="form-control form-control-lg"
                 />
             </div>
-            {
-                !display || taxa.length == 0 ? null : (
-                    <div style={{ position: 'absolute', zIndex: 10, width: '100%' }}>
-                        <ul className="list-group">
-                            {taxa.slice(0, limit).map((taxa, i) => (
-                                <li
-                                    key={i}
-                                    className={'list-group-item' + (active == i ? ' active' : '')}
-                                    onMouseOver={() => setActive(i)}
-                                    onMouseDown={() => select(taxa)}
-                                >
-                                    {taxa.name}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )
-            }
-        </div>
+        </SearchField>
     )
 }

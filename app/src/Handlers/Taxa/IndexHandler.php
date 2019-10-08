@@ -28,10 +28,10 @@ final class IndexHandler implements RequestHandlerInterface
     {
         $params = (array) $request->getQueryParams();
 
-        $q = (string) ($params['q'] ?? '');
+        $query = (string) ($params['query'] ?? '');
         $limit = (int) ($params['limit'] ?? 5);
 
-        $taxa = $this->taxa->all($q, $limit);
+        $taxa = $this->taxa->all($query, $limit);
 
         $response = $this->factory->createResponse(200);
 

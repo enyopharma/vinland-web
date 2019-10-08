@@ -13,9 +13,9 @@ final class TaxaViewSql implements TaxaViewInterface
         $this->pdo = $pdo;
     }
 
-    public function all(string $q, int $limit): Statement
+    public function all(string $query, int $limit): Statement
     {
-        $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $q)));
+        $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
 
         $select_taxa_sth = Query::instance($this->pdo)
             ->select('t.taxon_id, t.left_value, t.right_value, ts.name')
