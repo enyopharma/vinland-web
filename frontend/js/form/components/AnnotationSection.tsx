@@ -8,7 +8,7 @@ type Props = {
     selected: Annotation[]
 }
 
-export const AnnotationList: React.FC<Props> = ({ selected }) => {
+export const AnnotationSection: React.FC<Props> = ({ selected }) => {
     return (
         <div className="annotations">
             {selected.map((annotation, i) => (

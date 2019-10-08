@@ -2,11 +2,11 @@ body {
     padding-bottom: $spacer * 50;
 }
 
-div.row {
+div.row, .nav {
     margin-bottom: $spacer;
 }
 
-div.row, ul, p, table, .alert {
+div.row, .nav, ul, p, table, .alert {
     &:last-child {
         margin-bottom: 0;
     }
