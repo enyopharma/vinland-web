@@ -12,7 +12,7 @@ import { QueryResultSection } from './QueryResultSection'
 
 export const Form: React.FC<AppProps> = (props) => {
     return (
-        <form action="#" className="wrapper form-horizontal">
+        <form action="#" className="form-horizontal">
             <div className="row">
                 <div className="col">
                     <fieldset>
