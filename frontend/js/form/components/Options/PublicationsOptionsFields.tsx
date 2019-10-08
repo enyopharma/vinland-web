@@ -24,7 +24,7 @@ export const PublicationsOptionsFields: React.FC<Props> = ({ value, update }) =>
                 max="10"
                 value={value.threshold}
                 onChange={onChange}
-                className="form-control-range"
+                className="custom-range"
             />
         </React.Fragment>
     )
