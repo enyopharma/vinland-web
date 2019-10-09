@@ -5,11 +5,14 @@ import { Query } from 'form/types'
 import * as api from 'form/api/interactions'
 import { QueryResult, QueryResultStatuses } from 'form/api/interactions'
 
+import { PaginationRange } from './PaginationRange'
 import { QueryResultAlert } from './QueryResultAlert'
-import { InteractionSection } from './InteractionSection'
+import { InteractionTHead } from './InteractionTHead'
+import { InteractionTBody } from './InteractionTBody'
 
 type Props = {
     query: Query
+    limit: number
 }
 
 const init: QueryResult = { status: QueryResultStatuses.INCOMPLETE }
@@ -36,7 +39,8 @@ const arePropsEqual = (prev: Props, next: Props): boolean => {
         && areListsEqual(prev.query.virus.names, next.query.virus.names)
 }
 
-export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
+export const QueryResultCard: React.FC<Props> = React.memo(({ query, limit }) => {
+    const [offset, setOffset] = useState<number>(0)
     const [fetching, setFetching] = useState<boolean>(false)
     const [result, setResult] = useState<QueryResult>(init)
 
@@ -58,23 +62,42 @@ export const QueryResultSection: React.FC<Props> = React.memo(({ query }) => {
 
     if (fetching) {
         return (
-            <div className="progress">
-                <div
-                    style={{ width: '100%' }}
-                    className="progress-bar progress-bar-striped progress-bar-animated"
-                ></div>
+            <div className="card">
+                <div className="card-body">
+                    <div className="progress">
+                        <div
+                            style={{ width: '100%' }}
+                            className="progress-bar progress-bar-striped progress-bar-animated"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    if (api.isSuccessful(result) && result.data.length > 0) {
+        return (
+            <div className="card">
+                <div className="card-body">
+                    <QueryResultAlert result={result} />
+                    <PaginationRange offset={offset} total={result.data.length} limit={limit} update={setOffset} />
+                </div>
+                <table className="table card-table table-striped table-hover">
+                    <InteractionTHead />
+                    <InteractionTBody interactions={result.data.slice(offset, offset + limit)} />
+                </table>
+                <div className="card-body">
+                    <PaginationRange offset={offset} total={result.data.length} limit={limit} update={setOffset} />
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="queryresult">
-            <QueryResultAlert result={result} />
-            {
-                !api.isSuccessful(result) || result.data.length == 0 ? null : (
-                    <InteractionSection interactions={result.data} />
-                )
-            }
+        <div className="card">
+            <div className="card-body">
+                <QueryResultAlert result={result} />
+            </div>
         </div>
     )
 }, arePropsEqual)

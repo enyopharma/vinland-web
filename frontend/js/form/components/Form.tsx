@@ -2,45 +2,33 @@ import React from 'react'
 
 import { AppProps } from 'form/props';
 
-import { IdentifierSection } from './IdentifierSection'
+import { IdentifierCard } from './IdentifierCard'
 import { TaxonSearchField } from './TaxonSearchField'
 import { HHOptionsFields } from './Options/HHOptionsFields'
 import { VHOptionsFields } from './Options/VHOptionsFields'
 import { PublicationsOptionsFields } from './Options/PublicationsOptionsFields'
 import { MethodsOptionsFields } from './Options/MethodsOptionsFields'
-import { QueryResultSection } from './QueryResultSection'
+import { QueryResultCard } from './QueryResultCard'
 
 export const Form: React.FC<AppProps> = (props) => {
     return (
         <form action="#" className="form-horizontal">
-            <div className="row">
-                <div className="col">
-                    <fieldset>
-                        <legend>Human protein identifiers</legend>
-                        <div className="row">
-                            <div className="col">
-                                <IdentifierSection {...props.identifiers} />
-                            </div>
-                        </div>
-                    </fieldset>
+            <fieldset>
+                <legend>Human protein identifiers</legend>
+                <IdentifierCard {...props.identifiers} />
+            </fieldset>
+            <fieldset>
+                <legend>Viral taxon</legend>
+                <div className="card">
+                    <div className="card-body">
+                        <TaxonSearchField {...props.taxon} />
+                    </div>
                 </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <fieldset>
-                        <legend>Viral taxon</legend>
-                        <div className="row">
-                            <div className="col">
-                                <TaxonSearchField {...props.taxon} />
-                            </div>
-                        </div>
-                    </fieldset>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <fieldset>
-                        <legend>PPI display options</legend>
+            </fieldset>
+            <fieldset>
+                <legend>PPI display options</legend>
+                <div className="card">
+                    <div className="card-body">
                         <div className="row">
                             <div className="col">
                                 <HHOptionsFields {...props.hh} />
@@ -57,14 +45,13 @@ export const Form: React.FC<AppProps> = (props) => {
                                 <MethodsOptionsFields {...props.methods} />
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
                 </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <QueryResultSection {...props.interactions} />
-                </div>
-            </div>
+            </fieldset>
+            <fieldset>
+                <legend>Query result</legend>
+                <QueryResultCard {...props.interactions} limit={10} />
+            </fieldset>
         </form>
     );
 }
