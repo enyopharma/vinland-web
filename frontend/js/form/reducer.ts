@@ -1,8 +1,7 @@
 import { combineReducers } from 'redux'
 
 import { AppState } from './types'
-import { IdentifiersMode } from './types'
-import { Annotation } from './types'
+import { IdentifierList } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
@@ -10,10 +9,14 @@ import { PublicationsOptions, MethodsOptions } from './types'
 import { AppAction } from './actions'
 import { AppActionTypes } from './actions'
 
+let listkeycounter = 0
+
 const init: AppState = {
-    mode: IdentifiersMode.manual,
-    identifiers: [],
-    annotations: [],
+    identifiers: [{
+        key: listkeycounter,
+        name: 'Manual selection',
+        identifiers: '',
+    }],
     taxon: {
         left: 0,
         right: 0,
@@ -34,44 +37,33 @@ const init: AppState = {
     }
 }
 
-const strToUniqList = (str: string): string[] => {
-    return str.split(/(,|\s|\|)+/)
-        .map(a => a.trim().toUpperCase())
-        .filter(a => a.length >= 2 && a.length <= 12)
-        .reduce((u, a) => u.includes(a) ? u : [...u, a], [])
-}
-
-const mode = (state: IdentifiersMode = init.mode, action: AppAction): IdentifiersMode => {
+const identifiers = (state: IdentifierList[] = init.identifiers, action: AppAction): IdentifierList[] => {
     switch (action.type) {
-        case AppActionTypes.UPDATE_IDENTIFIERS_MODE:
-            return action.mode
-        default:
-            return state
-    }
-}
-
-const identifiers = (state: string[] = init.identifiers, action: AppAction): string[] => {
-    switch (action.type) {
-        case AppActionTypes.UPDATE_ACCESSIONS:
-            return strToUniqList(action.identifiers)
-        default:
-            return state
-    }
-}
-
-const annotations = (state: Annotation[] = init.annotations, action: AppAction): Annotation[] => {
-    switch (action.type) {
-        case AppActionTypes.ADD_ANNOTATION:
-            return [...state, action.annotation]
-        case AppActionTypes.UPDATE_ANNOTATION:
+        case AppActionTypes.ADD_IDENTIFIER_LIST:
+            return [...state, {
+                key: ++listkeycounter,
+                name: 'Manual selection',
+                identifiers: '',
+            }]
+        case AppActionTypes.UPDATE_IDENTIFIER_LIST:
             return [
                 ...state.slice(0, action.i),
                 Object.assign({}, state[action.i], {
-                    annotations: strToUniqList(action.identifiers),
+                    name: init.identifiers[0].name,
+                    identifiers: action.identifiers,
                 }),
                 ...state.slice(action.i + 1),
             ]
-        case AppActionTypes.REMOVE_ANNOTATION:
+        case AppActionTypes.SELECT_IDENTIFIER_LIST:
+            return [
+                ...state.slice(0, action.i),
+                Object.assign({}, state[action.i], {
+                    name: action.list.name,
+                    identifiers: action.list.identifiers,
+                }),
+                ...state.slice(action.i + 1),
+            ]
+        case AppActionTypes.REMOVE_IDENTIFIER_LIST:
             return [
                 ...state.slice(0, action.i),
                 ...state.slice(action.i + 1),
@@ -136,9 +128,7 @@ const methods = (state: MethodsOptions = init.methods, action: AppAction): Metho
 }
 
 export const reducer = combineReducers<AppState, AppAction>({
-    mode,
     identifiers,
-    annotations,
     taxon,
     names,
     hh,

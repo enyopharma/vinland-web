@@ -1,15 +1,13 @@
-import { IdentifiersMode } from './types'
-import { Annotation } from './types'
+import { IdentifierList } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
 
 export enum AppActionTypes {
-    UPDATE_IDENTIFIERS_MODE,
-    UPDATE_ACCESSIONS,
-    ADD_ANNOTATION,
-    UPDATE_ANNOTATION,
-    REMOVE_ANNOTATION,
+    ADD_IDENTIFIER_LIST,
+    SELECT_IDENTIFIER_LIST,
+    UPDATE_IDENTIFIER_LIST,
+    REMOVE_IDENTIFIER_LIST,
     SELECT_TAXON,
     UNSELECT_TAXON,
     UPDATE_HH_OPTIONS,
@@ -19,11 +17,10 @@ export enum AppActionTypes {
 }
 
 export type AppAction =
-    | UpdateIdentifiersMode
-    | UpdateAccessions
-    | AddAnnotation
-    | UpdateAnnotation
-    | RemoveAnnotation
+    | AddIdentifierList
+    | SelectIdentifierList
+    | UpdateIdentifierList
+    | RemoveIdentifierList
     | SelectTaxon
     | UnselectTaxon
     | UpdateHHOptions
@@ -31,29 +28,24 @@ export type AppAction =
     | UpdatePublicationsOptions
     | UpdateMethodsOptions
 
-type UpdateIdentifiersMode = {
-    type: typeof AppActionTypes.UPDATE_IDENTIFIERS_MODE
-    mode: IdentifiersMode
+type AddIdentifierList = {
+    type: typeof AppActionTypes.ADD_IDENTIFIER_LIST
 }
 
-type UpdateAccessions = {
-    type: typeof AppActionTypes.UPDATE_ACCESSIONS
-    identifiers: string
+type SelectIdentifierList = {
+    type: typeof AppActionTypes.SELECT_IDENTIFIER_LIST
+    i: number
+    list: IdentifierList
 }
 
-type AddAnnotation = {
-    type: typeof AppActionTypes.ADD_ANNOTATION
-    annotation: Annotation
-}
-
-type UpdateAnnotation = {
-    type: typeof AppActionTypes.UPDATE_ANNOTATION
+type UpdateIdentifierList = {
+    type: typeof AppActionTypes.UPDATE_IDENTIFIER_LIST
     i: number
     identifiers: string
 }
 
-type RemoveAnnotation = {
-    type: typeof AppActionTypes.REMOVE_ANNOTATION
+type RemoveIdentifierList = {
+    type: typeof AppActionTypes.REMOVE_IDENTIFIER_LIST
     i: number
 }
 

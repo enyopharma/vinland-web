@@ -1,68 +1,46 @@
 import React from 'react'
 
-import { IdentifiersMode } from 'form/types'
-import { Annotation } from 'form/types'
+import { IdentifierList } from 'form/types'
 
-import { IdentifierField } from './IdentifierField'
-import { AnnotationSection } from './AnnotationSection'
+import { IdentifierListField } from './IdentifierListField'
 
 type Props = {
-    mode: IdentifiersMode
-    update: (mode: IdentifiersMode) => void
+    lists: IdentifierList[]
+    add: () => void
+    select: (i: number, list: IdentifierList) => void
+    update: (i: number, identifiers: string) => void
+    remove: (i: number) => void
     parsed: string[]
-    manual: {
-        identifiers: string[]
-        update: (value: string) => void
-    },
-    annotations: {
-        selected: Annotation[]
-    }
 }
 
-export const IdentifierCard: React.FC<Props> = ({ mode, update, parsed, manual, annotations }) => {
-    const isManual = mode == IdentifiersMode.manual
-    const isAnnotations = mode == IdentifiersMode.annotations
-
-    const getOnClick = (mode: IdentifiersMode) => {
-        return e => { update(mode); e.preventDefault() }
-    }
+export const IdentifierCard: React.FC<Props> = ({ lists, parsed, ...actions }) => {
+    const onClick = () => actions.add()
 
     return (
         <div className="card">
-            <div className="card-header">
-                <ul className="nav nav-pills card-header-pills">
-                    <li className="nav-item">
-                        <a
-                            href="#"
-                            className={'nav-link' + (isManual ? ' active' : '')}
-                            onClick={getOnClick(IdentifiersMode.manual)}
-                        >Manual</a>
-                    </li>
-                    <li className="nav-item">
-                        <a
-                            href="#"
-                            className={'nav-link' + (isAnnotations ? ' active' : '')}
-                            onClick={getOnClick(IdentifiersMode.annotations)}
-                        >Annotations</a>
-                    </li>
-                </ul>
-            </div>
             <div className="card-body">
                 {
-                    isManual ? (
-                        <p>
-                            <IdentifierField {...manual} />
-                            <small className="form-text text-muted">
-                                Uniprot accession numbers or names spaced by commas or new lines.
-                        </small>
-                        </p>
-                    ) : null
+                    lists.map((list, i) => (
+                        <IdentifierListField
+                            key={list.key}
+                            list={list}
+                            update={(identifiers: string) => actions.update(i, identifiers)}
+                            select={(list: IdentifierList) => actions.select(i, list)}
+                            remove={() => actions.remove(i)}
+                        />
+                    ))
                 }
-                {
-                    isAnnotations ? (
-                        <AnnotationSection {...annotations} />
-                    ) : null
-                }
+                <div className="row">
+                    <div className="col">
+                        <button
+                            type="button"
+                            className="btn btn-primary btn-block"
+                            onClick={onClick}
+                        >
+                            Add a new identifier list
+                        </button>
+                    </div>
+                </div>
             </div>
             <div className="card-footer">
                 {parsed.length == 0

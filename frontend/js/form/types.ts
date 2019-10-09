@@ -2,9 +2,7 @@
  * The whole app state.
  */
 export type AppState = {
-    mode: IdentifiersMode
-    identifiers: string[]
-    annotations: Annotation[]
+    identifiers: IdentifierList[]
     taxon: TaxonSelection
     names: string[]
     hh: HHOptions
@@ -14,28 +12,17 @@ export type AppState = {
 }
 
 /**
- * The identifiers submission mode.
+ * Identifier list.
  */
-export enum IdentifiersMode {
-    manual = 'manual',
-    annotations = 'annotations',
-}
-
-/**
- * Annotation related types.
- */
-export type Annotation = {
-    source: string
-    ref: string
+export type IdentifierList = {
+    key: number
     name: string
-    identifiers: string[]
+    identifiers: string
 }
 
 /**
  * Taxon related types.
  */
-export type Taxon = { left: number, right: number, name: string }
-
 export type TaxonSelection = { left: 0, right: 0 } | Taxon
 
 export function isSelectedTaxon(selection: TaxonSelection): selection is Taxon {
@@ -72,6 +59,25 @@ export type SearchResult<T> = {
         label: string
         value: T
     }>
+}
+
+/**
+ * Annotation type.
+ */
+export type Annotation = {
+    source: string
+    ref: string
+    name: string
+    identifiers: string[]
+}
+
+/**
+ * Taxon type.
+ */
+export type Taxon = {
+    left: number
+    right: number
+    name: string
 }
 
 /**

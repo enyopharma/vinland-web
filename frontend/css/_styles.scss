@@ -2,11 +2,11 @@ body {
     padding-bottom: $spacer * 50;
 }
 
-div.row, .card, fieldset {
+div.row, div.card, fieldset {
     margin-bottom: $spacer;
 }
 
-div.row, .card, fieldset, ul, p, table, .alert {
+div.row, div.card, fieldset, ul, p, table, .alert {
     &:last-child {
         margin-bottom: 0;
     }

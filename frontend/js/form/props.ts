@@ -1,8 +1,7 @@
 import { Dispatch } from 'redux'
 
 import { AppState } from './types'
-import { IdentifiersMode } from './types'
-import { Annotation } from './types'
+import { IdentifierList } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
@@ -16,7 +15,14 @@ export type AppProps = ReturnType<typeof mergeProps>
 const mapStateToQuery = (state: AppState): Query => {
     return {
         human: {
-            accessions: state.identifiers
+            accessions: state.identifiers.reduce((merged, list) => {
+                return list.identifiers.split(/(,|\s|\|)+/)
+                    .map(i => i.trim().toUpperCase())
+                    .filter(i => i.length >= 2 && i.length <= 12)
+                    .reduce((merged, identifier) => {
+                        return merged.includes(identifier) ? merged : [...merged, identifier]
+                    }, merged)
+            }, [])
         },
         virus: {
             left: state.taxon.left,
@@ -39,25 +45,21 @@ export const mapStateToProps = (state: AppState) => {
 
 export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
     return {
-        updateIdentifiersMode: (mode: IdentifiersMode) => dispatch({
-            type: AppActionTypes.UPDATE_IDENTIFIERS_MODE,
-            mode: mode,
+        addIdentifierList: () => dispatch({
+            type: AppActionTypes.ADD_IDENTIFIER_LIST,
         }),
-        updateIdentifiers: (identifiers: string) => dispatch({
-            type: AppActionTypes.UPDATE_ACCESSIONS,
-            identifiers: identifiers,
+        selectIdentifierList: (i: number, list: IdentifierList) => dispatch({
+            type: AppActionTypes.SELECT_IDENTIFIER_LIST,
+            i: i,
+            list: list,
         }),
-        addAnnotation: (annotation: Annotation) => dispatch({
-            type: AppActionTypes.ADD_ANNOTATION,
-            annotation: annotation,
-        }),
-        updateAnnotation: (i: number, identifiers: string) => dispatch({
-            type: AppActionTypes.UPDATE_ANNOTATION,
+        updateIdentifierList: (i: number, identifiers: string) => dispatch({
+            type: AppActionTypes.UPDATE_IDENTIFIER_LIST,
             i: i,
             identifiers: identifiers,
         }),
-        removeAnnotation: (i: number) => dispatch({
-            type: AppActionTypes.REMOVE_ANNOTATION,
+        removeIdentifierList: (i: number) => dispatch({
+            type: AppActionTypes.REMOVE_IDENTIFIER_LIST,
             i: i,
         }),
         selectTaxon: (taxon: TaxonSelection) => dispatch({
@@ -89,16 +91,12 @@ export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
 export const mergeProps = (props: ReturnType<typeof mapStateToProps>, actions: ReturnType<typeof mapDispatchToProps>) => {
     return {
         identifiers: {
-            mode: props.mode,
-            update: actions.updateIdentifiersMode,
+            lists: props.identifiers,
+            add: actions.addIdentifierList,
+            select: actions.selectIdentifierList,
+            update: actions.updateIdentifierList,
+            remove: actions.removeIdentifierList,
             parsed: props.query.human.accessions,
-            manual: {
-                identifiers: props.identifiers,
-                update: actions.updateIdentifiers,
-            },
-            annotations: {
-                selected: props.annotations,
-            },
         },
         taxon: {
             selection: props.taxon,
