@@ -54,20 +54,23 @@ const identifiers = (state: IdentifierList[] = init.identifiers, action: AppActi
                 }),
                 ...state.slice(action.i + 1),
             ]
-        case AppActionTypes.SELECT_IDENTIFIER_LIST:
-            return [
-                ...state.slice(0, action.i),
-                Object.assign({}, state[action.i], {
-                    name: action.list.name,
-                    identifiers: action.list.identifiers,
-                }),
-                ...state.slice(action.i + 1),
-            ]
         case AppActionTypes.REMOVE_IDENTIFIER_LIST:
             return [
                 ...state.slice(0, action.i),
                 ...state.slice(action.i + 1),
             ]
+        case AppActionTypes.SELECT_ANNOTATION:
+            const list = {
+                key: ++listkeycounter,
+                name: `${action.annotation.ref} - ${action.annotation.name}`,
+                identifiers: action.annotation.accessions.join(', '),
+            }
+
+            if (state.length > 0 && state[state.length - 1].identifiers.trim().length == 0) {
+                return [...state.slice(0, state.length - 1), list]
+            }
+
+            return [...state, list]
         default:
             return state
     }

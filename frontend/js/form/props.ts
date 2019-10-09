@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux'
 
 import { AppState } from './types'
-import { IdentifierList } from './types'
+import { Annotation } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
@@ -48,11 +48,6 @@ export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
         addIdentifierList: () => dispatch({
             type: AppActionTypes.ADD_IDENTIFIER_LIST,
         }),
-        selectIdentifierList: (i: number, list: IdentifierList) => dispatch({
-            type: AppActionTypes.SELECT_IDENTIFIER_LIST,
-            i: i,
-            list: list,
-        }),
         updateIdentifierList: (i: number, identifiers: string) => dispatch({
             type: AppActionTypes.UPDATE_IDENTIFIER_LIST,
             i: i,
@@ -61,6 +56,10 @@ export const mapDispatchToProps = (dispatch: Dispatch<AppAction>) => {
         removeIdentifierList: (i: number) => dispatch({
             type: AppActionTypes.REMOVE_IDENTIFIER_LIST,
             i: i,
+        }),
+        selectAnnotation: (annotation: Annotation) => dispatch({
+            type: AppActionTypes.SELECT_ANNOTATION,
+            annotation: annotation,
         }),
         selectTaxon: (taxon: TaxonSelection) => dispatch({
             type: AppActionTypes.SELECT_TAXON,
@@ -93,9 +92,9 @@ export const mergeProps = (props: ReturnType<typeof mapStateToProps>, actions: R
         identifiers: {
             lists: props.identifiers,
             add: actions.addIdentifierList,
-            select: actions.selectIdentifierList,
             update: actions.updateIdentifierList,
             remove: actions.removeIdentifierList,
+            select: actions.selectAnnotation,
             parsed: props.query.human.accessions,
         },
         taxon: {

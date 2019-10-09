@@ -65,10 +65,9 @@ export type SearchResult<T> = {
  * Annotation type.
  */
 export type Annotation = {
-    source: string
     ref: string
     name: string
-    identifiers: string[]
+    accessions: string[]
 }
 
 /**

@@ -1,13 +1,13 @@
-import { IdentifierList } from './types'
+import { Annotation } from './types'
 import { TaxonSelection } from './types'
 import { HHOptions, VHOptions } from './types'
 import { PublicationsOptions, MethodsOptions } from './types'
 
 export enum AppActionTypes {
     ADD_IDENTIFIER_LIST,
-    SELECT_IDENTIFIER_LIST,
     UPDATE_IDENTIFIER_LIST,
     REMOVE_IDENTIFIER_LIST,
+    SELECT_ANNOTATION,
     SELECT_TAXON,
     UNSELECT_TAXON,
     UPDATE_HH_OPTIONS,
@@ -18,9 +18,9 @@ export enum AppActionTypes {
 
 export type AppAction =
     | AddIdentifierList
-    | SelectIdentifierList
     | UpdateIdentifierList
     | RemoveIdentifierList
+    | SelectAnnotation
     | SelectTaxon
     | UnselectTaxon
     | UpdateHHOptions
@@ -32,12 +32,6 @@ type AddIdentifierList = {
     type: typeof AppActionTypes.ADD_IDENTIFIER_LIST
 }
 
-type SelectIdentifierList = {
-    type: typeof AppActionTypes.SELECT_IDENTIFIER_LIST
-    i: number
-    list: IdentifierList
-}
-
 type UpdateIdentifierList = {
     type: typeof AppActionTypes.UPDATE_IDENTIFIER_LIST
     i: number
@@ -47,6 +41,11 @@ type UpdateIdentifierList = {
 type RemoveIdentifierList = {
     type: typeof AppActionTypes.REMOVE_IDENTIFIER_LIST
     i: number
+}
+
+type SelectAnnotation = {
+    type: typeof AppActionTypes.SELECT_ANNOTATION
+    annotation: Annotation
 }
 
 type SelectTaxon = {

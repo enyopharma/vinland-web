@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { SearchResult } from 'form/types'
 
@@ -20,54 +20,75 @@ export const SearchField: <T>(p: Props<T>) => React.ReactElement<Props<T>> = ({ 
             : label
     }
 
-    const [active, setActive] = useState(null)
-    const [display, setDisplay] = useState(false)
+    const [active, setActive] = useState<number>(null)
+    const [display, setDisplay] = useState<boolean>(false)
 
-    const onBlur = e => setDisplay(false)
+    useEffect(() => setActive(null), [display])
 
-    const onClick = e => setDisplay(true)
+    const doSelect = value => {
+        setDisplay(false)
+        select(value)
+    }
+
+    const onBlur = e => {
+        if (e.target.type == 'text') setDisplay(false)
+    }
+
+    const onFocus = e => {
+        if (e.target.type == 'text') setDisplay(true)
+    }
+
+    const onClick = e => {
+        if (e.target.type == 'text') setDisplay(true)
+    }
 
     const onKeyDown = e => {
-        switch (e.keyCode) {
-            case 13:
-                if (active != null) select(result.hints[active].value)
-                break
-            case 27:
-                setDisplay(!display)
-                break
-            case 38:
-                active == null || active == 0
-                    ? setActive(Math.min(result.hints.length, result.limit) - 1)
-                    : setActive(active - 1)
-                break
-            case 40:
-                active == null || active == Math.min(result.hints.length, result.limit) - 1
-                    ? setActive(0)
-                    : setActive(active + 1)
-                break
+        if (e.target.type == 'text') {
+            switch (e.keyCode) {
+                case 13:
+                    if (active != null) doSelect(result.hints[active].value)
+                    break
+                case 27:
+                    setDisplay(!display)
+                    break
+                case 38:
+                    active == null || active == 0
+                        ? setActive(Math.min(result.hints.length, result.limit) - 1)
+                        : setActive(active - 1)
+                    break
+                case 40:
+                    active == null || active == Math.min(result.hints.length, result.limit) - 1
+                        ? setActive(0)
+                        : setActive(active + 1)
+                    break
+            }
         }
     }
 
+    const getOnMouseOver = (active: number) => e => setActive(active)
+
+    const getOnMouseDown = value => e => doSelect(value)
+
     return (
-        <div style={{ position: 'relative' }} onClick={onClick} onBlur={onBlur} onKeyDown={onKeyDown}>
+        <div style={{ position: 'relative' }} onFocus={onFocus} onBlur={onBlur} onClick={onClick} onKeyDown={onKeyDown}>
             {children}
             {
-                !display || result.hints.length == 0 ? null : (
+                display && result.hints.length > 0 ? (
                     <div style={{ position: 'absolute', zIndex: 10, width: '100%' }}>
                         <ul className="list-group">
                             {result.hints.slice(0, result.limit).map((hint, i) => (
                                 <li
                                     key={i}
                                     className={'list-group-item' + (active == i ? ' active' : '')}
-                                    onMouseOver={() => setActive(i)}
-                                    onMouseDown={() => select(hint.value)}
+                                    onMouseOver={getOnMouseOver(i)}
+                                    onMouseDown={getOnMouseDown(hint.value)}
                                     dangerouslySetInnerHTML={{ __html: highlight(hint.label) }}
                                 >
                                 </li>
                             ))}
                         </ul>
                     </div>
-                )
+                ) : null
             }
         </div>
     )

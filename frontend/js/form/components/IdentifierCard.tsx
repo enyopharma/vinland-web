@@ -1,15 +1,17 @@
 import React from 'react'
 
+import { Annotation } from 'form/types'
 import { IdentifierList } from 'form/types'
 
 import { IdentifierListField } from './IdentifierListField'
+import { AnnotationSearchField } from './AnnotationSearchField'
 
 type Props = {
     lists: IdentifierList[]
     add: () => void
-    select: (i: number, list: IdentifierList) => void
     update: (i: number, identifiers: string) => void
     remove: (i: number) => void
+    select: (annotation: Annotation) => void
     parsed: string[]
 }
 
@@ -25,11 +27,15 @@ export const IdentifierCard: React.FC<Props> = ({ lists, parsed, ...actions }) =
                             key={list.key}
                             list={list}
                             update={(identifiers: string) => actions.update(i, identifiers)}
-                            select={(list: IdentifierList) => actions.select(i, list)}
                             remove={() => actions.remove(i)}
                         />
                     ))
                 }
+                <div className="row">
+                    <div className="col">
+                        <AnnotationSearchField select={actions.select} />
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col">
                         <button
