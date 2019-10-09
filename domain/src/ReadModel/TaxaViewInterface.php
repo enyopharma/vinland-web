@@ -6,5 +6,5 @@ namespace Domain\ReadModel;
 
 interface TaxaViewInterface
 {
-    public function all(string $q, int $limit): Statement;
+    public function all(string $query, int $limit): Statement;
 }
