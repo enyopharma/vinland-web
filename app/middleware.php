@@ -11,7 +11,14 @@ use Psr\Container\ContainerInterface;
  * @return Psr\Http\Server\MiddlewareInterface[]
  */
 return function (ContainerInterface $container): array {
+    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
+
     return [
+        /**
+         * Cross-origin resource sharing middleware.
+         */
+        new App\Http\Middleware\CORSMiddleware($factory, $_ENV['ALLOWED_DOMAIN'], 'GET', 'POST'),
+
         /**
          * Parse json body.
          */
