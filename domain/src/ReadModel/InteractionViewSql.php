@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Domain\ReadModel;
 
-use Domain\Input\StrCollection;
+use Domain\Input\QueryInput;
 
 final class InteractionViewSql implements InteractionViewInterface
 {
+    const HH  = 'hh';
+    const VH  = 'vh';
+
+    const NAME_CLASS = 'scientific name';
+
     private $pdo;
 
     public function __construct(\PDO $pdo)
@@ -15,32 +20,53 @@ final class InteractionViewSql implements InteractionViewInterface
         $this->pdo = $pdo;
     }
 
-    private function generator(\PDOStatement $sth): \Generator
+    public function all(QueryInput $input): Statement
     {
-        while ($interaction = $sth->fetch()) {
-            yield [
-                'type' => $interaction['type'],
-                'protein1' => [
-                    'type' => $interaction['type1'],
-                    'accession' => $interaction['accession1'],
-                    'name' => $interaction['name1'],
-                    'description' => $interaction['description1'],
-                    'taxon' => 'Homo sapiens',
-                ],
-                'protein2' => [
-                    'type' => $interaction['type2'],
-                    'accession' => $interaction['accession2'],
-                    'name' => $interaction['name2'],
-                    'description' => $interaction['description2'],
-                    'taxon' => $interaction['taxon_name'] ?? 'Homo sapiens',
-                ],
-                'publications' => [
-                    'nb' => $interaction['nb_publications'],
-                ],
-                'methods' => [
-                    'nb' => $interaction['nb_methods'],
-                ],
-            ];
+        $sths = [];
+
+        if ($input->wantsHHNetwork()) {
+            $sths[] = $this->HHNetwork($input);
+        }
+
+        if ($input->wantsHHInteractions()) {
+            $sths[] = $this->HHInteractions($input);
+        }
+
+        if ($input->wantsVHInteractions()) {
+            $sths[] = $this->VHInteractions($input);
+        }
+
+        return new Statement($this->generator(...$sths));
+    }
+
+    private function generator(\PDOStatement ...$sths): \Generator
+    {
+        foreach ($sths as $sth) {
+            while ($interaction = $sth->fetch()) {
+                yield [
+                    'type' => $interaction['type'],
+                    'protein1' => [
+                        'type' => $interaction['type1'],
+                        'accession' => $interaction['accession1'],
+                        'name' => $interaction['name1'],
+                        'description' => $interaction['description1'],
+                        'taxon' => 'Homo sapiens',
+                    ],
+                    'protein2' => [
+                        'type' => $interaction['type2'],
+                        'accession' => $interaction['accession2'],
+                        'name' => $interaction['name2'],
+                        'description' => $interaction['description2'],
+                        'taxon' => $interaction['taxon_name'] ?? 'Homo sapiens',
+                    ],
+                    'publications' => [
+                        'nb' => $interaction['nb_publications'],
+                    ],
+                    'methods' => [
+                        'nb' => $interaction['nb_methods'],
+                    ],
+                ];
+            }
         }
     }
 
@@ -54,45 +80,56 @@ final class InteractionViewSql implements InteractionViewInterface
             ->from('interactions AS i')
             ->from('proteins AS p1, proteins AS p2')
             ->where('p1.id = i.protein1_id AND p2.id = i.protein2_id')
-            ->where('i.type = ? AND i.nb_publications >= ? AND i.nb_methods >= ?');
+            ->where('i.type = ? AND i.nb_methods >= ? AND i.nb_publications >= ?');
     }
 
-    public function HHNetwork(StrCollection $accessions, int $publication, int $method): Statement
+    private function HHNetwork(QueryInput $input): \PDOStatement
     {
+        [$identifiers] = $input->human();
+        [$methods, $publications] = $input->filters();
+
         $select_interactions_sth = $this->query()
             ->from('proteins_xrefs AS x1, proteins_xrefs AS x2')
             ->where('p1.id = x1.protein_id AND p2.id = x2.protein_id')
-            ->in('x1.ref', $accessions->count())
-            ->in('x2.ref', $accessions->count())
+            ->in('x1.ref', count($identifiers))
+            ->in('x2.ref', count($identifiers))
             ->prepare();
 
         $select_interactions_sth->execute([
-            ...[\Domain\Interaction::HH, $publication, $method],
-            ...$accessions->uppercased(),
-            ...$accessions->uppercased(),
+            ...[self::HH, $methods, $publications],
+            ...$identifiers,
+            ...$identifiers,
         ]);
 
-        return new Statement($this->generator($select_interactions_sth));
+        return $select_interactions_sth;
     }
 
-    public function HHInteractions(StrCollection $accessions, int $publication, int $method): Statement
+    public function HHInteractions(QueryInput $input): \PDOStatement
     {
+        [$identifiers] = $input->human();
+        [$methods, $publications] = $input->filters();
+
         $select_interactions_sth = $this->query()
             ->from('edges AS e, proteins_xrefs AS x')
             ->where('e.source_id = x.protein_id')
-            ->in('x.ref', $accessions->count())
+            ->in('x.ref', count($identifiers))
             ->prepare();
 
         $select_interactions_sth->execute([
-            ...[\Domain\Interaction::HH, $publication, $method],
-            ...$accessions->uppercased(),
+            ...[self::HH, $methods, $publications],
+            ...$identifiers,
         ]);
 
-        return new Statement($this->generator($select_interactions_sth));
+        return $select_interactions_sth;
     }
 
-    public function VHInteractions(StrCollection $accessions, int $left, int $right, StrCollection $names, int $publication, int $method): Statement
+    public function VHInteractions(QueryInput $input): \PDOStatement
     {
+        [$identifiers] = $input->human();
+        [$left, $right, $names] = $input->virus();
+        [$methods, $publications] = $input->filters();
+
+        // get the base query.
         $query = $this->query();
 
         // add taxon name.
@@ -107,12 +144,12 @@ final class InteractionViewSql implements InteractionViewInterface
         $query = $query
             ->from('proteins_xrefs AS x1')
             ->where('p1.id = x1.protein_id')
-            ->in('x1.ref', $accessions->count());
+            ->in('x1.ref', count($identifiers));
 
         // add viral name filter.
-        $query = $query->in('p2.name', $names->count());
+        $query = $query->in('p2.name', count($names));
 
-        // add viral taxon filter.
+        // add viral taxon filter when needed.
         $taxon = [];
 
         if ($left > 0 && $right > 0) {
@@ -125,13 +162,13 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_interactions_sth = $query->prepare();
 
         $select_interactions_sth->execute([
-            ...[\Domain\Interaction::VH, $publication, $method],
-            ...[\Domain\Taxon::NAME_CLASS],
-            ...$accessions->uppercased(),
-            ...$names->values(),
+            ...[self::VH, $methods, $publications],
+            ...[self::NAME_CLASS],
+            ...$identifiers,
+            ...$names,
             ...$taxon,
         ]);
 
-        return new Statement($this->generator($select_interactions_sth));
+        return $select_interactions_sth;
     }
 }

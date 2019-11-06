@@ -11,7 +11,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "7.2"
+            "php": "7.4"
         }
     },
     "require": {
@@ -24,10 +24,17 @@
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "quanta/container": "^0.3.2",
+        "quanta/validation": "@dev",
         "symfony/dotenv": "^4.3",
         "zendframework/zend-expressive-fastroute": "^3.0",
         "zendframework/zend-expressive-helpers": "^5.3"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/pmall/input"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "App\\Http\\": "app/src",

@@ -21,10 +21,10 @@ return function (ContainerInterface $container): array {
         ],
 
         'POST /interactions' => [
-            'handler' => fn () => new App\Http\Handlers\Interactions\ShowHandler(
+            'handler' => fn () => new App\Http\Handlers\Interactions\IndexHandler(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\Input\QueryValidation::class),
                 $container->get(Domain\ReadModel\InteractionViewInterface::class),
+                new App\Http\Validations\RequestToQuery($container->get(PDO::class))
             ),
         ],
 
