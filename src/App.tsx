@@ -2,7 +2,7 @@ import React from 'react';
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { reducer as search } from './app/search/src/reducer'
+import { reducer as search } from './app/search/src/search'
 
 import { Navbar } from './app/Navbar'
 const HomePage = React.lazy(() => import('./app/HomePage').then(module => ({ default: module.HomePage })))
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
         <Provider store={store}>
             <BrowserRouter>
                 <Navbar />
-                <React.Suspense fallback="null">
+                <React.Suspense fallback={null}>
                     <Switch>
                         <Route exact path="/" component={HomePage} />
                         <Route path="/interactions" component={SearchPage} />
