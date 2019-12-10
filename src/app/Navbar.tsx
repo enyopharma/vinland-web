@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import 'bootstrap/js/dist/collapse'
 
-const Navbar: React.FC = () => (
+export const Navbar: React.FC = () => (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div className="container">
             <Link className="navbar-brand" to="/">Vinland</Link>
@@ -24,5 +24,3 @@ const Navbar: React.FC = () => (
         </div>
     </nav>
 )
-
-export { Navbar }

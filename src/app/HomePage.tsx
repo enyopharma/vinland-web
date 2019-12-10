@@ -1,6 +1,6 @@
 import React from 'react'
 
-const HomePage: React.FC = () => (
+export const HomePage: React.FC = () => (
     <div className="container">
         <div className="jumbotron">
             <h1>Welcome to Vinland!</h1>
@@ -14,5 +14,3 @@ const HomePage: React.FC = () => (
         </div>
     </div>
 )
-
-export { HomePage }
