@@ -1,3 +1,17 @@
 @import "~bootswatch/dist/minty/variables";
 @import "~bootstrap/scss/bootstrap";
 @import "~bootswatch/dist/minty/bootswatch";
+
+body {
+    padding-bottom: $spacer * 50;
+}
+
+div.row, div.card, fieldset {
+    margin-bottom: $spacer;
+}
+
+div.row, div.card, fieldset, ul, p, table, .alert {
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
