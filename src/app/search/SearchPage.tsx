@@ -17,7 +17,7 @@ export const SearchPage: React.FC = () => (
                 <TaxonCard />
             </fieldset>
             <fieldset>
-                <legend>PPI display options</legend>
+                <legend>PPI filter options</legend>
                 <OptionsCard />
             </fieldset>
         </form>
