@@ -2,25 +2,23 @@ import React from 'react'
 import { useSpring, animated } from 'react-spring'
 
 type Props = {
+    i: number
     name: string,
     identifiers: string,
     update: (identifiers: string) => void
     remove: () => void
 }
 
-export const IdentifierListInput: React.FC<Props> = ({ name, identifiers, update, remove }) => {
+export const IdentifierListInput: React.FC<Props> = ({ i, name, identifiers, update, remove }) => {
     const props = useSpring({
-        opacity: 1,
-        backgroundColor: '#fff',
-        from: {
-            opacity: 0,
-            backgroundColor: '#ccc',
-        },
+        config: { duration: 500 },
+        from: { opacity: 0 },
+        to: { opacity: 1 },
     })
 
     return (
         <div className="form-group">
-            <animated.div style={props}>
+            <animated.div style={i === 0 ? {} : props}>
                 <label>{name}</label>
                 <div className="input-group">
                     <textarea

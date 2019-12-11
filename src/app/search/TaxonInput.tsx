@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState } from 'react'
 
 import { TaxonSelection, Taxon, isSelectedTaxon, read } from './src/taxon'
 import { SearchResultPanel } from './SearchResultPanel'
@@ -21,14 +21,11 @@ export const TaxonInput: React.FC<Props> = ({ taxon, select, unselect }) => {
         select(taxon)
     }
 
-    useEffect(() => {
-        setEnabled(query.trim().length > 0)
-    }, [query])
-
     const handleKeyDown = (code: number) => {
-        if (code === 27) setEnabled(!enabled)
-        if (code === 38) setEnabled(true)
-        if (code === 40) setEnabled(true)
+        if (!input.current) return
+        if (code === 27) {
+            input.current.blur()
+        }
     }
 
     if (isSelectedTaxon(taxon)) {
@@ -55,7 +52,6 @@ export const TaxonInput: React.FC<Props> = ({ taxon, select, unselect }) => {
                     placeholder="Search for a viral species"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
-                    onClick={e => setEnabled(true)}
                     onFocus={e => setEnabled(true)}
                     onBlur={e => setEnabled(false)}
                     onKeyDown={e => handleKeyDown(e.keyCode)}

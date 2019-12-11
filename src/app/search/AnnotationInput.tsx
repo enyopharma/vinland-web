@@ -32,15 +32,16 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
 
     const search = (query: string) => annotations(source, query)
 
-    const selectAndEmpty = (annotation: Annotation) => {
+    const selectAndClose = (annotation: Annotation) => {
         setQuery('')
         select(annotation)
     }
 
     const handleKeyDown = (code: number) => {
-        if (code === 27) setEnabled(!enabled)
-        if (code === 38) setEnabled(true)
-        if (code === 40) setEnabled(true)
+        if (!input.current) return
+        if (code === 27) {
+            input.current.blur()
+        }
     }
 
     return (
@@ -54,7 +55,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                     value={source}
                     onChange={e => setSource(e.target.value)}
                 >
-                    <option value=""></option>
+                    <option value="">Source</option>
                     {sources.map((source, i) => (
                         <option key={i} value={source.value}>{source.label}</option>
                     ))}
@@ -67,7 +68,6 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                     value={query}
                     disabled={source === ''}
                     onChange={e => setQuery(e.target.value)}
-                    onClick={e => setEnabled(true)}
                     onFocus={e => setEnabled(true)}
                     onBlur={e => setEnabled(false)}
                     onKeyDown={e => handleKeyDown(e.keyCode)}
@@ -78,7 +78,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                 query={query}
                 enabled={enabled}
                 search={search}
-                select={selectAndEmpty}
+                select={selectAndClose}
             />
         </div>
     )

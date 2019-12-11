@@ -29,7 +29,7 @@ const Stateless: React.FC<Props> = ({ lists, parsed, add, update, remove, select
             <AnnotationInput select={select} />
             <hr />
             {lists.map((list, i) => (
-                <IdentifierListInput {...list} update={update(i)} remove={remove(i)} />
+                <IdentifierListInput key={list.i} {...list} update={update(i)} remove={remove(i)} />
             ))}
             <button type="button" className="btn btn-primary btn-block" onClick={() => add()}>
                 Add a new identifier list

@@ -5,7 +5,7 @@ import { Annotation } from './annotation'
  * types.
  */
 export type IdentifierList = {
-    key: number
+    i: number
     name: string
     identifiers: string
 }
@@ -41,7 +41,7 @@ interface SelectAction extends Action<typeof SELECT> {
 let listkeycounter = 0
 
 const init = [{
-    key: listkeycounter,
+    i: listkeycounter,
     name: 'manual selection',
     identifiers: '',
 }]
@@ -61,7 +61,7 @@ export const reducer: Reducer<IdentifierList[], IdentifierAction> = (state = ini
     switch (action.type) {
         case ADD:
             return [...state, {
-                key: ++listkeycounter,
+                i: ++listkeycounter,
                 name: 'Manual selection',
                 identifiers: '',
             }]
@@ -81,12 +81,12 @@ export const reducer: Reducer<IdentifierList[], IdentifierAction> = (state = ini
             ]
         case SELECT:
             const list = {
-                key: ++listkeycounter,
+                i: ++listkeycounter,
                 name: `${action.annotation.source} - ${action.annotation.ref} (${action.annotation.name})`,
                 identifiers: action.annotation.accessions.join(', '),
             }
 
-            if (state.length > 0 && state[0].identifiers.trim().length === 0) {
+            if (state.length === 1 && state[0].identifiers.trim().length === 0) {
                 return [list, ...state.slice(1)]
             }
 
