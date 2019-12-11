@@ -19,6 +19,13 @@ const NETWORK = 'search/options/NETWORK'
 const PUBLICATIONS = 'search/options/PUBLICATIONS'
 const METHODS = 'search/options/METHODS'
 
+type OptionsAction =
+    | SetShowHH
+    | SetShowVH
+    | SetNetwork
+    | SetPublicationsThreshold
+    | SetMethodsThreshold
+
 interface SetShowHH extends Action<typeof HH> {
     show: boolean
 }
@@ -40,21 +47,17 @@ interface SetMethodsThreshold extends Action<typeof METHODS> {
 }
 
 /**
- * creators and reducer.
+ * creators.
  */
-type OptionsAction =
-    | SetShowHH
-    | SetShowVH
-    | SetNetwork
-    | SetPublicationsThreshold
-    | SetMethodsThreshold
+export const setShowHH = (show: boolean) => ({ type: HH, show })
+export const setShowVH = (show: boolean) => ({ type: VH, show })
+export const setNetwork = (network: boolean) => ({ type: NETWORK, network })
+export const setPublicationsThreshold = (threshold: number) => ({ type: PUBLICATIONS, threshold })
+export const setMethodsThreshold = (threshold: number) => ({ type: METHODS, threshold })
 
-export const setShowHH = (show: boolean): SetShowHH => ({ type: HH, show })
-export const setShowVH = (show: boolean): SetShowVH => ({ type: VH, show })
-export const setNetwork = (network: boolean): SetNetwork => ({ type: NETWORK, network })
-export const setPublicationsThreshold = (threshold: number): SetPublicationsThreshold => ({ type: PUBLICATIONS, threshold })
-export const setMethodsThreshold = (threshold: number): SetMethodsThreshold => ({ type: METHODS, threshold })
-
+/**
+ * reducer.
+ */
 const hh: Reducer<{ show: boolean, network: boolean }, OptionsAction> = (state = { show: true, network: false }, action) => {
     switch (action.type) {
         case HH:

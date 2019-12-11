@@ -18,6 +18,12 @@ const UPDATE = 'search/identifier/UPDATE'
 const REMOVE = 'search/identifier/REMOVE'
 const SELECT = 'search/identifier/SELECT'
 
+type IdentifierAction =
+    | AddAction
+    | UpdateAction
+    | RemoveAction
+    | SelectAction
+
 interface AddAction extends Action<typeof ADD> {
     //
 }
@@ -36,7 +42,15 @@ interface SelectAction extends Action<typeof SELECT> {
 }
 
 /**
- * creators and reducer.
+ * creators.
+ */
+export const add = () => ({ type: ADD })
+export const update = (i: number, identifiers: string) => ({ type: UPDATE, i, identifiers })
+export const remove = (i: number) => ({ type: REMOVE, i })
+export const select = (annotation: Annotation) => ({ type: SELECT, annotation })
+
+/**
+ * reducer.
  */
 let listkeycounter = 0
 
@@ -45,17 +59,6 @@ const init = [{
     name: 'manual selection',
     identifiers: '',
 }]
-
-type IdentifierAction =
-    | AddAction
-    | UpdateAction
-    | RemoveAction
-    | SelectAction
-
-export const add = (): IdentifierAction => ({ type: ADD })
-export const update = (i: number, identifiers: string): IdentifierAction => ({ type: UPDATE, i, identifiers })
-export const remove = (i: number): IdentifierAction => ({ type: REMOVE, i })
-export const select = (annotation: Annotation): IdentifierAction => ({ type: SELECT, annotation })
 
 export const reducer: Reducer<IdentifierList[], IdentifierAction> = (state = init, action) => {
     switch (action.type) {

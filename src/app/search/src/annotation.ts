@@ -17,7 +17,7 @@ export type Annotation = {
 export const read = (limit: number) => {
     const cache: Record<string, SearchResult<Annotation>[]> = {}
 
-    return (source: string, query: string): SearchResult<Annotation>[] => {
+    return (source: string, query: string) => {
         if (source.trim().length === 0) return []
         if (query.trim().length === 0) return []
 
@@ -33,7 +33,7 @@ export const read = (limit: number) => {
     }
 }
 
-const getAnnotations = async (source: string, query: string, limit: number): Promise<SearchResult<Annotation>[]> => {
+const getAnnotations = async (source: string, query: string, limit: number) => {
     const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const querystr = qs.encode({ source: source, query: query, limit: limit })
     const params = { headers: { accept: 'application/json' } }

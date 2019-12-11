@@ -23,6 +23,10 @@ export function isSelectedTaxon(selection: TaxonSelection): selection is Taxon {
 const SELECT = 'search/taxon/SELECT'
 const UNSELECT = 'search/taxon/UNSELECT'
 
+type TaxonAction =
+    | SelectAction
+    | UnselectAction
+
 interface SelectAction extends Action<typeof SELECT> {
     taxon: Taxon
 }
@@ -32,16 +36,15 @@ interface UnselectAction extends Action<typeof UNSELECT> {
 }
 
 /**
- * creators and reducer.
+ * creators.
+ */
+export const select = (taxon: Taxon) => ({ type: SELECT, taxon })
+export const unselect = () => ({ type: UNSELECT })
+
+/**
+ * reducer.
  */
 const init = { left: 0, right: 0, name: '' }
-
-type TaxonAction =
-    | SelectAction
-    | UnselectAction
-
-export const select = (taxon: Taxon): TaxonAction => ({ type: SELECT, taxon })
-export const unselect = (): TaxonAction => ({ type: UNSELECT })
 
 export const reducer: Reducer<TaxonSelection, TaxonAction> = (state = init, action) => {
     switch (action.type) {
@@ -60,7 +63,7 @@ export const reducer: Reducer<TaxonSelection, TaxonAction> = (state = init, acti
 export const read = (limit: number) => {
     const cache: Record<string, SearchResult<Taxon>[]> = {}
 
-    return (query: string): SearchResult<Taxon>[] => {
+    return (query: string) => {
         if (cache[query]) return cache[query]
 
         throw new Promise(resolve => {
@@ -71,7 +74,7 @@ export const read = (limit: number) => {
     }
 }
 
-const getTaxa = async (query: string, limit: number): Promise<SearchResult<Taxon>[]> => {
+const getTaxa = async (query: string, limit: number) => {
     const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const querystr = qs.encode({ query: query, limit: limit })
     const params = { headers: { 'accept': 'application/json' } }

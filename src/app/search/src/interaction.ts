@@ -1,3 +1,5 @@
+import { string } from "prop-types"
+
 /**
  * types.
  */
@@ -50,38 +52,20 @@ export type FailedQueryResult = {
     errors: string[]
 }
 
-export enum InteractionTypes {
-    HH = 'hh',
-    VH = 'vh',
-}
-
-export enum InteractorTypes {
-    H = 'h',
-    V = 'v',
-}
-
 export type Interaction = {
-    type: InteractionTypes
+    type: 'hh' | 'vh'
     protein1: Interactor
     protein2: Interactor
-    publications: PublicationsMeta,
-    methods: MethodsMeta
+    publications: { nb: number }
+    methods: { nb: number }
 }
 
 export type Interactor = {
-    type: InteractorTypes
+    type: 'h' | 'v'
     accession: string
     name: string
     description: string
     taxon: string
-}
-
-export type PublicationsMeta = {
-    nb: number
-}
-
-export type MethodsMeta = {
-    nb: number
 }
 
 export function isSuccessfulQueryResult(result: QueryResult): result is SuccessfulQueryResult {
@@ -91,11 +75,24 @@ export function isSuccessfulQueryResult(result: QueryResult): result is Successf
 /**
  * api.
  */
-export const read = async (query: Query) => {
-    return await getInteractions(query);
+export const read = () => {
+    const cache: Record<string, QueryResult> = {}
+
+    return (query: Query): QueryResult => {
+        const key = query2key(query)
+
+        throw new Promise(resolve => {
+            setTimeout(() => getInteractions(query)
+                .then(result => cache[key] = result)
+                .then(resolve), 300)
+        })
+    }
 }
 
-const getInteractions = async (query: Query): Promise<QueryResult> => {
+const query2key = (query: Query) => ''
+
+const getInteractions = async (query: Query) => {
+    const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const params = {
         method: 'POST',
         body: JSON.stringify(query),
@@ -106,7 +103,7 @@ const getInteractions = async (query: Query): Promise<QueryResult> => {
     }
 
     try {
-        const response = await fetch('/interactions', params)
+        const response = await fetch(`${host}/interactions`, params)
         const json = await response.json()
 
         switch (json.status) {
