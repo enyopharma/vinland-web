@@ -1,22 +1,84 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React, { useState } from 'react'
 
-import { SearchState, state2Query } from './src/search'
+import { QueryResult, QueryResultStatuses, Interaction } from './src/interaction'
 
-import { QueryResultPanel } from './QueryResultPanel'
+import { QueryResultRange } from './QueryResultRange'
+import { InteractionTHead } from './InteractionTHead'
+import { InteractionTBody } from './InteractionTBody'
 
-const s2p = ({ search }: { search: SearchState }) => ({
-    query: state2Query(search)
-})
+type Props = {
+    result: QueryResult
+}
 
-type Props = ReturnType<typeof s2p>
-
-const Stateless: React.FC<Props> = ({ query }) => (
+const QueryResultIncomplete: React.FC = () => (
     <div className="card">
         <div className="card-body">
-            <QueryResultPanel query={query} />
+            <div className="alert alert-info">
+                Not enough information to query vinland.
+            </div>
         </div>
     </div>
 )
 
-export const QueryResultCard = connect(s2p)(Stateless)
+const QueryResultFailure: React.FC<{ errors: string[] }> = ({ errors }) => (
+    <div className="card">
+        <div className="card-body">
+            <div className="alert alert-danger">
+                <ul>{errors.map((error, i) => <li key={i}>{error}</li>)}</ul>
+            </div>
+        </div>
+    </div>
+)
+
+const QueryResultSuccess: React.FC<{ interactions: Interaction[] }> = ({ interactions }) => {
+    return interactions.length === 0
+        ? <QueryResultSuccessWithNoInteraction />
+        : <QueryResultSuccessWithInteractions interactions={interactions} />
+}
+
+const QueryResultSuccessWithNoInteraction: React.FC = () => (
+    <div className="card">
+        <div className="card-body">
+            <div className="alert alert-success">
+                No interaction found.
+            </div>
+        </div>
+    </div>
+)
+
+const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[] }> = ({ interactions }) => {
+    const [offset, setOffset] = useState<number>(0)
+    const limit = 10
+    const total = interactions.length
+
+    return (
+        <div className="card">
+            <div className="card-body">
+                <div className="alert alert-success">
+                    {interactions.length} {interactions.length > 1 ? 'interactions' : 'interaction'} found.
+            </div>
+            </div>
+            <div className="card-body">
+                <QueryResultRange offset={offset} limit={limit} total={total} update={setOffset} />
+            </div>
+            <table className="table card-table table-hover table-striped">
+                <InteractionTHead />
+                <InteractionTBody interactions={interactions.slice(offset, offset + limit)} />
+            </table>
+            <div className="card-body">
+                <QueryResultRange offset={offset} limit={limit} total={total} update={setOffset} />
+            </div>
+        </div>
+    )
+}
+
+export const QueryResultCard: React.FC<Props> = ({ result }) => {
+    switch (result.status) {
+        case QueryResultStatuses.INCOMPLETE:
+            return <QueryResultIncomplete />
+        case QueryResultStatuses.FAILURE:
+            return <QueryResultFailure errors={result.errors} />
+        case QueryResultStatuses.SUCCESS:
+            return <QueryResultSuccess interactions={result.interactions} />
+    }
+}

@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { TaxonCard } from './TaxonCard'
-import { OptionsCard } from './OptionsCard'
-import { IdentifierCard } from './IdentifierCard'
-import { QueryResultCard } from './QueryResultCard'
+import { TaxonContainer } from './TaxonContainer'
+import { OptionsContainer } from './OptionsContainer'
+import { IdentifiersContainer } from './IdentifiersContainer'
+import { QueryResultContainer } from './QueryResultContainer'
 
 export const SearchPage: React.FC = () => (
     <div className="container">
@@ -11,18 +11,18 @@ export const SearchPage: React.FC = () => (
         <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
             <fieldset>
                 <legend>Human protein identifiers</legend>
-                <IdentifierCard />
+                <IdentifiersContainer />
             </fieldset>
             <fieldset>
                 <legend>Viral taxon</legend>
-                <TaxonCard />
+                <TaxonContainer />
             </fieldset>
             <fieldset>
                 <legend>PPI filter options</legend>
-                <OptionsCard />
+                <OptionsContainer />
             </fieldset>
         </form>
         <h2>Query result</h2>
-        <QueryResultCard />
+        <QueryResultContainer />
     </div>
 )

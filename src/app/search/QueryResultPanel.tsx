@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Query, read } from './src/interaction'
 
-import { QueryResultAlert } from './QueryResultAlert'
+import { QueryResultCard } from './QueryResultCard'
 
 type Props = {
     query: Query,
@@ -11,29 +11,26 @@ type Props = {
 const search = read()
 
 const QueryResultLoader: React.FC = () => (
-    <div className="progress">
-        <div
-            className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-            style={{ width: '100%' }}
-        ></div>
+    <div className="card">
+        <div className="card-body">
+            <div className="progress">
+                <div
+                    className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                    style={{ width: '100%' }}
+                ></div>
+            </div>
+        </div>
     </div>
 )
 
-const QueryResultFragment: React.FC<Props> = ({ query }) => {
+const QueryResultFetcher: React.FC<Props> = ({ query }) => {
     const result = search(query)
 
-    return (
-        <React.Fragment>
-            <QueryResultAlert result={result} />
-        </React.Fragment>
-    )
+    return <QueryResultCard result={result} />
 }
 
-export const QueryResultPanel: React.FC<Props> = ({ query }) => {
-
-    return (
-        <React.Suspense fallback={<QueryResultLoader />}>
-            <QueryResultFragment query={query} />
-        </React.Suspense>
-    )
-}
+export const QueryResultPanel: React.FC<Props> = ({ query }) => (
+    <React.Suspense fallback={<QueryResultLoader />}>
+        <QueryResultFetcher query={query} />
+    </React.Suspense>
+)
