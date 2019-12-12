@@ -1,30 +1,19 @@
-import { string } from "prop-types"
-
 /**
  * types.
  */
 export type Query = {
-    human: {
-        identifiers: string[]
-    }
-    virus: {
+    key: string
+    identifiers: string[]
+    taxon: {
         left: number
         right: number
-        names: string[]
     }
-    hh: {
-        show: boolean
-        network: boolean
-    }
-    vh: {
-        show: boolean
-    }
-    publications: {
-        threshold: number
-    }
-    methods: {
-        threshold: number
-    }
+    names: string[]
+    hh: boolean
+    network: boolean
+    vh: boolean
+    publications: number
+    methods: number
 }
 
 export type QueryResult =
@@ -69,7 +58,7 @@ export type Interactor = {
 }
 
 export function isSuccessfulQueryResult(result: QueryResult): result is SuccessfulQueryResult {
-    return result.status == QueryResultStatuses.SUCCESS
+    return result.status === QueryResultStatuses.SUCCESS
 }
 
 /**
@@ -79,17 +68,15 @@ export const read = () => {
     const cache: Record<string, QueryResult> = {}
 
     return (query: Query): QueryResult => {
-        const key = query2key(query)
+        if (cache[query.key]) return cache[query.key]
 
         throw new Promise(resolve => {
             setTimeout(() => getInteractions(query)
-                .then(result => cache[key] = result)
-                .then(resolve), 300)
+                .then(result => cache[query.key] = result)
+                .then(resolve), 500)
         })
     }
 }
-
-const query2key = (query: Query) => ''
 
 const getInteractions = async (query: Query) => {
     const host = process.env.REACT_APP_API_HOST || 'http://localhost'
@@ -122,8 +109,5 @@ const getInteractions = async (query: Query) => {
         console.log(error)
     }
 
-    return {
-        status: QueryResultStatuses.FAILURE,
-        errors: ['server error'],
-    }
+    return { status: QueryResultStatuses.FAILURE, errors: ['Something went wrong'] }
 }

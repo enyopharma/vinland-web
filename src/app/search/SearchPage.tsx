@@ -3,6 +3,7 @@ import React from 'react'
 import { TaxonCard } from './TaxonCard'
 import { OptionsCard } from './OptionsCard'
 import { IdentifierCard } from './IdentifierCard'
+import { QueryResultCard } from './QueryResultCard'
 
 export const SearchPage: React.FC = () => (
     <div className="container">
@@ -21,5 +22,7 @@ export const SearchPage: React.FC = () => (
                 <OptionsCard />
             </fieldset>
         </form>
+        <h2>Query result</h2>
+        <QueryResultCard />
     </div>
 )
