@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 
 import { QueryResult, QueryResultStatuses, Interaction } from './src/interaction'
 
@@ -20,15 +21,19 @@ const QueryResultIncomplete: React.FC = () => (
     </div>
 )
 
-const QueryResultFailure: React.FC<{ errors: string[] }> = ({ errors }) => (
-    <div className="card">
-        <div className="card-body">
-            <div className="alert alert-danger">
-                <ul>{errors.map((error, i) => <li key={i}>{error}</li>)}</ul>
+const QueryResultFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
+    useEffect(() => { toast('invalid query', { type: toast.TYPE.ERROR }) }, [errors])
+
+    return (
+        <div className="card">
+            <div className="card-body">
+                <div className="alert alert-danger">
+                    <ul>{errors.map((error, i) => <li key={i}>{error}</li>)}</ul>
+                </div>
             </div>
         </div>
-    </div>
-)
+    )
+}
 
 const QueryResultSuccess: React.FC<{ interactions: Interaction[] }> = ({ interactions }) => {
     return interactions.length === 0
@@ -51,12 +56,16 @@ const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[]
     const limit = 10
     const total = interactions.length
 
+    const message = `${total} ${total > 1 ? 'interactions' : 'interaction'} found.`
+
+    useEffect(() => { toast(message, { type: toast.TYPE.SUCCESS }) }, [message])
+
     return (
         <div className="card">
             <div className="card-body">
                 <div className="alert alert-success">
-                    {interactions.length} {interactions.length > 1 ? 'interactions' : 'interaction'} found.
-            </div>
+                    {message}
+                </div>
             </div>
             <div className="card-body">
                 <QueryResultRange offset={offset} limit={limit} total={total} update={setOffset} />
