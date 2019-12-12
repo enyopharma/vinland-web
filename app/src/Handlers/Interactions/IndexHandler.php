@@ -10,6 +10,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
+use Quanta\Validation\ErrorInterface;
+
 use Domain\Input\QueryInput;
 use Domain\ReadModel\InteractionViewInterface;
 
@@ -21,11 +23,11 @@ final class IndexHandler implements RequestHandlerInterface
     const SUCCESS = 'success';
     const FAILURE = 'failure';
 
-    private $factory;
+    private ResponseFactoryInterface $factory;
 
-    private $interactions;
+    private InteractionViewInterface $interactions;
 
-    private $validation;
+    private RequestToQuery $validation;
 
     public function __construct(
         ResponseFactoryInterface $factory,
@@ -56,9 +58,14 @@ final class IndexHandler implements RequestHandlerInterface
         return $this->response(self::SUCCESS, $interactions);
     }
 
-    private function failure(...$errors): ResponseInterface
+    private function failure(ErrorInterface ...$errors): ResponseInterface
     {
-        return $this->response(self::FAILURE, array_map(fn ($e) => $e->message(), $errors));
+        return $this->response(self::FAILURE, array_map([$this, 'message'], $errors));
+    }
+
+    private function message(ErrorInterface $error): string
+    {
+        return sprintf('%s => %s', $error->name() == '' ? '' : $error->name(), $error->message());
     }
 
     private function response(string $status, array $data = []): ResponseInterface
@@ -68,7 +75,7 @@ final class IndexHandler implements RequestHandlerInterface
 
         $response = $this->factory->createResponse($code[$status]);
 
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((string) json_encode([
             'success' => $success[$status],
             'code' => $code[$status],
             'status' => $status,

@@ -2,89 +2,85 @@
 
 namespace Domain\Input;
 
-use Quanta\Validation\Input;
+use Quanta\Validation\Bound;
+use Quanta\Validation\Success;
 use Quanta\Validation\InputInterface;
 
-use Domain\Validations\Slice;
-use Domain\Validations\IsTypedAs;
-use Domain\Validations\IsHHOptions;
-use Domain\Validations\IsVHOptions;
-use Domain\Validations\IsHumanOptions;
-use Domain\Validations\IsVirusOptions;
-use Domain\Validations\IsFilterOptions;
+use Domain\Validations\IsQuery;
 
 final class QueryInput
 {
-    const MAX_IDENTIFIERS = 500;
+    private const MAX_IDENTIFIERS = 500;
 
-    private $hh;
-    private $vh;
-    private $human;
-    private $virus;
-    private $methods;
-    private $publications;
+    private string $key;
+    private array $identifiers;
+    private array $taxon;
+    private array $names;
+    private bool $hh;
+    private bool $vh;
+    private bool $network;
+    private int $publications;
+    private int $methods;
 
     public static function from(\PDO $pdo, array $data): InputInterface
     {
-        $slice = new Slice;
-        $isarr = new IsTypedAs('array');
-
-        return Input::pure(fn (...$xs) => new self(...$xs))(
-            $slice($data, 'hh')->validate($isarr, new IsHHOptions),
-            $slice($data, 'vh')->validate($isarr, new IsVHOptions),
-            $slice($data, 'human')->validate($isarr, new IsHumanOptions(self::MAX_IDENTIFIERS)),
-            $slice($data, 'virus')->validate($isarr, new IsVirusOptions($pdo)),
-            $slice($data, 'methods')->validate($isarr, new IsFilterOptions),
-            $slice($data, 'publications')->validate($isarr, new IsFilterOptions),
+        $validation = new Bound(
+            new IsQuery($pdo, self::MAX_IDENTIFIERS),
+            fn (array $data) => new Success(new self($data)),
         );
+
+        return $validation($data);
     }
 
-    private function __construct(array $hh, array $vh, array $human, array $virus, array $methods, array $publications)
+    private function __construct(array $data)
     {
-        $this->hh = $hh;
-        $this->vh = $vh;
-        $this->human = $human;
-        $this->virus = $virus;
-        $this->methods = $methods;
-        $this->publications = $publications;
+        $this->key = $data['key'];
+        $this->identifiers = $data['identifiers'];
+        $this->taxon = $data['taxon'];
+        $this->names = $data['names'];
+        $this->hh = $data['hh'];
+        $this->vh = $data['vh'];
+        $this->network = $data['network'];
+        $this->publications = $data['publications'];
+        $this->methods = $data['methods'];
     }
 
     public function isComplete(): bool
     {
-        return count($this->human['identifiers']) > 0 || $this->virus['left'] > 0;
+        return count($this->identifiers) > 0 || $this->taxon['left'] > 0;
     }
 
     public function wantsHHNetwork(): bool
     {
-        return $this->hh['show']
-            && $this->hh['network']
-            && count($this->human['identifiers']) > 0;
+        return $this->hh
+            && $this->network
+            && count($this->identifiers) > 0;
     }
 
     public function wantsHHInteractions(): bool
     {
-        return $this->hh['show']
-            && (! $this->hh['network'])
-            && count($this->human['identifiers']) > 0;
+        return $this->hh
+            && ! $this->network
+            && count($this->identifiers) > 0;
     }
 
     public function wantsVHInteractions(): bool
     {
-        return $this->vh['show'];
+        return $this->vh;
     }
 
     public function human(): array
     {
-        return [$this->human['identifiers']];
+        return [$this->identifiers];
     }
 
     public function virus(): array
     {
-        return [$this->virus['left'], $this->virus['right'], $this->virus['names']];
+        return [$this->taxon['left'], $this->taxon['right'], $this->names];
     }
 
     public function filters(): array
     {
-        return [$this->methods['threshold'], $this->publications['threshold']];
+        return [$this->publications, $this->methods];
     }
 }

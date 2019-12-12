@@ -17,7 +17,7 @@ return function (ContainerInterface $container): array {
         /**
          * Cross-origin resource sharing middleware.
          */
-        new App\Http\Middleware\CORSMiddleware($factory, $_ENV['ALLOWED_DOMAIN'], 'GET', 'POST'),
+        new App\Http\Middleware\CORSMiddleware($factory, ['GET', 'POST'], ...explode(',', $_ENV['ALLOWED_DOMAINS'])),
 
         /**
          * Parse json body.

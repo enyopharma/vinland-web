@@ -8,6 +8,9 @@ use Psr\Http\Message\ResponseInterface;
 
 final class Server
 {
+    /**
+     * @var callable
+     */
     private $application;
 
     public function __construct(callable $application)
@@ -15,9 +18,19 @@ final class Server
         $this->application = $application;
     }
 
-    public function run()
+    public function run(): void
     {
         $response = ($this->application)();
+
+        if (! $response instanceof ResponseInterface) {
+            throw new \UnexpectedValueException(
+                vsprintf('%s expects an instance of %s to be returned by the factory, %s returned', [
+                    self::class,
+                    ResponseInterface::class,
+                    gettype($response),
+                ])
+            );
+        }
 
         $http_line = sprintf('HTTP/%s %s %s',
             $response->getProtocolVersion(),

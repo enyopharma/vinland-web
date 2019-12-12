@@ -6,7 +6,7 @@ namespace Domain\ReadModel;
 
 final class AnnotationViewSql implements AnnotationViewInterface
 {
-    private $pdo;
+    private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
     {
@@ -18,7 +18,7 @@ final class AnnotationViewSql implements AnnotationViewInterface
         $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
 
         $select_annotations_sth = Query::instance($this->pdo)
-            ->select('ref, name, accessions')
+            ->select('*')
             ->from('annotations AS a')
             ->where('source = ?')
             ->where(...array_pad([], count($qs), 'search ILIKE ?'))
@@ -34,6 +34,7 @@ final class AnnotationViewSql implements AnnotationViewInterface
     {
         while ($annotation = $sth->fetch()) {
             yield [
+                'source' => $annotation['source'],
                 'ref' => $annotation['ref'],
                 'name' => $annotation['name'],
                 'accessions' => explode(',', trim($annotation['accessions'], '{}')),

@@ -12,34 +12,20 @@ use Psr\Container\ContainerInterface;
  */
 return function (ContainerInterface $container): array {
     return [
-        'GET /' => [
-            'name' => 'index',
-            'handler' => fn () => new App\Http\Handlers\IndexHandler(
-                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(League\Plates\Engine::class),
-            ),
-        ],
+        'POST /interactions' => fn () => new App\Http\Handlers\Interactions\IndexHandler(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            $container->get(Domain\ReadModel\InteractionViewInterface::class),
+            new App\Http\Validations\RequestToQuery($container->get(PDO::class))
+        ),
 
-        'POST /interactions' => [
-            'handler' => fn () => new App\Http\Handlers\Interactions\IndexHandler(
-                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\ReadModel\InteractionViewInterface::class),
-                new App\Http\Validations\RequestToQuery($container->get(PDO::class))
-            ),
-        ],
+        'GET /taxa' => fn () => new App\Http\Handlers\Taxa\IndexHandler(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            $container->get(Domain\ReadModel\TaxaViewInterface::class),
+        ),
 
-        'GET /taxa' => [
-            'handler' => fn () => new App\Http\Handlers\Taxa\IndexHandler(
-                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\ReadModel\TaxaViewInterface::class),
-            ),
-        ],
-
-        'GET /annotations' => [
-            'handler' => fn () => new App\Http\Handlers\Annotations\IndexHandler(
-                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\ReadModel\AnnotationViewInterface::class),
-            ),
-        ],
+        'GET /annotations' => fn () => new App\Http\Handlers\Annotations\IndexHandler(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            $container->get(Domain\ReadModel\AnnotationViewInterface::class),
+        ),
     ];
 };

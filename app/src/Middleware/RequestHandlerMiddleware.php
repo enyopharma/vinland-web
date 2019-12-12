@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class RequestHandlerMiddleware implements MiddlewareInterface
 {
-    private $handler;
+    private RequesthandlerInterface $handler;
 
     public function __construct(RequesthandlerInterface $handler)
     {

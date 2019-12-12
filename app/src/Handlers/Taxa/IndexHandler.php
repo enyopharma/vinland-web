@@ -14,9 +14,9 @@ use Domain\ReadModel\TaxaViewInterface;
 
 final class IndexHandler implements RequestHandlerInterface
 {
-    private $factory;
+    private ResponseFactoryInterface $factory;
 
-    private $taxa;
+    private TaxaViewInterface $taxa;
 
     public function __construct(ResponseFactoryInterface $factory, TaxaViewInterface $taxa)
     {
@@ -35,7 +35,7 @@ final class IndexHandler implements RequestHandlerInterface
 
         $response = $this->factory->createResponse(200);
 
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((string) json_encode([
             'success' => true,
             'code' => 200,
             'data' => $taxa->fetchAll(),

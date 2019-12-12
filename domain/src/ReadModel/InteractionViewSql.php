@@ -8,12 +8,12 @@ use Domain\Input\QueryInput;
 
 final class InteractionViewSql implements InteractionViewInterface
 {
-    const HH  = 'hh';
-    const VH  = 'vh';
+    private const HH  = 'hh';
+    private const VH  = 'vh';
 
-    const NAME_CLASS = 'scientific name';
+    private const NAME_CLASS = 'scientific name';
 
-    private $pdo;
+    private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
     {
@@ -80,13 +80,13 @@ final class InteractionViewSql implements InteractionViewInterface
             ->from('interactions AS i')
             ->from('proteins AS p1, proteins AS p2')
             ->where('p1.id = i.protein1_id AND p2.id = i.protein2_id')
-            ->where('i.type = ? AND i.nb_methods >= ? AND i.nb_publications >= ?');
+            ->where('i.type = ? AND i.nb_publications >= ? AND i.nb_methods >= ?');
     }
 
     private function HHNetwork(QueryInput $input): \PDOStatement
     {
         [$identifiers] = $input->human();
-        [$methods, $publications] = $input->filters();
+        [$publications, $methods] = $input->filters();
 
         $select_interactions_sth = $this->query()
             ->from('proteins_xrefs AS x1, proteins_xrefs AS x2')
@@ -96,7 +96,7 @@ final class InteractionViewSql implements InteractionViewInterface
             ->prepare();
 
         $select_interactions_sth->execute([
-            ...[self::HH, $methods, $publications],
+            ...[self::HH, $publications, $methods],
             ...$identifiers,
             ...$identifiers,
         ]);
@@ -107,16 +107,17 @@ final class InteractionViewSql implements InteractionViewInterface
     public function HHInteractions(QueryInput $input): \PDOStatement
     {
         [$identifiers] = $input->human();
-        [$methods, $publications] = $input->filters();
+        [$publications, $methods] = $input->filters();
 
         $select_interactions_sth = $this->query()
             ->from('edges AS e, proteins_xrefs AS x')
+            ->where('i.id = e.interaction_id')
             ->where('e.source_id = x.protein_id')
             ->in('x.ref', count($identifiers))
             ->prepare();
 
         $select_interactions_sth->execute([
-            ...[self::HH, $methods, $publications],
+            ...[self::HH, $publications, $methods],
             ...$identifiers,
         ]);
 
@@ -127,7 +128,7 @@ final class InteractionViewSql implements InteractionViewInterface
     {
         [$identifiers] = $input->human();
         [$left, $right, $names] = $input->virus();
-        [$methods, $publications] = $input->filters();
+        [$publications, $methods] = $input->filters();
 
         // get the base query.
         $query = $this->query();
@@ -162,7 +163,7 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_interactions_sth = $query->prepare();
 
         $select_interactions_sth->execute([
-            ...[self::VH, $methods, $publications],
+            ...[self::VH, $publications, $methods],
             ...[self::NAME_CLASS],
             ...$identifiers,
             ...$names,

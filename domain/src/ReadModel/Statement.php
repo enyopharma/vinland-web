@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Domain\ReadModel;
 
+/**
+ * @implements \IteratorAggregate<int, array>
+ */
 final class Statement implements \IteratorAggregate
 {
-    private $i;
+    private int $i;
 
-    private $generator;
+    private \Generator $generator;
 
     public function __construct(\Generator $generator)
     {
@@ -16,6 +19,9 @@ final class Statement implements \IteratorAggregate
         $this->generator = $generator;
     }
 
+    /**
+     * @return array|false
+     */
     public function fetch()
     {
         $this->i == 0

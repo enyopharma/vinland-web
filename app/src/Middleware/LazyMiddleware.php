@@ -9,6 +9,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class LazyMiddleware implements MiddlewareInterface
 {
+    /**
+     * @var callable
+     */
     private $factory;
 
     public function __construct(callable $factory)

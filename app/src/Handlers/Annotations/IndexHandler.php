@@ -14,9 +14,9 @@ use Domain\ReadModel\AnnotationViewInterface;
 
 final class IndexHandler implements RequestHandlerInterface
 {
-    private $factory;
+    private ResponseFactoryInterface $factory;
 
-    private $annotations;
+    private AnnotationViewInterface $annotations;
 
     public function __construct(ResponseFactoryInterface $factory, AnnotationViewInterface $annotations)
     {
@@ -36,7 +36,7 @@ final class IndexHandler implements RequestHandlerInterface
 
         $response = $this->factory->createResponse(200);
 
-        $response->getBody()->write(json_encode([
+        $response->getBody()->write((string) json_encode([
             'success' => true,
             'code' => 200,
             'data' => $annotations->fetchAll(),

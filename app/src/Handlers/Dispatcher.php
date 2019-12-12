@@ -11,11 +11,23 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class Dispatcher implements RequestHandlerInterface
 {
-    private $handler;
+    private RequestHandlerInterface $handler;
 
-    private $middleware;
+    private MiddlewareInterface $middleware;
 
-    private $xs;
+    private array $xs;
+
+    public static function stack(RequestHandlerInterface $handler, MiddlewareInterface ...$middleware): RequestHandlerInterface
+    {
+        return array_reduce($middleware, function ($app, $middleware) {
+            return new self($app, $middleware);
+        }, $handler);
+    }
+
+    public static function queue(RequestHandlerInterface $handler, MiddlewareInterface ...$middleware): RequestHandlerInterface
+    {
+        return self::stack($handler, ...array_reverse($middleware));
+    }
 
     public function __construct(
         RequestHandlerInterface $handler,

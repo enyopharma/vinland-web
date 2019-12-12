@@ -20,9 +20,6 @@ services:
             - .:/opt:rw
         networks:
             - default
-            - sso
 networks:
     proxy:
-        external: true
-    sso:
         external: true

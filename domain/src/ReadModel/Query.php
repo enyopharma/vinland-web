@@ -6,9 +6,9 @@ namespace Domain\ReadModel;
 
 final class Query
 {
-    private $pdo;
+    private \PDO $pdo;
 
-    private $clauses;
+    private array $clauses;
 
     public static function instance(\PDO $pdo): self
     {

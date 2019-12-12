@@ -8,6 +8,9 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class LazyRequestHandler implements RequestHandlerInterface
 {
+    /**
+     * @var callable
+     */
     private $factory;
 
     public function __construct(callable $factory)

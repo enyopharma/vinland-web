@@ -10,17 +10,17 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 final class CORSMiddleware implements MiddlewareInterface
 {
-    private $factory;
+    private ResponseFactoryInterface $factory;
 
-    private $domain;
+    private array $methods;
 
-    private $methods;
+    private array $allowed;
 
-    public function __construct(ResponseFactoryInterface $factory, string $domain, string ...$methods)
+    public function __construct(ResponseFactoryInterface $factory, array $methods, string ...$allowed)
     {
         $this->factory = $factory;
-        $this->domain = $domain;
         $this->methods = $methods;
+        $this->allowed = $allowed;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -29,10 +29,17 @@ final class CORSMiddleware implements MiddlewareInterface
             ? $this->factory->createResponse(200)
             : $handler->handle($request);
 
-        return $response
-            ->withHeader('Access-Control-Allow-Origin', $this->domain)
+        $origin = $request->getHeaderLine('origin');
+
+        return ! $this->isAllowed($origin) ? $response : $response
+            ->withHeader('Access-Control-Allow-Origin', $origin)
             ->withHeader('Access-Control-Allow-Methods', implode(', ', $this->methods))
-            ->withHeader('Access-Control-Allow-Headers', 'content-type')
-            ;
+            ->withHeader('Access-Control-Allow-Headers', 'content-type');
+    }
+
+    private function isAllowed(string $origin): bool
+    {
+        return preg_match('/^https?:\/\/localhost/', $origin) === 1
+            || in_array($origin, $this->allowed);
     }
 }

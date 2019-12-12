@@ -10,7 +10,7 @@ use Quanta\Validation\InputInterface;
 
 final class RequestToQuery
 {
-    private $pdo;
+    private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
     {

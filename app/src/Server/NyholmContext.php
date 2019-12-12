@@ -12,7 +12,7 @@ use Nyholm\Psr7Server\ServerRequestCreator;
 
 final class NyholmContext
 {
-    private $application;
+    private RequestHandlerInterface $application;
 
     public function __construct(RequestHandlerInterface $application)
     {

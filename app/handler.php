@@ -10,8 +10,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use App\Http\Handlers\Dispatcher;
 use App\Http\Handlers\NotFoundRequestHandler;
 
-use League\Plates\Engine;
-
 /**
  * A factory producing the application request handler.
  *
@@ -50,13 +48,10 @@ return function (string $env, bool $debug): RequestHandlerInterface {
      */
     $handler = new NotFoundRequestHandler(
         $container->get(ResponseFactoryInterface::class),
-        $container->get(Engine::class)
     );
 
     /**
      * Return the application.
      */
-    return array_reduce(array_reverse($middleware), function ($app, $middleware) {
-        return new Dispatcher($app, $middleware);
-    }, $handler);
+    return Dispatcher::queue($handler, ...$middleware);
 };
