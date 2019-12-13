@@ -54,7 +54,7 @@ const QueryResultSuccessWithNoInteraction: React.FC = () => (
 
 const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[] }> = ({ interactions }) => {
     const [offset, setOffset] = useState<number>(0)
-    const limit = 10
+    const limit = 50
     const total = interactions.length
 
     const message = `${total} ${total > 1 ? 'interactions' : 'interaction'} found.`

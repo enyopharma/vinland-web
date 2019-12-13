@@ -1,4 +1,5 @@
 import qs from 'querystring'
+import fetch from 'cross-fetch'
 import { Reducer, Action } from 'redux'
 import { Name } from './name'
 import { SearchResult } from './shared'

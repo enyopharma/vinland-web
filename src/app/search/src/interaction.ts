@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch'
 import { Query, QueryResult, QueryResultStatuses } from './query'
 
 /**

@@ -1,4 +1,5 @@
 import qs from 'querystring'
+import fetch from 'cross-fetch'
 import { SearchResult } from './shared'
 
 /**
