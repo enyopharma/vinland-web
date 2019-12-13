@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Interactions;
+namespace App\Http\Handlers\Taxa\Names;
 
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -12,30 +12,24 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 use Quanta\Validation\ErrorInterface;
 
-use Domain\Input\QueryInput;
-use Domain\ReadModel\InteractionViewInterface;
+use Domain\Input\TaxonInput;
+use Domain\ReadModel\TaxonNamesViewInterface;
 
-use App\Http\Validations\RequestToQuery;
+use App\Http\Validations\RequestToTaxon;
 
 final class IndexHandler implements RequestHandlerInterface
 {
-    const INCOMPLETE = 'incomplete';
-    const SUCCESS = 'success';
-    const FAILURE = 'failure';
-
     private ResponseFactoryInterface $factory;
 
-    private InteractionViewInterface $interactions;
-
-    private RequestToQuery $validation;
+    private TaxonNamesViewInterface $names;
 
     public function __construct(
         ResponseFactoryInterface $factory,
-        InteractionViewInterface $interactions,
-        RequestToQuery $validation
+        TaxonNamesViewInterface $names,
+        RequestToTaxon $validation
     ) {
         $this->factory = $factory;
-        $this->interactions = $interactions;
+        $this->names = $names;
         $this->validation = $validation;
     }
 
@@ -47,20 +41,16 @@ final class IndexHandler implements RequestHandlerInterface
         );
     }
 
-    private function success(QueryInput $query): ResponseInterface
+    private function success(TaxonInput $taxon): ResponseInterface
     {
-        if (! $query->isComplete()) {
-            return $this->response(self::INCOMPLETE);
-        }
+        $names = $this->names->all($taxon)->fetchAll();
 
-        $interactions = $this->interactions->all($query)->fetchAll();
-
-        return $this->response(self::SUCCESS, $interactions);
+        return $this->response(200, $names);
     }
 
     private function failure(ErrorInterface ...$errors): ResponseInterface
     {
-        return $this->response(self::FAILURE, array_map([$this, 'message'], $errors));
+        return $this->response(422, array_map([$this, 'message'], $errors));
     }
 
     private function message(ErrorInterface $error): string
@@ -72,17 +62,13 @@ final class IndexHandler implements RequestHandlerInterface
             : sprintf('%s => %s', $error->name(), $error->message());
     }
 
-    private function response(string $status, array $data = []): ResponseInterface
+    private function response(int $code, array $data = []): ResponseInterface
     {
-        $success = [self::INCOMPLETE => true, self::SUCCESS => true, self::FAILURE => false];
-        $code = [self::INCOMPLETE => 200, self::SUCCESS => 200, self::FAILURE => 422];
-
-        $response = $this->factory->createResponse($code[$status]);
+        $response = $this->factory->createResponse($code);
 
         $response->getBody()->write((string) json_encode([
-            'success' => $success[$status],
-            'code' => $code[$status],
-            'status' => $status,
+            'success' => $code >= 200 && $code < 300,
+            'code' => $code,
             'data' => $data,
         ]));
 
