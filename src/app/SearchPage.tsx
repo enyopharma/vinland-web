@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { ToastContainer } from './ToastContainer'
-import { TaxonContainer } from './TaxonContainer'
-import { OptionsContainer } from './OptionsContainer'
-import { IdentifiersContainer } from './IdentifiersContainer'
-import { QueryResultContainer } from './QueryResultContainer'
+import { ToastContainer } from './search/ToastContainer'
+import { TaxonContainer } from './search/TaxonContainer'
+import { OptionsContainer } from './search/OptionsContainer'
+import { IdentifiersContainer } from './search/IdentifiersContainer'
+import { QueryResultContainer } from './search/QueryResultContainer'
 
 export const SearchPage: React.FC = () => (
     <div className="container">
