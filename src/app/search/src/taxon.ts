@@ -1,5 +1,6 @@
 import qs from 'querystring'
 import { Reducer, Action } from 'redux'
+import { Name } from './name'
 import { SearchResult } from './shared'
 
 /**
@@ -9,6 +10,7 @@ export type Taxon = {
     left: number
     right: number
     name: string
+    names: Name[]
 }
 
 export type TaxonSelection = { left: 0, right: 0 } | Taxon
@@ -44,7 +46,7 @@ export const unselect = () => ({ type: UNSELECT })
 /**
  * reducer.
  */
-const init = { left: 0, right: 0, name: '' }
+const init = { left: 0, right: 0, name: '', names: [] }
 
 export const reducer: Reducer<TaxonSelection, TaxonAction> = (state = init, action) => {
     switch (action.type) {

@@ -18,11 +18,8 @@ body {
     padding-bottom: $spacer * 50;
 }
 
-div.row, div.card, form, fieldset {
+div.row, div.form-group, div.card, form, fieldset, ul, p, table, .alert {
     margin-bottom: $spacer;
-}
-
-div.row, div.form-group, div.card, fieldset, ul, p, table, .alert {
     &:last-child {
         margin-bottom: 0;
     }

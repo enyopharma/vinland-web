@@ -12,7 +12,7 @@ type Props = {
     select: (value: any) => void
 }
 
-const SearchLoader: React.FC = () => (
+const SearchResultLoader: React.FC = () => (
     <ul className="list-group">
         <li className="list-group-item">
             <div className="progress">
@@ -35,7 +35,7 @@ export const SearchResultPanel: React.FC<Props> = (props) => {
     return !props.enabled || props.query.trim().length === 0 ? null : (
         <div style={{ position: 'relative' }}>
             <div style={{ position: 'absolute', width: '100%', zIndex: 100 }}>
-                <React.Suspense fallback={<SearchLoader />}>
+                <React.Suspense fallback={<SearchResultLoader />}>
                     <SearchResultFetcher {...props} />
                 </React.Suspense>
             </div>

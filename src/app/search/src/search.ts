@@ -30,6 +30,7 @@ export const state2Query = (state: SearchState) => {
     parts.push(state.options.methods.toString())
     parts.push(state.taxon.left.toString())
     parts.push(state.taxon.right.toString())
+    parts.push(...state.names.sort((a, b) => a.localeCompare(b)))
     parts.push(...identifiers.sort((a, b) => a.localeCompare(b)))
 
     return {

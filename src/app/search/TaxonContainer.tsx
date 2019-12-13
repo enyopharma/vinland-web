@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import { SearchState } from './src/search'
 import { Taxon, select, unselect } from './src/taxon'
+import { Name, update as updateNames } from './src/name'
 
 import { TaxonCard } from './TaxonCard'
 
@@ -14,6 +15,7 @@ const s2p = ({ search }: { search: SearchState }) => ({
 const d2p = (dispatch: Dispatch) => ({
     select: (taxon: Taxon) => dispatch(select(taxon)),
     unselect: () => dispatch(unselect()),
+    updateNames: (names: Name[]) => dispatch(updateNames(names))
 })
 
 type Props = ReturnType<typeof s2p> & ReturnType<typeof d2p>
