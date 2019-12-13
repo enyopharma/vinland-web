@@ -1,0 +1,14 @@
+@import "~bootswatch/dist/minty/variables";
+@import '~react-toastify/dist/ReactToastify.css';
+
+.Toastify__toast--success {
+    color: '#ffffff' !important;
+    background-color: $success !important;
+    border-color: #d0f1e4 !important;
+}
+
+.Toastify__toast--error {
+    color: '#ffffff' !important;
+    background-color: $danger !important;
+    border-color: #ffd9ce !important;
+}

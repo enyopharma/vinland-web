@@ -2,18 +2,6 @@
 @import "~bootstrap/scss/bootstrap";
 @import "~bootswatch/dist/minty/bootswatch";
 
-.Toastify__toast--success {
-    color: '#ffffff' !important;
-    background-color: $success !important;
-    border-color: #d0f1e4 !important;
-}
-
-.Toastify__toast--error {
-    color: '#ffffff' !important;
-    background-color: $danger !important;
-    border-color: #ffd9ce !important;
-}
-
 body {
     padding-bottom: $spacer * 50;
 }
