@@ -23,12 +23,6 @@ return function (ContainerInterface $container): array {
             $container->get(Domain\ReadModel\TaxaViewInterface::class),
         ),
 
-        'GET /taxa/{left}/{right}/names' => fn () => new App\Http\Handlers\Taxa\Names\IndexHandler(
-            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-            $container->get(Domain\ReadModel\TaxonNamesViewInterface::class),
-            new App\Http\Validations\RequestToTaxon($container->get(PDO::class))
-        ),
-
         'GET /annotations' => fn () => new App\Http\Handlers\Annotations\IndexHandler(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
             $container->get(Domain\ReadModel\AnnotationViewInterface::class),

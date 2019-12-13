@@ -18,11 +18,13 @@ final class TaxaViewSql implements TaxaViewInterface
         $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
 
         $select_taxa_sth = Query::instance($this->pdo)
-            ->select('t.taxon_id, t.left_value, t.right_value, ts.name')
-            ->from('taxon AS t, taxon_search AS ts')
+            ->select('t.taxon_id, t.left_value, t.right_value, ts.name, string_agg(DISTINCT p.name, \',\') as names')
+            ->from('proteins AS p, taxon AS t, taxon_search AS ts')
+            ->where('t.ncbi_taxon_id = p.ncbi_taxon_id')
             ->where('t.taxon_id = ts.taxon_id')
             ->where(...array_pad([], count($qs), 'ts.name ILIKE ?'))
-            ->orderby('nb_interactions DESC')
+            ->groupby('t.taxon_id, ts.taxon_id')
+            ->orderby('ts.nb_interactions DESC')
             ->sliced()
             ->prepare();
 
@@ -39,6 +41,7 @@ final class TaxaViewSql implements TaxaViewInterface
                 'left' => $taxon['left_value'],
                 'right' => $taxon['right_value'],
                 'name' => $taxon['name'],
+                'names' => explode(',', $taxon['names'])
             ];
         }
     }
