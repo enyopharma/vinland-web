@@ -1,46 +1,8 @@
+import { Query, QueryResult, QueryResultStatuses } from './query'
+
 /**
  * types.
  */
-export type Query = {
-    key: string
-    identifiers: string[]
-    taxon: {
-        left: number
-        right: number
-    }
-    names: string[]
-    hh: boolean
-    network: boolean
-    vh: boolean
-    publications: number
-    methods: number
-}
-
-export type QueryResult =
-    | IncompleteQueryResult
-    | SuccessfulQueryResult
-    | FailedQueryResult
-
-export enum QueryResultStatuses {
-    INCOMPLETE = 'incomplete',
-    SUCCESS = 'success',
-    FAILURE = 'failure',
-}
-
-export type IncompleteQueryResult = {
-    status: typeof QueryResultStatuses.INCOMPLETE
-}
-
-export type SuccessfulQueryResult = {
-    status: typeof QueryResultStatuses.SUCCESS
-    interactions: Interaction[]
-}
-
-export type FailedQueryResult = {
-    status: typeof QueryResultStatuses.FAILURE
-    errors: string[]
-}
-
 export type Interaction = {
     type: 'hh' | 'vh'
     protein1: Interactor
@@ -55,10 +17,6 @@ export type Interactor = {
     name: string
     description: string
     taxon: string
-}
-
-export function isSuccessfulQueryResult(result: QueryResult): result is SuccessfulQueryResult {
-    return result.status === QueryResultStatuses.SUCCESS
 }
 
 /**

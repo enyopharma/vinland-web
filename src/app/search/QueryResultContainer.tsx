@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { SearchState, state2Query } from './src/search'
+import { SearchState } from './src/search'
+import { state2Query } from './src/query'
 
 import { QueryResultPanel } from './QueryResultPanel'
 

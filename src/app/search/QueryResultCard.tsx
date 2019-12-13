@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 
-import { QueryResult, QueryResultStatuses, Interaction } from './src/interaction'
+import { QueryResult, QueryResultStatuses } from './src/query'
+import { Interaction } from './src/interaction'
 
 import { QueryResultRange } from './QueryResultRange'
 import { InteractionTHead } from './InteractionTHead'

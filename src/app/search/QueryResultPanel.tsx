@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Query, read } from './src/interaction'
+import { Query } from './src/query'
+import { read } from './src/interaction'
 
 import { QueryResultCard } from './QueryResultCard'
 
