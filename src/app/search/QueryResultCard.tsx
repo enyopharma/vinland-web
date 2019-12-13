@@ -12,6 +12,8 @@ type Props = {
     result: QueryResult
 }
 
+const limit = 10
+
 const QueryResultIncomplete: React.FC = () => (
     <div className="card">
         <div className="card-body">
@@ -54,10 +56,8 @@ const QueryResultSuccessWithNoInteraction: React.FC = () => (
 
 const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[] }> = ({ interactions }) => {
     const [offset, setOffset] = useState<number>(0)
-    const limit = 50
-    const total = interactions.length
 
-    const message = `${total} ${total > 1 ? 'interactions' : 'interaction'} found.`
+    const message = `${interactions.length} ${interactions.length > 1 ? 'interactions' : 'interaction'} found.`
 
     useEffect(() => { toast(message, { type: toast.TYPE.SUCCESS }) }, [message])
 
@@ -69,14 +69,14 @@ const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[]
                 </div>
             </div>
             <div className="card-body">
-                <QueryResultRange offset={offset} limit={limit} total={total} update={setOffset} />
+                <QueryResultRange offset={offset} limit={limit} total={interactions.length} update={setOffset} />
             </div>
             <table className="table card-table table-hover table-striped">
                 <InteractionTHead />
                 <InteractionTBody interactions={interactions.slice(offset, offset + limit)} />
             </table>
             <div className="card-body">
-                <QueryResultRange offset={offset} limit={limit} total={total} update={setOffset} />
+                <QueryResultRange offset={offset} limit={limit} total={interactions.length} update={setOffset} />
             </div>
         </div>
     )
