@@ -36,7 +36,7 @@ final class InteractionViewSql implements InteractionViewInterface
             $sths[] = $this->VHInteractions($input);
         }
 
-        return new Statement($this->generator(...$sths));
+        return Statement::from($this->generator(...$sths));
     }
 
     private function generator(\PDOStatement ...$sths): \Generator

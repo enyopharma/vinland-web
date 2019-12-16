@@ -11,12 +11,25 @@ final class Statement implements \IteratorAggregate
 {
     private int $i;
 
-    private \Generator $generator;
+    private \Iterator $iterator;
 
-    public function __construct(\Generator $generator)
+    public static function from(iterable $iterable): self
+    {
+        if ($iterable instanceof \Iterator) {
+            return new self($iterable);
+        }
+
+        if (is_array($iterable)) {
+            return new self(new \ArrayIterator($iterable));
+        }
+
+        return new self(new \IteratorIterator($iterable));
+    }
+
+    private function __construct(\Iterator $iterator)
     {
         $this->i = 0;
-        $this->generator = $generator;
+        $this->iterator = $iterator;
     }
 
     /**
@@ -25,13 +38,13 @@ final class Statement implements \IteratorAggregate
     public function fetch()
     {
         $this->i == 0
-            ? $this->generator->rewind()
-            : $this->generator->next();
+            ? $this->iterator->rewind()
+            : $this->iterator->next();
 
-        if ($this->generator->valid()) {
+        if ($this->iterator->valid()) {
             $this->i++;
 
-            return $this->generator->current();
+            return $this->iterator->current();
         }
 
         return false;
@@ -39,11 +52,11 @@ final class Statement implements \IteratorAggregate
 
     public function fetchAll(): array
     {
-        return iterator_to_array($this->generator);
+        return iterator_to_array($this->iterator);
     }
 
     public function getIterator()
     {
-        return $this->generator;
+        return $this->iterator;
     }
 }

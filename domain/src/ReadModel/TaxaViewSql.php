@@ -30,7 +30,7 @@ final class TaxaViewSql implements TaxaViewInterface
 
         $select_taxa_sth->execute([...$qs, ...[$limit, 0]]);
 
-        return new Statement($this->generator($select_taxa_sth));
+        return Statement::from($this->generator($select_taxa_sth));
     }
 
     private function generator(\PDOStatement $sth): \Generator

@@ -27,12 +27,12 @@ final class AnnotationViewSql implements AnnotationViewInterface
 
         $select_annotations_sth->execute([$source, ...$qs, ...[$limit, 0]]);
 
-        return new Statement($this->generator($select_annotations_sth));
+        return Statement::from($this->generator($select_annotations_sth));
     }
 
     private function generator(\PDOStatement $sth): \Generator
     {
-        while ($annotation = $sth->fetch()) {
+        foreach ($sth as $annotation) {
             yield [
                 'source' => $annotation['source'],
                 'ref' => $annotation['ref'],
