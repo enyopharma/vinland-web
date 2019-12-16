@@ -4,9 +4,9 @@ import { toast } from 'react-toastify'
 import { QueryResult, QueryResultStatuses } from './src/query'
 import { Interaction } from './src/interaction'
 
-import { QueryResultRange } from './QueryResultRange'
 import { InteractionTHead } from './InteractionTHead'
 import { InteractionTBody } from './InteractionTBody'
+import { QueryResultPagination } from './QueryResultPagination'
 
 type Props = {
     result: QueryResult
@@ -59,6 +59,7 @@ const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[]
 
     const message = `${interactions.length} ${interactions.length > 1 ? 'interactions' : 'interaction'} found.`
 
+    useEffect(() => { setOffset(0) }, [interactions])
     useEffect(() => { toast(message, { type: toast.TYPE.SUCCESS }) }, [message])
 
     return (
@@ -67,16 +68,15 @@ const QueryResultSuccessWithInteractions: React.FC<{ interactions: Interaction[]
                 <div className="alert alert-success">
                     {message}
                 </div>
-            </div>
-            <div className="card-body">
-                <QueryResultRange offset={offset} limit={limit} total={interactions.length} update={setOffset} />
+                <hr />
+                <QueryResultPagination offset={offset} limit={limit} total={interactions.length} update={setOffset} />
             </div>
             <table className="table card-table table-hover table-striped">
                 <InteractionTHead />
-                <InteractionTBody interactions={interactions.slice(offset, offset + limit)} />
+                <InteractionTBody interactions={interactions.slice(offset, offset + limit)} limit={limit} />
             </table>
             <div className="card-body">
-                <QueryResultRange offset={offset} limit={limit} total={interactions.length} update={setOffset} />
+                <QueryResultPagination offset={offset} limit={limit} total={interactions.length} update={setOffset} />
             </div>
         </div>
     )
