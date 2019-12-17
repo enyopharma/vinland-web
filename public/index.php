@@ -19,20 +19,28 @@ $environment = $_ENV['APP_ENV'] ?? 'production';
 $debug = filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
 /**
- * Get the http application.
+ * Get the container.
  */
-$application = (require __DIR__ . '/../app/handler.php')($environment, $debug);
+$container = (require __DIR__ . '/../app/container.php')($environment, $debug);
 
 /**
- * Wrapp the http application insinde a fake http server.
+ * Run the boot scripts.
  */
-$server = new App\Http\Server(
-    new App\Http\Server\NyholmContext(
-        $application
-    )
-);
+foreach ((array) glob(__DIR__ . '/../app/boot/*.php') as $boot) {
+    (require $boot)($container);
+}
 
 /**
- * Run the http server.
+ * Get the http request handler.
  */
-$server->run();
+$handler = (require __DIR__ . '/../app/handler.php')($container);
+
+/**
+ * Get a fake server to run the request handler.
+ */
+$server = require __DIR__ . '/../app/server.php';
+
+/**
+ * Run the application.
+ */
+$server($handler);

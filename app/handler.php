@@ -13,33 +13,12 @@ use App\Http\Handlers\NotFoundRequestHandler;
 /**
  * A factory producing the application request handler.
  *
- * @param string    $env
- * @param bool      $debug
+ * @param Psr\Container\ContainerInterface $container
  * @return Psr\Http\Server\RequestHandlerInterface
  */
-return function (string $env, bool $debug): RequestHandlerInterface {
+return function (ContainerInterface $container): RequestHandlerInterface {
     /**
-     * Build the container.
-     */
-    $files = array_merge(
-        (array) glob(__DIR__ . '/../app/factories/*.php'),
-        (array) glob(__DIR__ . '/../domain/factories/*.php'),
-        (array) glob(__DIR__ . '/../infrastructure/factories/*.php'),
-    );
-
-    $container = new Quanta\Container(array_reduce($files, function ($factories, $file) {
-        return array_merge($factories, require $file);
-    }, []));
-
-    /**
-     * Run the boot scripts.
-     */
-    foreach ((array) glob(__DIR__ . '/boot/*.php') as $boot) {
-        (require $boot)($container);
-    }
-
-    /**
-     * Get the middleware factories.
+     * Get the middleware.
      */
     $middleware = (require __DIR__ . '/middleware.php')($container);
 
