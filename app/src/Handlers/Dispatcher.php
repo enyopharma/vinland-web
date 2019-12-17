@@ -15,36 +15,24 @@ final class Dispatcher implements RequestHandlerInterface
 
     private MiddlewareInterface $middleware;
 
-    private array $xs;
-
-    public static function stack(RequestHandlerInterface $handler, MiddlewareInterface ...$middleware): RequestHandlerInterface
+    public static function stack(RequestHandlerInterface $handler, MiddlewareInterface $head = null, MiddlewareInterface ...$tail): RequestHandlerInterface
     {
-        return array_reduce($middleware, function ($app, $middleware) {
-            return new self($app, $middleware);
-        }, $handler);
+        return is_null($head) ? $handler : self::stack(new self($handler, $head), ...$tail);
     }
 
-    public static function queue(RequestHandlerInterface $handler, MiddlewareInterface ...$middleware): RequestHandlerInterface
+    public static function queue(RequestHandlerInterface $handler, MiddlewareInterface $head = null, MiddlewareInterface ...$tail): RequestHandlerInterface
     {
-        return self::stack($handler, ...array_reverse($middleware));
+        return is_null($head) ? $handler : new self(self::queue($handler, ...$tail), $head);
     }
 
-    public function __construct(
-        RequestHandlerInterface $handler,
-        MiddlewareInterface $middleware,
-        MiddlewareInterface ...$xs
-    ) {
+    public function __construct(RequestHandlerInterface $handler, MiddlewareInterface $middleware)
+    {
         $this->handler = $handler;
         $this->middleware = $middleware;
-        $this->xs = $xs;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $handler = count($this->xs) > 0
-            ? new self($this->handler, ...$this->xs)
-            : $this->handler;
-
-        return $this->middleware->process($request, $handler);
+        return $this->middleware->process($request, $this->handler);
     }
 }

@@ -11,9 +11,7 @@ use Psr\Container\ContainerInterface;
  * @return void
  */
 return function (ContainerInterface $container) {
-    $collector = new Zend\Expressive\Router\RouteCollector(
-        $container->get(Zend\Expressive\Router\RouterInterface::class)
-    );
+    $collector = $container->get(FastRoute\RouteCollector::class);
 
     $routes = (require __DIR__ . '/../routes.php')($container);
 
@@ -38,10 +36,6 @@ return function (ContainerInterface $container) {
         $method = (string) array_shift($parts);
         $path = (string) array_shift($parts);
 
-        $middleware = new App\Http\Middleware\RequestHandlerMiddleware(
-            new App\Http\Handlers\LazyRequestHandler($handler)
-        );
-
-        $collector->route($path, $middleware, [$method]);
+        $collector->addRoute($method, $path, $handler);
     }
 };

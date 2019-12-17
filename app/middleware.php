@@ -11,13 +11,15 @@ use Psr\Container\ContainerInterface;
  * @return Psr\Http\Server\MiddlewareInterface[]
  */
 return function (ContainerInterface $container): array {
-    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
-
     return [
         /**
          * Cross-origin resource sharing middleware.
          */
-        new App\Http\Middleware\CORSMiddleware($factory, ['GET', 'POST'], ...explode(',', $_ENV['ALLOWED_DOMAINS'])),
+        new App\Http\Middleware\CORSMiddleware(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            ['GET', 'POST'],
+            ...explode(',', $_ENV['ALLOWED_DOMAINS'])
+        ),
 
         /**
          * Parse json body.
@@ -27,13 +29,9 @@ return function (ContainerInterface $container): array {
         /**
          * Router.
          */
-        new Zend\Expressive\Router\Middleware\RouteMiddleware(
-            $container->get(Zend\Expressive\Router\RouterInterface::class)
+        new App\Http\Middleware\FastRouteMiddleware(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            $container->get(FastRoute\Dispatcher::class)
         ),
-
-        /**
-         * Route dispatcher.
-         */
-        new Zend\Expressive\Router\Middleware\DispatchMiddleware,
     ];
 };
