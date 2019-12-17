@@ -27,12 +27,6 @@
         "symfony/dotenv": "^4.3",
         "zendframework/zend-expressive-fastroute": "^3.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/pmall/input"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "App\\Http\\": "app/src",
