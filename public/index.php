@@ -36,11 +36,15 @@ foreach ((array) glob(__DIR__ . '/../app/boot/*.php') as $boot) {
 $handler = (require __DIR__ . '/../app/handler.php')($container);
 
 /**
- * Get a fake server to run the request handler.
- */
-$server = require __DIR__ . '/../app/server.php';
-
-/**
  * Run the application.
  */
-$server($handler);
+use function Http\Response\send;
+
+$factory = new Nyholm\Psr7\Factory\Psr17Factory;
+$creator = new Nyholm\Psr7Server\ServerRequestCreator($factory, $factory, $factory, $factory);
+
+$request = $creator->fromGlobals();
+
+$response = $handler->handle($request);
+
+send($response);

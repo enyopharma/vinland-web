@@ -18,12 +18,42 @@ use App\Http\Handlers\NotFoundRequestHandler;
  */
 return function (ContainerInterface $container): RequestHandlerInterface {
     /**
-     * Get the middleware.
+     * Get the configured CORS analyzer.
      */
-    $middleware = (require __DIR__ . '/middleware.php')($container);
+    $cors = (require __DIR__ . '/config/cors.analyzer.php')($container);
 
     /**
-     * Return the application.
+     * Get the response factory from the container.
      */
-    return Dispatcher::queue(...$middleware);
+    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
+
+    /**
+     * Get the fast route dispatcher from the container.
+     */
+    $router = $container->get(FastRoute\Dispatcher::class);
+
+    /**
+     * Return the application request handler as a middleware queue.
+     */
+    return Dispatcher::queue(
+        /**
+         * Cross-origin resource sharing middleware.
+         */
+        new Middlewares\Cors($cors, $factory),
+
+        /**
+         * Router.
+         */
+        new App\Http\Middleware\FastRouteMiddleware($factory, $router),
+
+        /**
+         * Parse json body.
+         */
+        new Middlewares\JsonPayload,
+
+        /**
+         * Execute the matched request handler.
+         */
+        new App\Http\Middleware\RequestHandlerMiddleware,
+    );
 };
