@@ -15,14 +15,18 @@ final class Dispatcher implements RequestHandlerInterface
 
     private MiddlewareInterface $middleware;
 
-    public static function stack(RequestHandlerInterface $handler, MiddlewareInterface $head = null, MiddlewareInterface ...$tail): RequestHandlerInterface
+    public static function stack(MiddlewareInterface ...$middleware): RequestHandlerInterface
     {
-        return is_null($head) ? $handler : self::stack(new self($handler, $head), ...$tail);
+        return ($head = array_pop($middleware) ?? false)
+            ? new self(self::stack(...$middleware), $head)
+            : new InnerMostRequestHandler;
     }
 
-    public static function queue(RequestHandlerInterface $handler, MiddlewareInterface $head = null, MiddlewareInterface ...$tail): RequestHandlerInterface
+    public static function queue(MiddlewareInterface ...$middleware): RequestHandlerInterface
     {
-        return is_null($head) ? $handler : new self(self::queue($handler, ...$tail), $head);
+        return ($head = array_shift($middleware) ?? false)
+            ? new self(self::queue(...$middleware), $head)
+            : new InnerMostRequestHandler;
     }
 
     public function __construct(RequestHandlerInterface $handler, MiddlewareInterface $middleware)

@@ -30,16 +30,21 @@ return function (ContainerInterface $container): array {
         ),
 
         /**
-         * Parse json body.
-         */
-        new Middlewares\JsonPayload,
-
-        /**
          * Router.
          */
         new App\Http\Middleware\FastRouteMiddleware(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
             $container->get(FastRoute\Dispatcher::class),
         ),
+
+        /**
+         * Parse json body.
+         */
+        new Middlewares\JsonPayload,
+
+        /**
+         * Execute the matched request handler.
+         */
+        new App\Http\Middleware\RequestHandlerMiddleware,
     ];
 };

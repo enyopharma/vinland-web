@@ -23,14 +23,7 @@ return function (ContainerInterface $container): RequestHandlerInterface {
     $middleware = (require __DIR__ . '/middleware.php')($container);
 
     /**
-     * Get the inner most request handler.
-     */
-    $handler = new NotFoundRequestHandler(
-        $container->get(ResponseFactoryInterface::class),
-    );
-
-    /**
      * Return the application.
      */
-    return Dispatcher::queue($handler, ...$middleware);
+    return Dispatcher::queue(...$middleware);
 };
