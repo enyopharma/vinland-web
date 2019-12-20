@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af4856b6f5ac3610afd02b5b639307bb",
+    "content-hash": "87a0d2e5770f7dc12a980e656a33b439",
     "packages": [
         {
             "name": "http-interop/response-sender",
@@ -868,6 +868,57 @@
                 "dependency-injection"
             ],
             "time": "2019-07-16T11:22:30+00:00"
+        },
+        {
+            "name": "quanta/http-middleware",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quantaphp/http-middleware.git",
+                "reference": "4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quantaphp/http-middleware/zipball/4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e",
+                "reference": "4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "7.4.0",
+                "psr/http-message": "^1.0",
+                "psr/http-server-handler": "^1.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "require-dev": {
+                "eloquent/phony-kahlan": "^2.0",
+                "kahlan/kahlan": "^4.5",
+                "phpstan/phpstan": "^0.12.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Quanta\\Http\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "pmall",
+                    "email": "pierre.mallinjoud@gmail.com"
+                }
+            ],
+            "description": "Minimalist library for dispatching Psr-15 middleware",
+            "homepage": "https://github.com/quantaphp/http-middleware",
+            "keywords": [
+                "dispatcher",
+                "middleware",
+                "psr-15",
+                "request-handler"
+            ],
+            "time": "2019-12-20T12:45:18+00:00"
         },
         {
             "name": "quanta/validation",

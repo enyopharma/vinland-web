@@ -7,9 +7,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use App\Http\Handlers\Dispatcher;
-use App\Http\Handlers\NotFoundRequestHandler;
-
 /**
  * A factory producing the application request handler.
  *
@@ -35,7 +32,7 @@ return function (ContainerInterface $container): RequestHandlerInterface {
     /**
      * Return the application request handler as a middleware queue.
      */
-    return Dispatcher::queue(
+    return Quanta\Http\Dispatcher::queue(
         /**
          * Cross-origin resource sharing middleware.
          */
