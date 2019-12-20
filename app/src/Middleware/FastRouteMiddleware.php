@@ -42,16 +42,10 @@ final class FastRouteMiddleware implements MiddlewareInterface
             return $this->factory->createResponse(405)->withHeader('Allow', implode(', ', $info[0]));
         }
 
-        [$factory, $attributes] = $info;
-
-        if (! is_callable($factory)) {
-            throw new \LogicException(
-                sprintf('Route handler must be a callable, %s given', gettype($factory)),
-            );
-        }
+        [$matched, $attributes] = $info;
 
         $request = $request
-            ->withAttribute(RequesthandlerInterface::class, $factory())
+            ->withAttribute(RequesthandlerInterface::class, $matched)
             ->withAttribute($this->attributes, $attributes);
 
         return $handler->handle($request);

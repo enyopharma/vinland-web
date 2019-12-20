@@ -24,15 +24,6 @@ return function (ContainerInterface $container) {
             );
         }
 
-        if (! is_callable($handler)) {
-            throw new LogicException(
-                vsprintf('route handler must be a callable, %s given for endpoint \'%s\'', [
-                    gettype($handler),
-                    $endpoint,
-                ])
-            );
-        }
-
         $method = (string) array_shift($parts);
         $path = (string) array_shift($parts);
 

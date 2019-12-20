@@ -12,20 +12,20 @@ use Psr\Container\ContainerInterface;
  */
 return function (ContainerInterface $container): array {
     return [
-        'POST /interactions' => fn () => new App\Http\Handlers\Interactions\IndexHandler(
+        'GET /annotations' => new App\Http\Handlers\Annotations\IndexHandler(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-            $container->get(Domain\ReadModel\InteractionViewInterface::class),
-            new App\Http\Validations\RequestToQuery($container->get(PDO::class))
+            $container->get(Domain\ReadModel\AnnotationViewInterface::class),
         ),
 
-        'GET /taxa' => fn () => new App\Http\Handlers\Taxa\IndexHandler(
+        'GET /taxa' => new App\Http\Handlers\Taxa\IndexHandler(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
             $container->get(Domain\ReadModel\TaxaViewInterface::class),
         ),
 
-        'GET /annotations' => fn () => new App\Http\Handlers\Annotations\IndexHandler(
+        'POST /interactions' => new App\Http\Handlers\Interactions\IndexHandler(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-            $container->get(Domain\ReadModel\AnnotationViewInterface::class),
+            $container->get(Domain\ReadModel\InteractionViewInterface::class),
+            new App\Http\Validations\RequestToQuery($container->get(PDO::class)),
         ),
     ];
 };
