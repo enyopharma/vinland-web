@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e65958cfe50c44061b4874250ac77154",
+    "content-hash": "3f301533a434fa81e9e19f3f712a8a2b",
     "packages": [
         {
             "name": "http-interop/response-sender",
@@ -870,17 +870,17 @@
             "time": "2019-07-16T11:22:30+00:00"
         },
         {
-            "name": "quanta/http-middleware",
-            "version": "0.3.0",
+            "name": "quanta/http-dispatcher",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/quantaphp/http-middleware.git",
-                "reference": "4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e"
+                "url": "https://github.com/quantaphp/http-dispatcher.git",
+                "reference": "bec4c9a7617d3d354ff54a203fe8e1dc488e89dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-middleware/zipball/4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e",
-                "reference": "4cedf7964205b6c4fd560d8ce6dfa3f8e3f91c9e",
+                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/bec4c9a7617d3d354ff54a203fe8e1dc488e89dd",
+                "reference": "bec4c9a7617d3d354ff54a203fe8e1dc488e89dd",
                 "shasum": ""
             },
             "require": {
@@ -910,15 +910,15 @@
                     "email": "pierre.mallinjoud@gmail.com"
                 }
             ],
-            "description": "Minimalist library for dispatching Psr-15 middleware",
-            "homepage": "https://github.com/quantaphp/http-middleware",
+            "description": "Minimalist Psr-15 middleware dispatcher",
+            "homepage": "https://github.com/quantaphp/http-dispatcher",
             "keywords": [
                 "dispatcher",
                 "middleware",
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2019-12-20T12:45:18+00:00"
+            "time": "2019-12-20T15:28:22+00:00"
         },
         {
             "name": "quanta/http-routing",
