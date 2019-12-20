@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "87a0d2e5770f7dc12a980e656a33b439",
+    "content-hash": "e65958cfe50c44061b4874250ac77154",
     "packages": [
         {
             "name": "http-interop/response-sender",
@@ -919,6 +919,58 @@
                 "request-handler"
             ],
             "time": "2019-12-20T12:45:18+00:00"
+        },
+        {
+            "name": "quanta/http-routing",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quantaphp/http-routing.git",
+                "reference": "34421da5b8ddce857e9004c81cf81de252cf2fd5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quantaphp/http-routing/zipball/34421da5b8ddce857e9004c81cf81de252cf2fd5",
+                "reference": "34421da5b8ddce857e9004c81cf81de252cf2fd5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "7.4.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.0",
+                "psr/http-server-handler": "^1.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "require-dev": {
+                "eloquent/phony-kahlan": "^2.0",
+                "kahlan/kahlan": "^4.5",
+                "phpstan/phpstan": "^0.12.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Quanta\\Http\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "pmall",
+                    "email": "pierre.mallinjoud@gmail.com"
+                }
+            ],
+            "description": "Psr-15 routing middleware",
+            "homepage": "https://github.com/quantaphp/http-routing",
+            "keywords": [
+                "middleware",
+                "psr-15",
+                "router",
+                "routing"
+            ],
+            "time": "2019-12-20T15:10:19+00:00"
         },
         {
             "name": "quanta/validation",

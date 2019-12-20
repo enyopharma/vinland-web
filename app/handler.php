@@ -27,7 +27,7 @@ return function (ContainerInterface $container): RequestHandlerInterface {
     /**
      * Get the fast route dispatcher from the container.
      */
-    $router = $container->get(FastRoute\Dispatcher::class);
+    $router = $container->get(Quanta\Http\RouterInterface::class);
 
     /**
      * Return the application request handler as a middleware queue.
@@ -41,7 +41,7 @@ return function (ContainerInterface $container): RequestHandlerInterface {
         /**
          * Router.
          */
-        new App\Http\Middleware\FastRouteMiddleware($factory, $router),
+        new Quanta\Http\RoutingMiddleware($factory, $router),
 
         /**
          * Parse json body.
@@ -51,6 +51,6 @@ return function (ContainerInterface $container): RequestHandlerInterface {
         /**
          * Execute the matched request handler.
          */
-        new App\Http\Middleware\RequestHandlerMiddleware,
+        new Quanta\Http\MatchedRouteMiddleware,
     );
 };
