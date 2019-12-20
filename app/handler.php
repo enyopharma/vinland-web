@@ -25,9 +25,11 @@ return function (ContainerInterface $container): RequestHandlerInterface {
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
 
     /**
-     * Get the fast route dispatcher from the container.
+     * Get the fast route dispatcher and build a router.
      */
-    $router = $container->get(Quanta\Http\RouterInterface::class);
+    $router = new App\Http\FastRouteRouter(
+        $container->get(FastRoute\Dispatcher::class)
+    );
 
     /**
      * Return the application request handler as a middleware queue.
