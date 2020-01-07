@@ -41,18 +41,23 @@ return function (ContainerInterface $container): RequestHandlerInterface {
         new Middlewares\Cors($cors, $factory),
 
         /**
-         * Router.
-         */
-        new Quanta\Http\RoutingMiddleware($factory, $router),
-
-        /**
          * Parse json body.
          */
         new Middlewares\JsonPayload,
 
         /**
-         * Execute the matched request handler.
+         * Router.
          */
-        new Quanta\Http\MatchedRouteMiddleware,
+        new Quanta\Http\RoutingMiddleware($router),
+
+        /**
+         * Return a not allowed response.
+         */
+        new Quanta\Http\NotAllowedMiddleware($factory),
+
+        /**
+         * Return a not found response.
+         */
+        new Quanta\Http\NotFoundMiddleware($factory),
     );
 };

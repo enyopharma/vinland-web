@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f301533a434fa81e9e19f3f712a8a2b",
+    "content-hash": "c4cde6cda14e4c5d1ea4eab4f509409c",
     "packages": [
         {
             "name": "http-interop/response-sender",
@@ -871,20 +871,20 @@
         },
         {
             "name": "quanta/http-dispatcher",
-            "version": "0.4.0",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-dispatcher.git",
-                "reference": "bec4c9a7617d3d354ff54a203fe8e1dc488e89dd"
+                "reference": "395c588afbf77c593fd830f6b8e17be9a0841db9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/bec4c9a7617d3d354ff54a203fe8e1dc488e89dd",
-                "reference": "bec4c9a7617d3d354ff54a203fe8e1dc488e89dd",
+                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/395c588afbf77c593fd830f6b8e17be9a0841db9",
+                "reference": "395c588afbf77c593fd830f6b8e17be9a0841db9",
                 "shasum": ""
             },
             "require": {
-                "php": "7.4.0",
+                "php": "^7.4",
                 "psr/http-message": "^1.0",
                 "psr/http-server-handler": "^1.0",
                 "psr/http-server-middleware": "^1.0"
@@ -918,24 +918,24 @@
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2019-12-20T15:28:22+00:00"
+            "time": "2020-01-07T13:08:17+00:00"
         },
         {
             "name": "quanta/http-routing",
-            "version": "0.1.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-routing.git",
-                "reference": "34421da5b8ddce857e9004c81cf81de252cf2fd5"
+                "reference": "70788bf85d02df380ec7b3a77a6e1f64d06d2d8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-routing/zipball/34421da5b8ddce857e9004c81cf81de252cf2fd5",
-                "reference": "34421da5b8ddce857e9004c81cf81de252cf2fd5",
+                "url": "https://api.github.com/repos/quantaphp/http-routing/zipball/70788bf85d02df380ec7b3a77a6e1f64d06d2d8f",
+                "reference": "70788bf85d02df380ec7b3a77a6e1f64d06d2d8f",
                 "shasum": ""
             },
             "require": {
-                "php": "7.4.0",
+                "php": "^7.4",
                 "psr/http-factory": "^1.0",
                 "psr/http-message": "^1.0",
                 "psr/http-server-handler": "^1.0",
@@ -970,7 +970,7 @@
                 "router",
                 "routing"
             ],
-            "time": "2019-12-20T15:10:19+00:00"
+            "time": "2020-01-07T13:07:38+00:00"
         },
         {
             "name": "quanta/validation",
@@ -1020,16 +1020,16 @@
         },
         {
             "name": "symfony/dotenv",
-            "version": "v4.4.1",
+            "version": "v4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dotenv.git",
-                "reference": "7abe2c6d7d232cf5a88e79a57479876b35704a01"
+                "reference": "c387ab37887f997162a8579d335b38f328d27859"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dotenv/zipball/7abe2c6d7d232cf5a88e79a57479876b35704a01",
-                "reference": "7abe2c6d7d232cf5a88e79a57479876b35704a01",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/c387ab37887f997162a8579d335b38f328d27859",
+                "reference": "c387ab37887f997162a8579d335b38f328d27859",
                 "shasum": ""
             },
             "require": {
@@ -1073,78 +1073,25 @@
                 "env",
                 "environment"
             ],
-            "time": "2019-11-23T14:53:46+00:00"
+            "time": "2019-12-19T15:57:49+00:00"
         }
     ],
     "packages-dev": [
         {
-            "name": "nikic/php-parser",
-            "version": "v4.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "9a9981c347c5c49d6dfe5cf826bb882b824080dc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/9a9981c347c5c49d6dfe5cf826bb882b824080dc",
-                "reference": "9a9981c347c5c49d6dfe5cf826bb882b824080dc",
-                "shasum": ""
-            },
-            "require": {
-                "ext-tokenizer": "*",
-                "php": ">=7.0"
-            },
-            "require-dev": {
-                "ircmaxell/php-yacc": "0.0.5",
-                "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0"
-            },
-            "bin": [
-                "bin/php-parse"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PhpParser\\": "lib/PhpParser"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Nikita Popov"
-                }
-            ],
-            "description": "A PHP parser written in PHP",
-            "keywords": [
-                "parser",
-                "php"
-            ],
-            "time": "2019-11-08T13:50:10+00:00"
-        },
-        {
             "name": "phpstan/phpstan",
-            "version": "0.12.3",
+            "version": "0.12.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c15a6ea55da71d8133399306f560cfe4d30301b7"
+                "reference": "100a25ba8561223f6bf5a5ff4204f951c0ec007c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c15a6ea55da71d8133399306f560cfe4d30301b7",
-                "reference": "c15a6ea55da71d8133399306f560cfe4d30301b7",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/100a25ba8561223f6bf5a5ff4204f951c0ec007c",
+                "reference": "100a25ba8561223f6bf5a5ff4204f951c0ec007c",
                 "shasum": ""
             },
             "require": {
-                "nikic/php-parser": "^4.3.0",
                 "php": "^7.1"
             },
             "bin": [
@@ -1167,7 +1114,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2019-12-14T13:41:17+00:00"
+            "time": "2020-01-06T06:38:17+00:00"
         }
     ],
     "aliases": [],
