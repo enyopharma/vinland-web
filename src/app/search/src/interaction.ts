@@ -38,7 +38,6 @@ export const read = () => {
 }
 
 const getInteractions = async (query: Query) => {
-    const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const params = {
         method: 'POST',
         body: JSON.stringify(query),
@@ -49,7 +48,7 @@ const getInteractions = async (query: Query) => {
     }
 
     try {
-        const response = await fetch(`${host}/interactions`, params)
+        const response = await fetch(`/api/interactions`, params)
         const json = await response.json()
 
         switch (json.status) {

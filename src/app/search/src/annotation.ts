@@ -35,12 +35,11 @@ export const read = (limit: number) => {
 }
 
 const getAnnotations = async (source: string, query: string, limit: number) => {
-    const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const querystr = qs.encode({ source: source, query: query, limit: limit })
     const params = { headers: { accept: 'application/json' } }
 
     try {
-        const response = await fetch(`${host}/annotations?${querystr}`, params)
+        const response = await fetch(`/api/annotations?${querystr}`, params)
         const json = await response.json()
 
         if (!json.success) {

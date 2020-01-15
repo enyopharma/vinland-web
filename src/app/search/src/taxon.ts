@@ -78,12 +78,11 @@ export const read = (limit: number) => {
 }
 
 const getTaxa = async (query: string, limit: number) => {
-    const host = process.env.REACT_APP_API_HOST || 'http://localhost'
     const querystr = qs.encode({ query: query, limit: limit })
     const params = { headers: { 'accept': 'application/json' } }
 
     try {
-        const response = await fetch(`${host}/taxa?${querystr}`, params)
+        const response = await fetch(`/api/taxa?${querystr}`, params)
         const json = await response.json()
 
         if (!json.success) {
