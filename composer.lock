@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4cde6cda14e4c5d1ea4eab4f509409c",
+    "content-hash": "73d5b90b91f3873310c808ef6ccd5e82",
     "packages": [
         {
             "name": "http-interop/response-sender",
@@ -46,56 +46,6 @@
             ],
             "description": "A function to convert PSR-7 Response to HTTP output",
             "time": "2017-03-17T15:46:19+00:00"
-        },
-        {
-            "name": "middlewares/cors",
-            "version": "v2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/middlewares/cors.git",
-                "reference": "629582786348db4407f7728f43e4f97f46ec6d53"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/middlewares/cors/zipball/629582786348db4407f7728f43e4f97f46ec6d53",
-                "reference": "629582786348db4407f7728f43e4f97f46ec6d53",
-                "shasum": ""
-            },
-            "require": {
-                "middlewares/utils": "^3.0",
-                "neomerx/cors-psr7": "^2.0",
-                "php": "^7.2",
-                "psr/http-server-middleware": "^1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.0",
-                "oscarotero/php-cs-fixer-config": "^1.0",
-                "phpunit/phpunit": "^8.1",
-                "squizlabs/php_codesniffer": "^3.0",
-                "zendframework/zend-diactoros": "^2.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Middlewares\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Middleware to implement Cross-Origin Resource Sharing (CORS)",
-            "homepage": "https://github.com/middlewares/cors",
-            "keywords": [
-                "cors",
-                "cross-origin",
-                "http",
-                "middleware",
-                "psr-15",
-                "psr-7",
-                "security"
-            ],
-            "time": "2019-11-30T23:25:59+00:00"
         },
         {
             "name": "middlewares/payload",
@@ -206,63 +156,6 @@
                 "psr-7"
             ],
             "time": "2019-11-29T12:20:12+00:00"
-        },
-        {
-            "name": "neomerx/cors-psr7",
-            "version": "v2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/neomerx/cors-psr7.git",
-                "reference": "454e923aaf9ba4aa162f7aca2a514e41708b6ba5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/neomerx/cors-psr7/zipball/454e923aaf9ba4aa162f7aca2a514e41708b6ba5",
-                "reference": "454e923aaf9ba4aa162f7aca2a514e41708b6ba5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.0",
-                "psr/http-message": "^1.0",
-                "psr/log": "^1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.14",
-                "mockery/mockery": "^1.0",
-                "phpmd/phpmd": "^2.6",
-                "phpunit/phpunit": "^7.0",
-                "scrutinizer/ocular": "^1.4",
-                "squizlabs/php_codesniffer": "^2.9"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Neomerx\\Cors\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "neomerx",
-                    "email": "info@neomerx.com"
-                }
-            ],
-            "description": "Framework agnostic (PSR-7) CORS implementation (www.w3.org/TR/cors/)",
-            "homepage": "https://github.com/neomerx/cors-psr7",
-            "keywords": [
-                "Cross Origin Resource Sharing",
-                "Cross-Origin Resource Sharing",
-                "cors",
-                "neomerx",
-                "psr-7",
-                "psr7",
-                "w3.org",
-                "www.w3.org"
-            ],
-            "time": "2019-02-14T10:35:50+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -732,53 +625,6 @@
             "time": "2018-10-30T17:12:04+00:00"
         },
         {
-            "name": "psr/log",
-            "version": "1.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psr\\Log\\": "Psr/Log/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for logging libraries",
-            "homepage": "https://github.com/php-fig/log",
-            "keywords": [
-                "log",
-                "psr",
-                "psr-3"
-            ],
-            "time": "2019-11-01T11:05:21+00:00"
-        },
-        {
             "name": "quanta/array-type-check",
             "version": "0.3.0",
             "source": {
@@ -871,16 +717,16 @@
         },
         {
             "name": "quanta/http-dispatcher",
-            "version": "0.4.1",
+            "version": "0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-dispatcher.git",
-                "reference": "395c588afbf77c593fd830f6b8e17be9a0841db9"
+                "reference": "51d146618b1a37979156969976ad6f2d19d2c8fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/395c588afbf77c593fd830f6b8e17be9a0841db9",
-                "reference": "395c588afbf77c593fd830f6b8e17be9a0841db9",
+                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/51d146618b1a37979156969976ad6f2d19d2c8fc",
+                "reference": "51d146618b1a37979156969976ad6f2d19d2c8fc",
                 "shasum": ""
             },
             "require": {
@@ -918,20 +764,20 @@
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2020-01-07T13:08:17+00:00"
+            "time": "2020-01-14T15:24:04+00:00"
         },
         {
             "name": "quanta/http-routing",
-            "version": "0.2.1",
+            "version": "0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-routing.git",
-                "reference": "70788bf85d02df380ec7b3a77a6e1f64d06d2d8f"
+                "reference": "718822d7361491536523a7c73db8b6c30d04fc94"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-routing/zipball/70788bf85d02df380ec7b3a77a6e1f64d06d2d8f",
-                "reference": "70788bf85d02df380ec7b3a77a6e1f64d06d2d8f",
+                "url": "https://api.github.com/repos/quantaphp/http-routing/zipball/718822d7361491536523a7c73db8b6c30d04fc94",
+                "reference": "718822d7361491536523a7c73db8b6c30d04fc94",
                 "shasum": ""
             },
             "require": {
@@ -970,7 +816,7 @@
                 "router",
                 "routing"
             ],
-            "time": "2020-01-07T13:07:38+00:00"
+            "time": "2020-01-15T10:38:39+00:00"
         },
         {
             "name": "quanta/validation",
@@ -1079,16 +925,16 @@
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.4",
+            "version": "0.12.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "100a25ba8561223f6bf5a5ff4204f951c0ec007c"
+                "reference": "71a20c18f06c53605251a00a8efe443fa85225d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/100a25ba8561223f6bf5a5ff4204f951c0ec007c",
-                "reference": "100a25ba8561223f6bf5a5ff4204f951c0ec007c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/71a20c18f06c53605251a00a8efe443fa85225d1",
+                "reference": "71a20c18f06c53605251a00a8efe443fa85225d1",
                 "shasum": ""
             },
             "require": {
@@ -1114,7 +960,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2020-01-06T06:38:17+00:00"
+            "time": "2020-01-12T14:31:21+00:00"
         }
     ],
     "aliases": [],

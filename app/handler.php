@@ -15,11 +15,6 @@ use Psr\Http\Message\ResponseFactoryInterface;
  */
 return function (ContainerInterface $container): RequestHandlerInterface {
     /**
-     * Get the configured CORS analyzer.
-     */
-    $cors = (require __DIR__ . '/config/cors.analyzer.php')($container);
-
-    /**
      * Get the response factory from the container.
      */
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
@@ -35,11 +30,6 @@ return function (ContainerInterface $container): RequestHandlerInterface {
      * Return the application request handler as a middleware queue.
      */
     return Quanta\Http\Dispatcher::queue(
-        /**
-         * Cross-origin resource sharing middleware.
-         */
-        new Middlewares\Cors($cors, $factory),
-
         /**
          * Parse json body.
          */
