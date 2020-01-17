@@ -1,18 +1,12 @@
 import React from 'react';
-import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import { reducer as search } from './app/search/src/search'
+import { store } from 'app/store'
+import { Navbar } from 'app/components/Navbar'
+import { PageLoader } from 'app/components/PageLoader'
 
-import { Navbar } from './app/layout/Navbar'
-import { PageLoader } from './app/layout/PageLoader'
-
-const HomePage = React.lazy(() => import('./app/HomePage').then(module => ({ default: module.HomePage })))
-const SearchPage = React.lazy(() => import('./app/SearchPage').then(module => ({ default: module.SearchPage })))
-
-const reducer = combineReducers({ search })
-
-const store = createStore(reducer)
+const HomePage = React.lazy(() => import('home/components/HomePage').then(module => ({ default: module.HomePage })))
+const SearchPage = React.lazy(() => import('search/components/SearchPage').then(module => ({ default: module.SearchPage })))
 
 export const App: React.FC = () => {
     return (
