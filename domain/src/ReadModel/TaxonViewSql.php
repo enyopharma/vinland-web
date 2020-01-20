@@ -55,7 +55,7 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_names_sth->execute([$left_value, $right_value]);
 
-        return $select_names_sth->fetchAll();
+        return ($names = $select_names_sth->fetchAll()) ? $names : [];
     }
 
     private function children(int $taxon_id): array
