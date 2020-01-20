@@ -10,73 +10,65 @@ use Domain\Validations\IsQuery;
 
 final class QueryInput
 {
-    private const MAX_IDENTIFIERS = 500;
-
     private string $key;
-    private array $identifiers;
-    private array $taxon;
-    private array $names;
+    private array $human;
+    private array $virus;
     private bool $hh;
     private bool $vh;
-    private bool $network;
+    private bool $neighbors;
     private int $publications;
     private int $methods;
 
-    public static function from(\PDO $pdo, array $data): InputInterface
+    public static function from(array $data): InputInterface
     {
-        $validation = new Bound(
-            new IsQuery($pdo, self::MAX_IDENTIFIERS),
-            fn (array $data) => new Success(new self($data)),
-        );
-
-        return $validation($data);
+        return isQuery::validation()($data)->bind(fn (array $data) => new Success(new self($data)));
     }
 
     private function __construct(array $data)
     {
         $this->key = $data['key'];
-        $this->identifiers = $data['identifiers'];
-        $this->taxon = $data['taxon'];
-        $this->names = $data['names'];
+        $this->human = $data['human'];
+        $this->virus = $data['virus'];
         $this->hh = $data['hh'];
         $this->vh = $data['vh'];
-        $this->network = $data['network'];
+        $this->neighbors = $data['neighbors'];
         $this->publications = $data['publications'];
         $this->methods = $data['methods'];
     }
 
+    public function key(): string
+    {
+        return $this->key;
+    }
+
     public function isComplete(): bool
     {
-        return count($this->identifiers) > 0 || $this->taxon['left'] > 0;
-    }
-
-    public function wantsHHNetwork(): bool
-    {
-        return $this->hh
-            && $this->network
-            && count($this->identifiers) > 0;
-    }
-
-    public function wantsHHInteractions(): bool
-    {
-        return $this->hh
-            && ! $this->network
-            && count($this->identifiers) > 0;
-    }
-
-    public function wantsVHInteractions(): bool
-    {
-        return $this->vh;
+        return count($this->human['identifiers']) > 0 || $this->virus['ncbi_taxon_id'] > 0;
     }
 
     public function human(): array
     {
-        return [$this->identifiers];
+        return $this->human['identifiers'];
     }
 
     public function virus(): array
     {
-        return [$this->taxon['left'], $this->taxon['right'], $this->names];
+        return [$this->virus['ncbi_taxon_id'], ...$this->virus['names']];
+    }
+
+    public function neighbors(): bool
+    {
+        return $this->neighbors;
+    }
+
+    public function hh(): bool
+    {
+        return $this->hh;
+    }
+
+    public function vh(): bool
+    {
+        return $this->vh;
     }
 
     public function filters(): array

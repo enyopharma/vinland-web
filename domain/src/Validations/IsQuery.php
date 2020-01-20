@@ -18,57 +18,24 @@ final class IsQuery
 {
     private const KEY_PATTERN = '/^[a-z0-9]{32}$/i';
 
-    private \PDO $pdo;
-
-    private int $threshold;
-
-    public function __construct(\PDO $pdo, int $threshold)
+    public static function validation(): callable
     {
-        $this->pdo = $pdo;
-        $this->threshold = $threshold;
-    }
+        $isArr = new Is(new OfType('array'));
+        $isStr = new Is(new OfType('string'));
+        $isInt = new Is(new OfType('integer'));
+        $isBool = new Is(new OfType('boolean'));
+        $isKey = new Bound($isStr, new Is(new Matching(self::KEY_PATTERN)));
+        $isThreshold = new Bound($isInt, new Is(new GreaterThan(1)));
 
-    public function __invoke(array $data): InputInterface
-    {
-        $upper = fn (string $str) => $this->upper($str);
-        $sanitize = fn (array $strs) => $this->sanitize(...$strs);
-
-        $isarr = new Is(new OfType('array'));
-        $isstr = new Is(new OfType('string'));
-        $isint = new Is(new OfType('integer'));
-        $isbool = new Is(new OfType('boolean'));
-        $iskey = new Bound($isstr, new Is(new Matching(self::KEY_PATTERN)));
-        $istaxon = new IsTaxon($this->pdo);
-        $isidentifiers = new Bound($isarr, new TraverseA($isstr, $upper), $sanitize, new Is(new LessThan($this->threshold)));
-        $isnames = new Bound($isarr, new TraverseA($isstr), $sanitize);
-        $isthreshold = new Bound($isint, new Is(new GreaterThan(1)));
-
-        $validation = new Merged(
-            Field::required('key', $iskey),
-            Field::required('identifiers', $isidentifiers),
-            Field::required('taxon', $istaxon),
-            Field::required('names', $isnames),
-            Field::required('hh', $isbool),
-            Field::required('vh', $isbool),
-            Field::required('network', $isbool),
-            Field::required('publications', $isthreshold),
-            Field::required('methods', $isthreshold),
+        return new Merged(
+            Field::required('key', $isKey),
+            Field::required('human', $isArr, Query\IsHumanParams::validation()),
+            Field::required('virus', $isArr, Query\IsVirusParams::validation()),
+            Field::required('neighbors', $isBool),
+            Field::required('hh', $isBool),
+            Field::required('vh', $isBool),
+            Field::required('publications', $isThreshold),
+            Field::required('methods', $isThreshold),
         );
-
-        return $validation($data);
-    }
-
-    private function upper(string $str): InputInterface
-    {
-        return new Success(strtoupper($str));
-    }
-
-    private function sanitize(string ...$strs): InputInterface
-    {
-        $strs = array_map('trim', $strs);
-        $strs = array_unique($strs);
-        $strs = array_filter($strs, fn ($str) => strlen($str) > 0);
-
-        return new Success($strs);
     }
 }

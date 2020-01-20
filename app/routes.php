@@ -27,10 +27,15 @@ return function (ContainerInterface $container): array {
             $container->get(Domain\ReadModel\TaxonViewInterface::class),
         ),
 
-        'POST /interactions' => new App\Http\Handlers\Interactions\IndexHandler(
-            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-            $container->get(Domain\ReadModel\InteractionViewInterface::class),
-            new App\Http\Validations\RequestToQuery($container->get(PDO::class)),
+        'POST /interactions' => new Quanta\Http\RequestHandler(
+            new App\Http\Handlers\Interactions\IndexHandler(
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+                $container->get(Domain\ReadModel\InteractionViewInterface::class),
+            ),
+            new App\Http\Middleware\InputValidationMiddleware(
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+                [Domain\Input\QueryInput::class, 'from'],
+            ),
         ),
     ];
 };
