@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 use Domain\ReadModel\TaxonViewInterface;
 
-final class IndexHandler implements RequestHandlerInterface
+final class ShowHandler implements RequestHandlerInterface
 {
     private ResponseFactoryInterface $factory;
 
@@ -26,19 +26,20 @@ final class IndexHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $params = (array) $request->getQueryParams();
+        $ncbi_taxon_id = (int) $request->getAttribute('ncbi_taxon_id');
 
-        $query = (string) ($params['query'] ?? '');
-        $limit = (int) ($params['limit'] ?? 5);
+        $select_taxa_sth = $this->taxa->id($ncbi_taxon_id);
 
-        $select_taxa_sth = $this->taxa->all($query, $limit);
+        if (! $taxon = $select_taxa_sth->fetch()) {
+            return $this->factory->createResponse(404);
+        }
 
         $response = $this->factory->createResponse(200);
 
         $response->getBody()->write((string) json_encode([
             'success' => true,
             'code' => 200,
-            'data' => $select_taxa_sth->fetchAll(),
+            'data' => $taxon,
         ]));
 
         return $response->withHeader('content-type', 'application/json');

@@ -19,7 +19,12 @@ return function (ContainerInterface $container): array {
 
         'GET /taxa' => new App\Http\Handlers\Taxa\IndexHandler(
             $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-            $container->get(Domain\ReadModel\TaxaViewInterface::class),
+            $container->get(Domain\ReadModel\TaxonViewInterface::class),
+        ),
+
+        'GET /taxa/{ncbi_taxon_id:\d+}' => new App\Http\Handlers\Taxa\ShowHandler(
+            $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+            $container->get(Domain\ReadModel\TaxonViewInterface::class),
         ),
 
         'POST /interactions' => new App\Http\Handlers\Interactions\IndexHandler(

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\ReadModel;
 
-interface TaxaViewInterface
+interface TaxonViewInterface
 {
     public function all(string $query, int $limit): Statement;
 }

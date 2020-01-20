@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Domain\ReadModel\TaxaViewInterface;
+use Domain\ReadModel\TaxonViewInterface;
 use Domain\ReadModel\AnnotationViewInterface;
 use Domain\ReadModel\InteractionViewInterface;
 
@@ -11,7 +11,7 @@ return [
         $c->get(PDO::class),
     ),
 
-    TaxaViewInterface::class => fn ($c) => new Domain\ReadModel\TaxaViewSql(
+    TaxonViewInterface::class => fn ($c) => new Domain\ReadModel\TaxonViewSql(
         $c->get(PDO::class),
     ),
 
