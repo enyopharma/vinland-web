@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Http\Handlers\Taxa;
 
 use Psr\Http\Server\RequestHandlerInterface;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 
 use Domain\ReadModel\TaxonViewInterface;
 
+use App\Http\Responders\JsonResponder;
+
 final class IndexHandler implements RequestHandlerInterface
 {
-    private ResponseFactoryInterface $factory;
+    private JsonResponder $responder;
 
     private TaxonViewInterface $taxa;
 
-    public function __construct(ResponseFactoryInterface $factory, TaxonViewInterface $taxa)
+    public function __construct(JsonResponder $responder, TaxonViewInterface $taxa)
     {
-        $this->factory = $factory;
+        $this->responder = $responder;
         $this->taxa = $taxa;
     }
 
@@ -31,16 +31,8 @@ final class IndexHandler implements RequestHandlerInterface
         $query = (string) ($params['query'] ?? '');
         $limit = (int) ($params['limit'] ?? 5);
 
-        $select_taxa_sth = $this->taxa->all($query, $limit);
+        $taxa = $this->taxa->all($query, $limit)->fetchAll();
 
-        $response = $this->factory->createResponse(200);
-
-        $response->getBody()->write((string) json_encode([
-            'success' => true,
-            'code' => 200,
-            'data' => $select_taxa_sth->fetchAll(),
-        ]));
-
-        return $response->withHeader('content-type', 'application/json');
+        return $this->responder->success($taxa);
     }
 }

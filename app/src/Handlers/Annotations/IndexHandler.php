@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Http\Handlers\Annotations;
 
 use Psr\Http\Server\RequestHandlerInterface;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 
 use Domain\ReadModel\AnnotationViewInterface;
 
+use App\Http\Responders\JsonResponder;
+
 final class IndexHandler implements RequestHandlerInterface
 {
-    private ResponseFactoryInterface $factory;
+    private JsonResponder $responder;
 
     private AnnotationViewInterface $annotations;
 
-    public function __construct(ResponseFactoryInterface $factory, AnnotationViewInterface $annotations)
+    public function __construct(JsonResponder $responder, AnnotationViewInterface $annotations)
     {
-        $this->factory = $factory;
+        $this->responder = $responder;
         $this->annotations = $annotations;
     }
 
@@ -32,16 +32,8 @@ final class IndexHandler implements RequestHandlerInterface
         $query = (string) ($params['query'] ?? '');
         $limit = (int) ($params['limit'] ?? 5);
 
-        $annotations = $this->annotations->all($source, $query, $limit);
+        $annotations = $this->annotations->all($source, $query, $limit)->fetchAll();
 
-        $response = $this->factory->createResponse(200);
-
-        $response->getBody()->write((string) json_encode([
-            'success' => true,
-            'code' => 200,
-            'data' => $annotations->fetchAll(),
-        ]));
-
-        return $response->withHeader('content-type', 'application/json');
+        return $this->responder->success($annotations);
     }
 }

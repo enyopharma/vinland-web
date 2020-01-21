@@ -8,22 +8,23 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 
 use Quanta\Validation\ErrorInterface;
 
+use App\Http\Responders\JsonResponder;
+
 final class InputValidationMiddleware implements MiddlewareInterface
 {
-    private ResponseFactoryInterface $factory;
+    private JsonResponder $responder;
 
     /**
      * @var callable(array $data): \Quanta\Validation\InputInterface
      */
     private $validation;
 
-    public function __construct(ResponseFactoryInterface $factory, callable $validation)
+    public function __construct(JsonResponder $responder, callable $validation)
     {
-        $this->factory = $factory;
+        $this->responder = $responder;
         $this->validation = $validation;
     }
 
@@ -51,22 +52,7 @@ final class InputValidationMiddleware implements MiddlewareInterface
 
     private function failure(ErrorInterface ...$errors): ResponseInterface
     {
-        $response = $this->factory->createResponse(422);
-
-        $contents = json_encode([
-            'success' => false,
-            'code' => 422,
-            'data' => [],
-            'errors' => array_map([$this, 'message'], $errors),
-        ]);
-
-        if (! $contents) {
-            throw new \Exception(json_last_error_msg());
-        }
-
-        $response->getBody()->write($contents);
-
-        return $response->withHeader('content-type', 'application/json');
+        return $this->responder->errors(...array_map([$this, 'message'], $errors));
     }
 
     /**
