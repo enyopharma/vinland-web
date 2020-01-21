@@ -48,7 +48,7 @@ final class IndexHandler implements RequestHandlerInterface
 
         $interactions = $this->interactions->all($input)->fetchAll();
 
-        return $this->response(self::INCOMPLETE, $interactions);
+        return $this->response(self::SUCCESS, $interactions);
     }
 
     private function response(string $status, array $data = []): ResponseInterface

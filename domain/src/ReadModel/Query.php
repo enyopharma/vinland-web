@@ -52,7 +52,7 @@ final class Query
 
     public function in(string $field, int $nb): self
     {
-        return $nb == 0
+        return $nb < 1
             ? new self($this->pdo, $this->clauses)
             : new self($this->pdo, array_merge_recursive($this->clauses, [
                 'where' => sprintf('%s IN (%s)', $field, implode(', ', array_pad([], $nb, '?'))),

@@ -22,21 +22,129 @@ final class InteractionViewSql implements InteractionViewInterface
 
     public function all(QueryInput $input): Statement
     {
+        $ids = [];
+        $ids = [...$ids, ...$this->humanProteinIdList($input)];
+        $ids = [...$ids, ...$this->viralProteinIdList($input)];
+
+        if (count($ids) == 0) {
+            return Statement::from($this->generator());
+        }
+
         $sths = [];
 
-        if ($input->wantsHHNetwork()) {
-            $sths[] = $this->HHNetwork($input);
+        $params = [$ids, $input->neighbors(), ...$input->filters()];
+
+        if ($input->hh()) {
+            $sths[] = $this->interactions(self::HH, ...$params);
         }
 
-        if ($input->wantsHHInteractions()) {
-            $sths[] = $this->HHInteractions($input);
-        }
-
-        if ($input->wantsVHInteractions()) {
-            $sths[] = $this->VHInteractions($input);
+        if ($input->vh()) {
+            $sths[] = $this->interactions(self::VH, ...$params);
         }
 
         return Statement::from($this->generator(...$sths));
+    }
+
+    private function humanProteinIdList(QueryInput $input): array
+    {
+        [$identifiers] = $input->human();
+
+        if (count($identifiers) == 0) {
+            return [];
+        }
+
+        $select_ids_sth = Query::instance($this->pdo)
+            ->select('DISTINCT p.id')
+            ->from('proteins AS p, proteins_xrefs AS x')
+            ->where('p.id = x.protein_id')
+            ->in('x.ref', count($identifiers))
+            ->prepare();
+
+        $select_ids_sth->execute($identifiers);
+
+        return ($ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN)) ? $ids : [];
+    }
+
+    private function viralProteinIdList(QueryInput $input): array
+    {
+        [$ncbi_taxon_id, $names] = $input->virus();
+
+        if ($ncbi_taxon_id < 1) {
+            return [];
+        }
+
+        $select_ids_sth = Query::instance($this->pdo)
+            ->select('p.id')
+            ->from('proteins AS p, taxa AS t1, taxa AS t2')
+            ->where('p.ncbi_taxon_id = t1.ncbi_taxon_id')
+            ->where('t1.left_value >= t2.left_value')
+            ->where('t1.right_value <= t2.right_value')
+            ->where('t2.ncbi_taxon_id = ?')
+            ->in('p.name', count($names))
+            ->prepare();
+
+        $select_ids_sth->execute([$ncbi_taxon_id, ...$names]);
+
+        return ($ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN)) ? $ids : [];
+    }
+
+    private function interactions(string $type, array $ids, bool $neighbors, int $publications, int $methods): \PDOStatement
+    {
+        $params = $neighbors
+            ? [$type, $publications, $methods, ...$ids]
+            : [$type, $publications, $methods, ...$ids, ...$ids];
+
+        $select_interactions_sth = $this->query($type, count($ids), $neighbors)->prepare();
+
+        $select_interactions_sth->execute($params);
+
+        return $select_interactions_sth;
+    }
+
+    private function basequery(int $nb, bool $neighbors): Query
+    {
+        $query = Query::instance($this->pdo)
+            ->select('DISTINCT i.type, i.nb_publications, i.nb_methods')
+            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
+            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
+            ->from('edges AS e, interactions AS i, proteins AS p1, proteins AS p2')
+            ->where('i.id = e.interaction_id')
+            ->where('p1.id = i.protein1_id')
+            ->where('p2.id = i.protein2_id')
+            ->where('i.type = ?')
+            ->where('i.nb_publications >= ?')
+            ->where('i.nb_methods >= ?')
+            ->in('e.source_id', $nb);
+
+        return $neighbors ? $query : $query->in('e.target_id', $nb);
+    }
+
+    private function hhquery(int $nb, bool $neighbors): Query
+    {
+        return $this->basequery($nb, $neighbors);
+    }
+
+    private function vhquery(int $nb, bool $neighbors): Query
+    {
+        return $this->basequery($nb, $neighbors)
+            ->select('t.ncbi_taxon_id, t.name AS taxon_name')
+            ->select('s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name')
+            ->from('taxa AS t, taxa AS s')
+            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
+            ->where('s.ncbi_taxon_id = t.ncbi_species_id');
+    }
+
+    private function query(string $type, int $nb, bool $neighbors): Query
+    {
+        if ($type == self::HH) {
+            return $this->hhquery($nb, $neighbors);
+        }
+
+        if ($type == self::VH) {
+            return $this->vhquery($nb, $neighbors);
+        }
+
+        throw new \UnexpectedValueException($type);
     }
 
     private function generator(\PDOStatement ...$sths): \Generator
@@ -50,14 +158,28 @@ final class InteractionViewSql implements InteractionViewInterface
                         'accession' => $interaction['accession1'],
                         'name' => $interaction['name1'],
                         'description' => $interaction['description1'],
-                        'taxon' => 'Homo sapiens',
+                        'taxon' => [
+                            'ncbi_taxon_id' => 9606,
+                            'name' => 'Homo sapiens',
+                        ],
+                        'species' => [
+                            'ncbi_taxon_id' => 9606,
+                            'name' => 'Homo sapiens',
+                        ],
                     ],
                     'protein2' => [
                         'type' => $interaction['type2'],
                         'accession' => $interaction['accession2'],
                         'name' => $interaction['name2'],
                         'description' => $interaction['description2'],
-                        'taxon' => $interaction['taxon_name'] ?? 'Homo sapiens',
+                        'taxon' => [
+                            'ncbi_taxon_id' => $interaction['ncbi_taxon_id'] ?? 9606,
+                            'name' => $interaction['taxon_name'] ?? 'Homo sapiens',
+                        ],
+                        'species' => [
+                            'ncbi_taxon_id' => $interaction['ncbi_species_id'] ?? 9606,
+                            'name' => $interaction['species_name'] ?? 'Homo sapiens',
+                        ],
                     ],
                     'publications' => [
                         'nb' => $interaction['nb_publications'],
@@ -68,108 +190,5 @@ final class InteractionViewSql implements InteractionViewInterface
                 ];
             }
         }
-    }
-
-    private function query(): Query
-    {
-        return Query::instance($this->pdo)
-            ->select('DISTINCT i.id, i.type, i.protein1_id, i.protein2_id')
-            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
-            ->select('i.nb_publications, i.nb_methods')
-            ->from('interactions AS i')
-            ->from('proteins AS p1, proteins AS p2')
-            ->where('p1.id = i.protein1_id AND p2.id = i.protein2_id')
-            ->where('i.type = ? AND i.nb_publications >= ? AND i.nb_methods >= ?');
-    }
-
-    private function HHNetwork(QueryInput $input): \PDOStatement
-    {
-        [$identifiers] = $input->human();
-        [$publications, $methods] = $input->filters();
-
-        $select_interactions_sth = $this->query()
-            ->from('proteins_xrefs AS x1, proteins_xrefs AS x2')
-            ->where('p1.id = x1.protein_id AND p2.id = x2.protein_id')
-            ->in('x1.ref', count($identifiers))
-            ->in('x2.ref', count($identifiers))
-            ->prepare();
-
-        $select_interactions_sth->execute([
-            ...[self::HH, $publications, $methods],
-            ...$identifiers,
-            ...$identifiers,
-        ]);
-
-        return $select_interactions_sth;
-    }
-
-    public function HHInteractions(QueryInput $input): \PDOStatement
-    {
-        [$identifiers] = $input->human();
-        [$publications, $methods] = $input->filters();
-
-        $select_interactions_sth = $this->query()
-            ->from('edges AS e, proteins_xrefs AS x')
-            ->where('i.id = e.interaction_id')
-            ->where('e.source_id = x.protein_id')
-            ->in('x.ref', count($identifiers))
-            ->prepare();
-
-        $select_interactions_sth->execute([
-            ...[self::HH, $publications, $methods],
-            ...$identifiers,
-        ]);
-
-        return $select_interactions_sth;
-    }
-
-    public function VHInteractions(QueryInput $input): \PDOStatement
-    {
-        [$identifiers] = $input->human();
-        [$left, $right, $names] = $input->virus();
-        [$publications, $methods] = $input->filters();
-
-        // get the base query.
-        $query = $this->query();
-
-        // add taxon name.
-        $query = $query
-            ->select('tn.name AS taxon_name')
-            ->from('taxon AS t, taxon_name AS tn')
-            ->where('t.taxon_id = tn.taxon_id')
-            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
-            ->where('tn.name_class = ?');
-
-        // add human ref filter.
-        $query = $query
-            ->from('proteins_xrefs AS x1')
-            ->where('p1.id = x1.protein_id')
-            ->in('x1.ref', count($identifiers));
-
-        // add viral name filter.
-        $query = $query->in('p2.name', count($names));
-
-        // add viral taxon filter when needed.
-        $taxon = [];
-
-        if ($left > 0 && $right > 0) {
-            array_push($taxon, $left, $right);
-
-            $query = $query->where('t.left_value >= ? AND t.right_value <= ?');
-        }
-
-        // prepare and execute the query.
-        $select_interactions_sth = $query->prepare();
-
-        $select_interactions_sth->execute([
-            ...[self::VH, $publications, $methods],
-            ...[self::NAME_CLASS],
-            ...$identifiers,
-            ...$names,
-            ...$taxon,
-        ]);
-
-        return $select_interactions_sth;
     }
 }

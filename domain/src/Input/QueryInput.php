@@ -48,12 +48,12 @@ final class QueryInput
 
     public function human(): array
     {
-        return $this->human['identifiers'];
+        return [$this->human['identifiers']];
     }
 
     public function virus(): array
     {
-        return [$this->virus['ncbi_taxon_id'], ...$this->virus['names']];
+        return [$this->virus['ncbi_taxon_id'], $this->virus['names']];
     }
 
     public function neighbors(): bool
