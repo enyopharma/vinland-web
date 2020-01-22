@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Taxa;
+namespace App\Http\Handlers\Taxa\Children;
 
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +12,7 @@ use Domain\ReadModel\TaxonViewInterface;
 
 use App\Http\Responders\JsonResponder;
 
-final class ShowHandler implements RequestHandlerInterface
+final class IndexHandler implements RequestHandlerInterface
 {
     private JsonResponder $responder;
 
@@ -26,12 +26,12 @@ final class ShowHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $ncbi_taxon_id = (int) $request->getAttribute('ncbi_taxon_id');
+        if (is_null($taxon = $request->getAttribute('taxon'))) {
+            throw new \LogicException;
+        }
 
-        $select_taxa_sth = $this->taxa->id($ncbi_taxon_id);
+        $children = $this->taxa->children($taxon['taxon_id'])->fetchAll();
 
-        return ($taxon = $select_taxa_sth->fetch())
-            ? $this->responder->success($taxon)
-            : $this->responder->notFound();
+        return $this->responder->success($children);
     }
 }

@@ -16,14 +16,14 @@ final class TaxonViewSql implements TaxonViewInterface
     public function id(int $ncbi_taxon_id): Statement
     {
         $select_taxon_sth = Query::instance($this->pdo)
-            ->select('taxon_id, ncbi_taxon_id, name, left_value, right_value, nb_interactions')
+            ->select('taxon_id, ncbi_taxon_id, name, left_value, right_value')
             ->from('taxa')
             ->where('ncbi_taxon_id = ?')
             ->prepare();
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
-        return Statement::from($this->formatone($select_taxon_sth));
+        return Statement::from($this->formattaxon($select_taxon_sth));
     }
 
     public function all(string $query, int $limit): Statement
@@ -40,25 +40,26 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxa_sth->execute([...$qs, ...[$limit, 0]]);
 
-        return Statement::from($this->formatlist($select_taxa_sth));
+        return Statement::from($this->formattaxa($select_taxa_sth));
     }
 
-    private function names(int $left_value, int $right_value): array
+    public function names(int $left_value, int $right_value): Statement
     {
         $select_names_sth = Query::instance($this->pdo)
-            ->select('p.name')
+            ->select('DISTINCT p.name')
             ->from('taxa AS t, proteins AS p')
             ->where('t.ncbi_taxon_id = p.ncbi_taxon_id')
             ->where('t.left_value >= ? AND t.right_value <= ?')
-            ->groupBy('p.name')
             ->prepare();
 
         $select_names_sth->execute([$left_value, $right_value]);
 
-        return ($names = $select_names_sth->fetchAll()) ? $names : [];
+        return ($names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN))
+            ? Statement::from($names)
+            : Statement::from([]);
     }
 
-    private function children(int $taxon_id): array
+    public function children(int $taxon_id): Statement
     {
         $select_children_sth = Query::instance($this->pdo)
             ->select('ncbi_taxon_id, name, nb_interactions')
@@ -70,33 +71,29 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_children_sth->execute([$taxon_id]);
 
-        $generator = $this->formatlist($select_children_sth);
-
-        return iterator_to_array($generator);
+        return Statement::from($this->formattaxa($select_children_sth));
     }
 
-    private function formatone(\PDOStatement $sth): \Generator
+    private function formattaxon(\PDOStatement $sth): \Generator
     {
         while ($taxon = $sth->fetch()) {
             yield [
+                'taxon_id' => $taxon['taxon_id'],
                 'ncbi_taxon_id' => $taxon['ncbi_taxon_id'],
                 'name' => $taxon['name'],
-                'nb_interactions' => $taxon['nb_interactions'],
-                'names' => $this->names($taxon['left_value'], $taxon['right_value']),
-                'children' => $this->children($taxon['taxon_id']),
+                'left_value' => $taxon['left_value'],
+                'right_value' => $taxon['right_value'],
             ];
         }
     }
 
-    private function formatlist(\PDOStatement $sth): \Generator
+    private function formattaxa(\PDOStatement $sth): \Generator
     {
         while ($taxon = $sth->fetch()) {
             yield [
                 'ncbi_taxon_id' => $taxon['ncbi_taxon_id'],
                 'name' => $taxon['name'],
                 'nb_interactions' => $taxon['nb_interactions'],
-                'names' => [],
-                'children' => [],
             ];
         }
     }

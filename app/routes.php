@@ -22,9 +22,26 @@ return function (ContainerInterface $container): array {
             $container->get(Domain\ReadModel\TaxonViewInterface::class),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}' => new App\Http\Handlers\Taxa\ShowHandler(
-            $container->get(App\Http\Responders\JsonResponder::class),
-            $container->get(Domain\ReadModel\TaxonViewInterface::class),
+        'GET /taxa/{ncbi_taxon_id:\d+}/names' => new Quanta\Http\RequestHandler(
+            new App\Http\Handlers\Taxa\Names\IndexHandler(
+                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+            ),
+            new App\Http\Middleware\FetchTaxonMiddleware(
+                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+            ),
+        ),
+
+        'GET /taxa/{ncbi_taxon_id:\d+}/children' => new Quanta\Http\RequestHandler(
+            new App\Http\Handlers\Taxa\Children\IndexHandler(
+                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+            ),
+            new App\Http\Middleware\FetchTaxonMiddleware(
+                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+            ),
         ),
 
         'POST /interactions' => new Quanta\Http\RequestHandler(
