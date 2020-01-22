@@ -27,7 +27,7 @@ final class InteractionViewSql implements InteractionViewInterface
         $ids = [...$ids, ...$this->viralProteinIdList($input)];
 
         if (count($ids) == 0) {
-            return Statement::from($this->generator());
+            return Statement::from([]);
         }
 
         $sths = [];
