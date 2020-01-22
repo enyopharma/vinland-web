@@ -11,8 +11,9 @@ use Domain\Validations\IsQuery;
 final class QueryInput
 {
     private string $key;
-    private array $human;
-    private array $virus;
+    private array $identifiers;
+    private int $ncbi_taxon_id;
+    private array $names;
     private bool $hh;
     private bool $vh;
     private bool $neighbors;
@@ -27,8 +28,9 @@ final class QueryInput
     private function __construct(array $data)
     {
         $this->key = $data['key'];
-        $this->human = $data['human'];
-        $this->virus = $data['virus'];
+        $this->identifiers = $data['identifiers'];
+        $this->ncbi_taxon_id = $data['ncbi_taxon_id'];
+        $this->names = $data['names'];
         $this->hh = $data['hh'];
         $this->vh = $data['vh'];
         $this->neighbors = $data['neighbors'];
@@ -43,17 +45,17 @@ final class QueryInput
 
     public function isComplete(): bool
     {
-        return count($this->human['identifiers']) > 0 || $this->virus['ncbi_taxon_id'] > 0;
+        return count($this->identifiers) > 0 || $this->ncbi_taxon_id > 0;
     }
 
     public function human(): array
     {
-        return [$this->human['identifiers']];
+        return [$this->identifiers];
     }
 
     public function virus(): array
     {
-        return [$this->virus['ncbi_taxon_id'], $this->virus['names']];
+        return [$this->ncbi_taxon_id, $this->names];
     }
 
     public function neighbors(): bool

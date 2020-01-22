@@ -3,12 +3,12 @@
 namespace Domain\Validations\Query;
 
 use Quanta\Validation\Is;
-use Quanta\Validation\Field;
+use Quanta\Validation\Bound;
 use Quanta\Validation\TraverseA;
 use Quanta\Validation\Rules\OfType;
 use Quanta\Validation\Rules\LessThan;
 
-final class IsHumanParams
+final class IsIdentifierList
 {
     private const MAX_IDENTIFIERS = 500;
 
@@ -19,6 +19,6 @@ final class IsHumanParams
         $sanitize = StringSanitization::forceUpper(true);
         $isLessThanThreshold = new Is(new LessThan(self::MAX_IDENTIFIERS));
 
-        return Field::required('identifiers', $isArr, new TraverseA($isStr), $sanitize, $isLessThanThreshold);
+        return new Bound($isArr, new TraverseA($isStr), $sanitize, $isLessThanThreshold);
     }
 }
