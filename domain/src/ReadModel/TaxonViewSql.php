@@ -42,7 +42,7 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxa_sth->execute([...$qs, ...[$limit, 0]]);
 
-        return ($taxon = $select_taxa_sth->fetch())
+        return ($taxon = $select_taxa_sth->fetchAll())
             ? Statement::from([$taxon])
             : Statement::from([]);
     }
