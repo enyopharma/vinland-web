@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ToastContainer } from './toast/ToastContainer'
-import { ConnectedVirusCard } from './virus/ConnectedVirusCard'
+import { ConnectedVirusCard } from './taxon/ConnectedVirusCard'
 import { ConnectedOptionsCard } from './options/ConnectedOptionsCard'
 import { ConnectedIdentifierCard } from './identifier/ConnectedIdentifierCard'
 import { ConnectedQueryResultCard } from './query/ConnectedQueryResultCard'

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Interaction } from 'search/state/query'
+import { Interaction } from 'search/state/interaction'
 
 type Props = {
     interactions: Interaction[]
@@ -51,8 +51,8 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
             whiteSpace: 'nowrap',
             maxWidth: '10px',
         }}>
-            <span title={interaction.protein2.taxon}>
-                {interaction.protein2.taxon}
+            <span title={interaction.protein2.taxon.name}>
+                {interaction.protein2.taxon.name}
             </span>
         </td>
     </tr>

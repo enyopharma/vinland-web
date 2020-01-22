@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 
-import { QueryResult, QueryResultStatuses, Interaction } from 'search/state/query'
+import { Interaction } from 'search/state/interaction'
+import { QueryResult, QueryResultStatuses } from 'search/state/query'
+import { InteractionThead } from 'search/components/interaction/InteractionThead'
+import { InteractionTbody } from 'search/components/interaction/InteractionTbody'
 
-import { InteractionThead } from './InteractionThead'
-import { InteractionTbody } from './InteractionTbody'
 import { QueryResultPagination } from './QueryResultPagination'
 
 type Props = {

@@ -2,25 +2,24 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 
 import { SearchResult } from 'search/state/input'
-import { Taxon } from 'search/state/virus'
+import { Taxon } from 'search/state/taxon'
 
-export const newTaxaStore = (limit: number) => {
-    const cache: Record<string, SearchResult<Taxon>[]> = {}
+const limit = 5
+const taxa: Record<string, SearchResult<Taxon>[]> = {}
 
-    return {
-        read: (query: string) => {
-            if (cache[query]) return cache[query]
+export const api = {
+    search: (query: string) => {
+        if (taxa[query]) return taxa[query]
 
-            throw new Promise(resolve => {
-                setTimeout(() => fetchTaxa(query, limit)
-                    .then(results => cache[query] = results)
-                    .then(resolve), 300)
-            })
-        }
+        throw new Promise(resolve => {
+            setTimeout(() => fetchTaxa(query)
+                .then(results => taxa[query] = results)
+                .then(resolve), 300)
+        })
     }
 }
 
-const fetchTaxa = async (query: string, limit: number) => {
+const fetchTaxa = async (query: string) => {
     const querystr = qs.encode({ query: query, limit: limit })
     const params = { headers: { 'accept': 'application/json' } }
 

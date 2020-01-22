@@ -1,25 +1,20 @@
 import React, { useRef, useState } from 'react'
 
-import { TaxonSelection, Taxon, isSelectedTaxon } from 'search/state/virus'
-
+import { Taxon } from 'search/state/taxon'
 import { SearchResultListPanel } from 'search/components/shared/SearchResultListPanel'
 
-import { newTaxaStore } from './api'
+import { api } from './api'
 
 type Props = {
-    taxon: TaxonSelection
     select: (taxon: Taxon) => void
-    unselect: () => void
 }
 
-const taxa = newTaxaStore(5)
-
-export const TaxonInput: React.FC<Props> = ({ taxon, select, unselect }) => {
+export const TaxonInput: React.FC<Props> = ({ select }) => {
     const input = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
     const [enabled, setEnabled] = useState<boolean>(false)
 
-    const search = (query: string) => taxa.read(query)
+    const search = (query: string) => api.search(query)
 
     const selectAndClose = (taxon: Taxon) => {
         setEnabled(false)
@@ -31,17 +26,6 @@ export const TaxonInput: React.FC<Props> = ({ taxon, select, unselect }) => {
         if (code === 27) {
             input.current.blur()
         }
-    }
-
-    if (isSelectedTaxon(taxon)) {
-        return (
-            <div className="alert alert-danger">
-                {taxon.name}
-                <button type="button" className="close" onClick={e => unselect()}>
-                    &times;
-                </button>
-            </div>
-        )
     }
 
     return (

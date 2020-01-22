@@ -2,19 +2,17 @@ import fetch from 'cross-fetch'
 
 import { Query, QueryResult, QueryResultStatuses } from 'search/state/query'
 
-export const newInteractionStore = () => {
-    const cache: Record<string, QueryResult> = {}
+const interactions: Record<string, QueryResult> = {}
 
-    return {
-        read: (query: Query): QueryResult => {
-            if (cache[query.key]) return cache[query.key]
+export const api = {
+    search: (query: Query): QueryResult => {
+        if (interactions[query.key]) return interactions[query.key]
 
-            throw new Promise(resolve => {
-                setTimeout(() => fetchInteractions(query)
-                    .then(result => cache[query.key] = result)
-                    .then(resolve), 500)
-            })
-        }
+        throw new Promise(resolve => {
+            setTimeout(() => fetchInteractions(query)
+                .then(result => interactions[query.key] = result)
+                .then(resolve), 500)
+        })
     }
 }
 
@@ -32,13 +30,17 @@ const fetchInteractions = async (query: Query) => {
         const response = await fetch(`/api/interactions`, params)
         const json = await response.json()
 
+        if (!json.status && json.errors) {
+            return { status: QueryResultStatuses.FAILURE, errors: json.errors }
+        }
+
         switch (json.status) {
             case QueryResultStatuses.INCOMPLETE:
                 return { status: json.status }
             case QueryResultStatuses.SUCCESS:
                 return { status: json.status, interactions: json.data }
             case QueryResultStatuses.FAILURE:
-                return { status: json.status, errors: json.data }
+                return { status: json.status, errors: json.errors }
             default:
                 throw new Error(json)
         }

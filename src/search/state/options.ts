@@ -4,13 +4,9 @@ import { Reducer, Action, combineReducers } from 'redux'
  * types.
  */
 export type Options = {
-    readonly hh: {
-        readonly show: boolean
-        readonly network: boolean
-    }
-    readonly vh: {
-        readonly show: boolean
-    }
+    readonly hh: boolean
+    readonly vh: boolean
+    readonly neighbors: boolean
     readonly publications: number
     readonly methods: number
 }
@@ -20,34 +16,34 @@ export type Options = {
  */
 const HH = 'search/options/HH'
 const VH = 'search/options/VH'
-const NETWORK = 'search/options/NETWORK'
+const NEIGHBORS = 'search/options/NEIGHBORS'
 const PUBLICATIONS = 'search/options/PUBLICATIONS'
 const METHODS = 'search/options/METHODS'
 
 export type OptionsAction =
-    | SetShowHH
-    | SetShowVH
-    | SetNetwork
-    | SetPublicationsThreshold
-    | SetMethodsThreshold
+    | SetHH
+    | SetVH
+    | SetNeighbors
+    | SetPublications
+    | SetMethods
 
-interface SetShowHH extends Action<typeof HH> {
-    show: boolean
+interface SetHH extends Action<typeof HH> {
+    hh: boolean
 }
 
-interface SetShowVH extends Action<typeof VH> {
-    show: boolean
+interface SetVH extends Action<typeof VH> {
+    vh: boolean
 }
 
-interface SetNetwork extends Action<typeof NETWORK> {
-    network: boolean
+interface SetNeighbors extends Action<typeof NEIGHBORS> {
+    neighbors: boolean
 }
 
-interface SetPublicationsThreshold extends Action<typeof PUBLICATIONS> {
+interface SetPublications extends Action<typeof PUBLICATIONS> {
     threshold: number
 }
 
-interface SetMethodsThreshold extends Action<typeof METHODS> {
+interface SetMethods extends Action<typeof METHODS> {
     threshold: number
 }
 
@@ -55,31 +51,38 @@ interface SetMethodsThreshold extends Action<typeof METHODS> {
  * creators.
  */
 export const creators = {
-    setShowHH: (show: boolean) => ({ type: HH, show }),
-    setShowVH: (show: boolean) => ({ type: VH, show }),
-    setNetwork: (network: boolean) => ({ type: NETWORK, network }),
-    setPublicationsThreshold: (threshold: number) => ({ type: PUBLICATIONS, threshold }),
-    setMethodsThreshold: (threshold: number) => ({ type: METHODS, threshold }),
+    setHH: (hh: boolean) => ({ type: HH, hh }),
+    setVH: (vh: boolean) => ({ type: VH, vh }),
+    setNeighbors: (neighbors: boolean) => ({ type: NEIGHBORS, neighbors }),
+    setPublications: (threshold: number) => ({ type: PUBLICATIONS, threshold }),
+    setMethods: (threshold: number) => ({ type: METHODS, threshold }),
 }
 
 /**
  * reducer.
  */
-const hh: Reducer<{ show: boolean, network: boolean }, OptionsAction> = (state = { show: true, network: false }, action) => {
+const hh: Reducer<boolean, OptionsAction> = (state = true, action) => {
     switch (action.type) {
         case HH:
-            return { show: action.show, network: action.show && state.network }
-        case NETWORK:
-            return { show: state.show, network: state.show && action.network }
+            return action.hh
         default:
             return state
     }
 }
 
-const vh: Reducer<{ show: boolean }, OptionsAction> = (state = { show: true }, action) => {
+const vh: Reducer<boolean, OptionsAction> = (state = true, action) => {
     switch (action.type) {
         case VH:
-            return { show: action.show }
+            return action.vh
+        default:
+            return state
+    }
+}
+
+const neighbors: Reducer<boolean, OptionsAction> = (state = true, action) => {
+    switch (action.type) {
+        case NEIGHBORS:
+            return action.neighbors
         default:
             return state
     }
@@ -103,4 +106,4 @@ const methods: Reducer<number, OptionsAction> = (state = 1, action) => {
     }
 }
 
-export const reducer: Reducer<Options, OptionsAction> = combineReducers({ hh, vh, publications, methods })
+export const reducer: Reducer<Options, OptionsAction> = combineReducers({ hh, vh, neighbors, publications, methods })

@@ -4,28 +4,27 @@ import fetch from 'cross-fetch'
 import { SearchResult } from 'search/state/input'
 import { Annotation } from 'search/state/identifier'
 
-export const newAnnotationSource = (limit: number) => {
-    const cache: Record<string, SearchResult<Annotation>[]> = {}
+const limit = 5
+const annotations: Record<string, SearchResult<Annotation>[]> = {}
 
-    return {
-        read: (source: string, query: string) => {
-            if (source.trim().length === 0) return []
-            if (query.trim().length === 0) return []
+export const api = {
+    search: (source: string, query: string) => {
+        if (source.trim().length === 0) return []
+        if (query.trim().length === 0) return []
 
-            const key = `${source}:${query}`
+        const key = `${source}:${query}`
 
-            if (cache[key]) return cache[key]
+        if (annotations[key]) return annotations[key]
 
-            throw new Promise(resolve => {
-                setTimeout(() => fetchAnnotations(source, query, limit)
-                    .then(results => cache[key] = results)
-                    .then(resolve), 300)
-            })
-        }
+        throw new Promise(resolve => {
+            setTimeout(() => fetchAnnotations(source, query)
+                .then(results => annotations[key] = results)
+                .then(resolve), 300)
+        })
     }
 }
 
-const fetchAnnotations = async (source: string, query: string, limit: number) => {
+const fetchAnnotations = async (source: string, query: string) => {
     const querystr = qs.encode({ source: source, query: query, limit: limit })
     const params = { headers: { accept: 'application/json' } }
 

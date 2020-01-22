@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Query } from 'search/state/query'
 
-import { newInteractionStore } from './api'
+import { api } from './api'
 import { QueryResultCard } from './QueryResultCard'
 
 
@@ -10,9 +10,7 @@ type Props = {
     query: Query,
 }
 
-const interactions = newInteractionStore()
-
-const QueryResultLoader: React.FC = () => (
+const QueryResultCardLoader: React.FC = () => (
     <div className="card">
         <div className="card-body">
             <div className="progress">
@@ -25,14 +23,14 @@ const QueryResultLoader: React.FC = () => (
     </div>
 )
 
-const QueryResultFetcher: React.FC<Props> = ({ query }) => {
-    const result = interactions.read(query)
+const QueryResultCardFetcher: React.FC<Props> = ({ query }) => {
+    const result = api.search(query)
 
     return <QueryResultCard result={result} />
 }
 
 export const QueryResultCardPanel: React.FC<Props> = ({ query }) => (
-    <React.Suspense fallback={<QueryResultLoader />}>
-        <QueryResultFetcher query={query} />
+    <React.Suspense fallback={<QueryResultCardLoader />}>
+        <QueryResultCardFetcher query={query} />
     </React.Suspense>
 )

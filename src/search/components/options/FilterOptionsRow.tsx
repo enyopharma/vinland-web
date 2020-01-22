@@ -3,11 +3,11 @@ import React from 'react'
 type Props = {
     publications: number,
     methods: number,
-    setPublicationsThreshold: (threshold: number) => void
-    setMethodsThreshold: (threshold: number) => void
+    setPublications: (threshold: number) => void
+    setMethods: (threshold: number) => void
 }
 
-export const FilterOptionsRow: React.FC<Props> = ({ publications, methods, setPublicationsThreshold, setMethodsThreshold }) => (
+export const FilterOptionsRow: React.FC<Props> = ({ publications, methods, setPublications, setMethods }) => (
     <div className="row">
         <div className="col">
             <label htmlFor="publications">
@@ -20,7 +20,7 @@ export const FilterOptionsRow: React.FC<Props> = ({ publications, methods, setPu
                 value={publications}
                 min="1"
                 max="10"
-                onChange={e => setPublicationsThreshold(parseInt(e.target.value))}
+                onChange={e => setPublications(parseInt(e.target.value))}
             />
         </div>
         <div className="col">
@@ -34,7 +34,7 @@ export const FilterOptionsRow: React.FC<Props> = ({ publications, methods, setPu
                 value={methods}
                 min="1"
                 max="10"
-                onChange={e => setMethodsThreshold(parseInt(e.target.value))}
+                onChange={e => setMethods(parseInt(e.target.value))}
             />
         </div>
     </div>

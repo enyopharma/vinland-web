@@ -7,31 +7,28 @@ import { parse as parseIdentifiers } from 'search/state/identifier'
 
 import { QueryResultCardPanel } from './QueryResultCardPanel'
 
-export const state2Query = ({ search }: AppState) => {
+const state2Query = ({ search }: AppState) => {
     const identifiers = parseIdentifiers(search.identifiers)
+    const ncbi_taxon_id = search.taxon === null ? 0 : search.taxon.ncbi_taxon_id
 
     const parts: string[] = []
-    if (search.options.hh.show) parts.push('HH')
-    if (search.options.vh.show) parts.push('VH')
-    if (search.options.hh.network) parts.push('NETWORK')
+    if (search.options.hh) parts.push('HH')
+    if (search.options.vh) parts.push('VH')
+    if (search.options.neighbors) parts.push('NEIGHBORS')
     parts.push(search.options.publications.toString())
     parts.push(search.options.methods.toString())
-    parts.push(search.virus.taxon.left.toString())
-    parts.push(search.virus.taxon.right.toString())
-    parts.push(...search.virus.names.sort((a, b) => a.localeCompare(b)))
+    parts.push(ncbi_taxon_id.toString())
+    parts.push(...search.names.sort((a, b) => a.localeCompare(b)))
     parts.push(...identifiers.sort((a, b) => a.localeCompare(b)))
 
     return {
         key: md5(parts.join(':')),
         identifiers: identifiers,
-        taxon: {
-            left: search.virus.taxon.left,
-            right: search.virus.taxon.right,
-        },
-        names: search.virus.names,
-        hh: search.options.hh.show,
-        vh: search.options.vh.show,
-        network: search.options.hh.network,
+        ncbi_taxon_id: ncbi_taxon_id,
+        names: search.names,
+        hh: search.options.hh,
+        vh: search.options.vh,
+        neighbors: search.options.neighbors,
         publications: search.options.publications,
         methods: search.options.methods,
     }

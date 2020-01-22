@@ -1,14 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import { newAnnotationSource } from './api'
+import { api } from './api'
 import { Annotation } from 'search/state/identifier'
 import { SearchResultListPanel } from 'search/components/shared/SearchResultListPanel'
 
 type Props = {
     select: (annotation: Annotation) => void
 }
-
-const annotations = newAnnotationSource(5)
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -31,7 +29,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
         setEnabled(query.trim().length > 0)
     }, [query])
 
-    const search = (query: string) => annotations.read(source, query)
+    const search = (query: string) => api.search(source, query)
 
     const selectAndClose = (annotation: Annotation) => {
         setQuery('')

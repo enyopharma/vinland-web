@@ -9,19 +9,19 @@ import { OptionsCard } from './OptionsCard'
 
 
 const s2p = ({ search }: AppState) => ({
-    hh: search.options.hh.show,
-    vh: search.options.vh.show,
-    network: search.options.hh.network,
+    hh: search.options.hh,
+    vh: search.options.vh,
+    neighbors: search.options.neighbors,
     publications: search.options.publications,
     methods: search.options.methods,
 })
 
 const d2p = (dispatch: Dispatch) => ({
-    setShowHH: (show: boolean) => dispatch(creators.setShowHH(show)),
-    setShowVH: (show: boolean) => dispatch(creators.setShowVH(show)),
-    setNetwork: (network: boolean) => dispatch(creators.setNetwork(network)),
-    setPublicationsThreshold: (threshold: number) => dispatch(creators.setPublicationsThreshold(threshold)),
-    setMethodsThreshold: (threshold: number) => dispatch(creators.setMethodsThreshold(threshold)),
+    setHH: (hh: boolean) => dispatch(creators.setHH(hh)),
+    setVH: (vh: boolean) => dispatch(creators.setVH(vh)),
+    setNeighbors: (neighbors: boolean) => dispatch(creators.setNeighbors(neighbors)),
+    setPublications: (threshold: number) => dispatch(creators.setPublications(threshold)),
+    setMethods: (threshold: number) => dispatch(creators.setMethods(threshold)),
 })
 
 type Props = ReturnType<typeof s2p> & ReturnType<typeof d2p>

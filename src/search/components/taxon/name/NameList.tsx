@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Name } from 'search/state/virus'
+import { Name } from 'search/state/name'
 
 type Props = {
     names: Name[]
@@ -10,8 +10,8 @@ type Props = {
 
 export const NameList: React.FC<Props> = ({ names, selected, update }) => {
     const classes = (name: Name) => selected.includes(name)
-        ? 'btn btn-sm btn-danger'
-        : 'btn btn-sm btn-outline-danger'
+        ? 'm-1 btn btn-sm btn-danger'
+        : 'm-1 btn btn-sm btn-outline-danger'
 
     const select = (name: Name) => (e: any) => {
         e.preventDefault();
@@ -21,14 +21,14 @@ export const NameList: React.FC<Props> = ({ names, selected, update }) => {
     }
 
     return (
-        <ul className="list-inline">
-            {names.map((name, i) => (
-                <li key={i} className="list-inline-item">
-                    <a href="/" className={classes(name)} onClick={select(name)}>
+        <p>
+            {names.length === 0
+                ? 'no interactor associated to this taxon'
+                : names.map((name, i) => (
+                    <button key={i} className={classes(name)} onClick={select(name)}>
                         {name}
-                    </a>
-                </li>
-            ))}
-        </ul>
+                    </button>
+                ))}
+        </p>
     )
 }
