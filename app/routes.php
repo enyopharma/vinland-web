@@ -22,8 +22,8 @@ return function (ContainerInterface $container): array {
             $container->get(Domain\ReadModel\TaxonViewInterface::class),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}/names' => new Quanta\Http\RequestHandler(
-            new App\Http\Handlers\Taxa\Names\IndexHandler(
+        'GET /taxa/{ncbi_taxon_id:\d+}/related' => new Quanta\Http\RequestHandler(
+            new App\Http\Handlers\Taxa\Related\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
                 $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),
@@ -33,8 +33,8 @@ return function (ContainerInterface $container): array {
             ),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}/children' => new Quanta\Http\RequestHandler(
-            new App\Http\Handlers\Taxa\Children\IndexHandler(
+        'GET /taxa/{ncbi_taxon_id:\d+}/names' => new Quanta\Http\RequestHandler(
+            new App\Http\Handlers\Taxa\Names\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
                 $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),

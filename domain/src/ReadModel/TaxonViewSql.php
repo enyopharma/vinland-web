@@ -23,7 +23,9 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
-        return Statement::from($this->formattaxon($select_taxon_sth));
+        return ($taxon = $select_taxon_sth->fetch())
+            ? Statement::from([$taxon])
+            : Statement::from([]);
     }
 
     public function all(string $query, int $limit): Statement
@@ -40,7 +42,42 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxa_sth->execute([...$qs, ...[$limit, 0]]);
 
-        return Statement::from($this->formattaxa($select_taxa_sth));
+        return ($taxon = $select_taxa_sth->fetch())
+            ? Statement::from([$taxon])
+            : Statement::from([]);
+    }
+
+    public function parent(int $taxon_id): Statement
+    {
+        $select_parent_sth = Query::instance($this->pdo)
+            ->select('p.ncbi_taxon_id, p.name, p.nb_interactions')
+            ->from('taxa AS t, taxa AS p')
+            ->where('p.taxon_id = t.parent_taxon_id')
+            ->where('t.taxon_id = ?')
+            ->prepare();
+
+        $select_parent_sth->execute([$taxon_id]);
+
+        return ($parent = $select_parent_sth->fetch())
+            ? Statement::from([$parent])
+            : Statement::from([null]);
+    }
+
+    public function children(int $taxon_id): Statement
+    {
+        $select_children_sth = Query::instance($this->pdo)
+            ->select('ncbi_taxon_id, name, nb_interactions')
+            ->from('taxa')
+            ->where('parent_taxon_id = ?')
+            ->where('nb_interactions > 0')
+            ->orderBy('nb_interactions DESC')
+            ->prepare();
+
+        $select_children_sth->execute([$taxon_id]);
+
+        return ($children = $select_children_sth->fetchAll())
+            ? Statement::from($children)
+            : Statement::from([]);
     }
 
     public function names(int $left_value, int $right_value): Statement
@@ -57,44 +94,5 @@ final class TaxonViewSql implements TaxonViewInterface
         return ($names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN))
             ? Statement::from($names)
             : Statement::from([]);
-    }
-
-    public function children(int $taxon_id): Statement
-    {
-        $select_children_sth = Query::instance($this->pdo)
-            ->select('ncbi_taxon_id, name, nb_interactions')
-            ->from('taxa')
-            ->where('parent_taxon_id = ?')
-            ->where('nb_interactions > 0')
-            ->orderBy('nb_interactions DESC')
-            ->prepare();
-
-        $select_children_sth->execute([$taxon_id]);
-
-        return Statement::from($this->formattaxa($select_children_sth));
-    }
-
-    private function formattaxon(\PDOStatement $sth): \Generator
-    {
-        while ($taxon = $sth->fetch()) {
-            yield [
-                'taxon_id' => $taxon['taxon_id'],
-                'ncbi_taxon_id' => $taxon['ncbi_taxon_id'],
-                'name' => $taxon['name'],
-                'left_value' => $taxon['left_value'],
-                'right_value' => $taxon['right_value'],
-            ];
-        }
-    }
-
-    private function formattaxa(\PDOStatement $sth): \Generator
-    {
-        while ($taxon = $sth->fetch()) {
-            yield [
-                'ncbi_taxon_id' => $taxon['ncbi_taxon_id'],
-                'name' => $taxon['name'],
-                'nb_interactions' => $taxon['nb_interactions'],
-            ];
-        }
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Taxa\Children;
+namespace App\Http\Handlers\Taxa\Related;
 
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,8 +30,17 @@ final class IndexHandler implements RequestHandlerInterface
             throw new \LogicException;
         }
 
+        $select_parent_sth = $this->taxa->parent($taxon['taxon_id']);
+
+        if (! $parent = $select_parent_sth->fetch()) {
+            $parent = null;
+        }
+
         $children = $this->taxa->children($taxon['taxon_id'])->fetchAll();
 
-        return $this->responder->success($children);
+        return $this->responder->success([
+            'parent' => $parent,
+            'children' => $children,
+        ]);
     }
 }
