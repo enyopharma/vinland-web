@@ -31,7 +31,7 @@ final class IndexHandler implements RequestHandlerInterface
         $query = (string) ($params['query'] ?? '');
         $limit = (int) ($params['limit'] ?? 5);
 
-        $taxa = $this->taxa->all($query, $limit)->fetchAll();
+        $taxa = $this->taxa->search($query, $limit)->fetchAll();
 
         return $this->responder->success($taxa);
     }

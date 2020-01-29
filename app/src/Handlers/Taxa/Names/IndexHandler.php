@@ -8,7 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Domain\ReadModel\TaxonViewInterface;
+use Domain\ReadModel\TaxonInterface;
 
 use App\Http\Responders\JsonResponder;
 
@@ -16,22 +16,21 @@ final class IndexHandler implements RequestHandlerInterface
 {
     private JsonResponder $responder;
 
-    private TaxonViewInterface $taxa;
-
-    public function __construct(JsonResponder $responder, TaxonViewInterface $taxa)
+    public function __construct(JsonResponder $responder)
     {
         $this->responder = $responder;
-        $this->taxa = $taxa;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (is_null($taxon = $request->getAttribute('taxon'))) {
+        $taxon = $request->getAttribute(TaxonInterface::class);
+
+        if (! $taxon instanceof TaxonInterface) {
             throw new \LogicException;
         }
 
-        $names = $this->taxa->names($taxon['left_value'], $taxon['right_value'])->fetchAll();
+        $taxon = $taxon->withNames();
 
-        return $this->responder->success($names);
+        return $this->responder->success($taxon->data());
     }
 }

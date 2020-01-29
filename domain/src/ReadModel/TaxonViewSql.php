@@ -8,6 +8,20 @@ final class TaxonViewSql implements TaxonViewInterface
 {
     private \PDO $pdo;
 
+    const SELECT_TAXON_SQL = <<<SQL
+        SELECT taxon_id, ncbi_taxon_id, name, left_value, right_value, nb_interactions
+        FROM taxa
+        WHERE ncbi_taxon_id = ?
+    SQL;
+
+    const SELECT_TAXA_SQL = <<<SQL
+        SELECT taxon_id, ncbi_taxon_id, name, left_value, right_value, nb_interactions
+        FROM taxa
+        WHERE %s
+        ORDER BY nb_interactions DESC
+        LIMIT ?
+    SQL;
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
@@ -15,84 +29,42 @@ final class TaxonViewSql implements TaxonViewInterface
 
     public function id(int $ncbi_taxon_id): Statement
     {
-        $select_taxon_sth = Query::instance($this->pdo)
-            ->select('taxon_id, ncbi_taxon_id, name, left_value, right_value')
-            ->from('taxa')
-            ->where('ncbi_taxon_id = ?')
-            ->prepare();
+        $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
-        return ($taxon = $select_taxon_sth->fetch())
-            ? Statement::from([$taxon])
-            : Statement::from([]);
+        return Statement::from($this->generator($select_taxon_sth));
     }
 
-    public function all(string $query, int $limit): Statement
+    public function search(string $query, int $limit): Statement
     {
         $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
 
-        $select_taxa_sth = Query::instance($this->pdo)
-            ->select('ncbi_taxon_id, name, nb_interactions')
-            ->from('taxa')
-            ->where(...array_pad([], count($qs), 'name ILIKE ?'))
-            ->orderBy('nb_interactions DESC')
-            ->sliced()
-            ->prepare();
+        if (count($qs) == 0) {
+            return Statement::from([]);
+        }
 
-        $select_taxa_sth->execute([...$qs, ...[$limit, 0]]);
+        $where = implode(' AND ', array_pad([], count($qs), 'name ILIKE ?'));
 
-        return ($taxa = $select_taxa_sth->fetchAll())
-            ? Statement::from($taxa)
-            : Statement::from([]);
+        $select_taxa_sth = $this->pdo->prepare(sprintf(self::SELECT_TAXA_SQL, $where));
+
+        $select_taxa_sth->execute([...$qs, $limit]);
+
+        return Statement::from($this->generator($select_taxa_sth));
     }
 
-    public function parent(int $taxon_id): Statement
+    private function generator(\PDOStatement $sth): \Generator
     {
-        $select_parent_sth = Query::instance($this->pdo)
-            ->select('p.ncbi_taxon_id, p.name, p.nb_interactions')
-            ->from('taxa AS t, taxa AS p')
-            ->where('p.taxon_id = t.parent_taxon_id')
-            ->where('t.taxon_id = ?')
-            ->prepare();
-
-        $select_parent_sth->execute([$taxon_id]);
-
-        return ($parent = $select_parent_sth->fetch())
-            ? Statement::from([$parent])
-            : Statement::from([null]);
-    }
-
-    public function children(int $taxon_id): Statement
-    {
-        $select_children_sth = Query::instance($this->pdo)
-            ->select('ncbi_taxon_id, name, nb_interactions')
-            ->from('taxa')
-            ->where('parent_taxon_id = ?')
-            ->where('nb_interactions > 0')
-            ->orderBy('nb_interactions DESC')
-            ->prepare();
-
-        $select_children_sth->execute([$taxon_id]);
-
-        return ($children = $select_children_sth->fetchAll())
-            ? Statement::from($children)
-            : Statement::from([]);
-    }
-
-    public function names(int $left_value, int $right_value): Statement
-    {
-        $select_names_sth = Query::instance($this->pdo)
-            ->select('DISTINCT p.name')
-            ->from('taxa AS t, proteins AS p')
-            ->where('t.ncbi_taxon_id = p.ncbi_taxon_id')
-            ->where('t.left_value >= ? AND t.right_value <= ?')
-            ->prepare();
-
-        $select_names_sth->execute([$left_value, $right_value]);
-
-        return ($names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN))
-            ? Statement::from($names)
-            : Statement::from([]);
+        while ($row = $sth->fetch()) {
+            yield new TaxonSql(
+                $this->pdo,
+                $row['taxon_id'],
+                $row['ncbi_taxon_id'],
+                $row['left_value'],
+                $row['right_value'],
+                $row['name'],
+                $row,
+            );
+        }
     }
 }

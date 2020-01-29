@@ -8,6 +8,10 @@ final class AnnotationViewSql implements AnnotationViewInterface
 {
     private \PDO $pdo;
 
+    const SELECT_ANNOTATIONS_SQL = <<<SQL
+        SELECT * FROM annotations WHERE %s AND source = ? LIMIT ?
+    SQL;
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
@@ -17,15 +21,15 @@ final class AnnotationViewSql implements AnnotationViewInterface
     {
         $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
 
-        $select_annotations_sth = Query::instance($this->pdo)
-            ->select('*')
-            ->from('annotations AS a')
-            ->where('source = ?')
-            ->where(...array_pad([], count($qs), 'search ILIKE ?'))
-            ->sliced()
-            ->prepare();
+        if (count($qs) == 0) {
+            return Statement::from([]);
+        }
 
-        $select_annotations_sth->execute([$source, ...$qs, ...[$limit, 0]]);
+        $where = implode(' AND ', array_pad([], count($qs), 'search ILIKE ?'));
+
+        $select_annotations_sth = $this->pdo->prepare(sprintf(self::SELECT_ANNOTATIONS_SQL, $where));
+
+        $select_annotations_sth->execute([...$qs, $source, $limit]);
 
         return Statement::from($this->generator($select_annotations_sth));
     }

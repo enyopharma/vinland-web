@@ -8,20 +8,22 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 
+use Domain\ReadModel\TaxonInterface;
 use Domain\ReadModel\TaxonViewInterface;
 
 use App\Http\Responders\JsonResponder;
 
 final class FetchTaxonMiddleware implements MiddlewareInterface
 {
-    private JsonResponder $responder;
+    private ResponseFactoryInterface $factory;
 
     private TaxonViewInterface $taxa;
 
-    public function __construct(JsonResponder $responder, TaxonViewInterface $taxa)
+    public function __construct(ResponseFactoryInterface $factory, TaxonViewInterface $taxa)
     {
-        $this->responder = $responder;
+        $this->factory = $factory;
         $this->taxa = $taxa;
     }
 
@@ -31,20 +33,12 @@ final class FetchTaxonMiddleware implements MiddlewareInterface
 
         $select_taxon_sth = $this->taxa->id($ncbi_taxon_id);
 
-        return ($taxon = $select_taxon_sth->fetch())
-            ? $this->success($request, $handler, $taxon)
-            : $this->failure();
-    }
+        if (! $taxon = $select_taxon_sth->fetch()) {
+            return $this->factory->createResponse(404);
+        }
 
-    private function success(ServerRequestInterface $request, RequestHandlerInterface $handler, array $taxon): ResponseInterface
-    {
-        $request = $request->withAttribute('taxon', $taxon);
+        $request = $request->withAttribute(TaxonInterface::class, $taxon);
 
         return $handler->handle($request);
-    }
-
-    private function failure(): ResponseInterface
-    {
-        return $this->responder->notFound();
     }
 }

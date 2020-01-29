@@ -5,27 +5,44 @@ declare(strict_types=1);
 namespace Domain\ReadModel;
 
 /**
- * @implements \IteratorAggregate<int, array>
+ * @implements \IteratorAggregate<\Domain\ReadModel\EntityInterface>
  */
 final class Statement implements \IteratorAggregate
 {
+    /**
+     * @var int
+     */
     private int $i;
 
+    /**
+     * @var \Iterator<\Domain\ReadModel\EntityInterface>
+     */
     private \Iterator $iterator;
 
+    /**
+     * @param iterable<\Domain\ReadModel\EntityInterface> $iterable
+     * @return \Domain\ReadModel\Statement
+     */
     public static function from(iterable $iterable): self
     {
-        if ($iterable instanceof \Iterator) {
-            return new self($iterable);
-        }
-
         if (is_array($iterable)) {
             return new self(new \ArrayIterator($iterable));
         }
 
-        return new self(new \IteratorIterator($iterable));
+        if ($iterable instanceof \IteratorAggregate) {
+            return new self(new \IteratorIterator($iterable));
+        }
+
+        if ($iterable instanceof \Iterator) {
+            return new self($iterable);
+        }
+
+        throw new \LogicException;
     }
 
+    /**
+     * @param \Iterator<\Domain\ReadModel\EntityInterface> $iterator
+     */
     private function __construct(\Iterator $iterator)
     {
         $this->i = 0;
@@ -33,7 +50,7 @@ final class Statement implements \IteratorAggregate
     }
 
     /**
-     * @return array|false
+     * @return \Domain\ReadModel\EntityInterface|false
      */
     public function fetch()
     {
@@ -50,11 +67,23 @@ final class Statement implements \IteratorAggregate
         return false;
     }
 
+    /**
+     * @return array[]
+     */
     public function fetchAll(): array
     {
-        return iterator_to_array($this->iterator);
+        $data = [];
+
+        while ($entity = $this->fetch()) {
+            $data[] = $entity->data();
+        }
+
+        return $data;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getIterator()
     {
         return $this->iterator;

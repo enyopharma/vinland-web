@@ -25,10 +25,9 @@ return function (ContainerInterface $container): array {
         'GET /taxa/{ncbi_taxon_id:\d+}/related' => new Quanta\Http\RequestHandler(
             new App\Http\Handlers\Taxa\Related\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
-                $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),
             new App\Http\Middleware\FetchTaxonMiddleware(
-                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
                 $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),
         ),
@@ -36,10 +35,9 @@ return function (ContainerInterface $container): array {
         'GET /taxa/{ncbi_taxon_id:\d+}/names' => new Quanta\Http\RequestHandler(
             new App\Http\Handlers\Taxa\Names\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
-                $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),
             new App\Http\Middleware\FetchTaxonMiddleware(
-                $container->get(App\Http\Responders\JsonResponder::class),
+                $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
                 $container->get(Domain\ReadModel\TaxonViewInterface::class),
             ),
         ),
