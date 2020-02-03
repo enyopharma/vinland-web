@@ -37,12 +37,12 @@ final class AnnotationViewSql implements AnnotationViewInterface
     private function generator(\PDOStatement $sth): \Generator
     {
         foreach ($sth as $annotation) {
-            yield [
+            yield new Entity([
                 'source' => $annotation['source'],
                 'ref' => $annotation['ref'],
                 'name' => $annotation['name'],
                 'accessions' => explode(',', trim($annotation['accessions'], '{}')),
-            ];
+            ]);
         }
     }
 }
