@@ -23,7 +23,7 @@ const fetchNames = async (ncbi_taxon_id: number) => {
     const json = await response.json()
 
     if (json.success) {
-        return json.data
+        return json.data.names
     }
 
     throw new Error(json)
