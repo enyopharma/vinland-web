@@ -84,7 +84,9 @@ final class TaxonSql implements TaxonInterface
 
         $select_children_sth->execute([$this->taxon_id]);
 
-        if (! $children = $select_children_sth->fetchAll()) {
+        $children = $select_children_sth->fetchAll();
+
+        if ($children === false) {
             throw new \LogicException;
         }
 
