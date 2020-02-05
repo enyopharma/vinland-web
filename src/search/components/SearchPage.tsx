@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { ToastContainer } from './toast/ToastContainer'
-import { ConnectedVirusCard } from './taxon/ConnectedVirusCard'
-import { ConnectedOptionsCard } from './options/ConnectedOptionsCard'
-import { ConnectedIdentifierCard } from './identifier/ConnectedIdentifierCard'
-import { ConnectedQueryResultCard } from './query/ConnectedQueryResultCard'
+import { TaxonCard } from './TaxonCard'
+import { OptionsCard } from './OptionsCard'
+import { ToastContainer } from './ToastContainer'
+import { IdentifierCard } from './IdentifierCard'
+import { QueryResultCard } from './QueryResultCard'
 
 export const SearchPage: React.FC = () => (
     <div className="container">
@@ -12,19 +12,19 @@ export const SearchPage: React.FC = () => (
         <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
             <fieldset>
                 <legend>Human protein identifiers</legend>
-                <ConnectedIdentifierCard />
+                <IdentifierCard />
             </fieldset>
             <fieldset>
                 <legend>Virus protein selection</legend>
-                <ConnectedVirusCard />
+                <TaxonCard />
             </fieldset>
             <fieldset>
                 <legend>PPI display options</legend>
-                <ConnectedOptionsCard />
+                <OptionsCard />
             </fieldset>
         </form>
         <h2 id="results">Query result</h2>
-        <ConnectedQueryResultCard />
         <ToastContainer target="results" />
+        <QueryResultCard />
     </div>
 )

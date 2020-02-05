@@ -6,7 +6,7 @@ body {
     padding-bottom: $spacer * 50;
 }
 
-div.row, div.form-group, div.form-row, div.card, div.alert, form, fieldset, ul, p, table {
+div.row, div.form-group, div.form-row, div.card, div.alert, div.animation, form, fieldset, ul, p, table {
     margin-bottom: $spacer;
     &:last-child {
         margin-bottom: 0;
