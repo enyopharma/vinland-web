@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import { Options } from '.'
+import { actions as taxonomy } from 'features/taxonomy'
 
 const initialState: Options = {
     hh: true,
@@ -44,6 +45,11 @@ const slice = createSlice({
                 state.methods = Math.max(1, action.payload.methods)
             },
         },
+    },
+    extraReducers: {
+        [taxonomy.select.toString()]: (state, action) => {
+            state.vh = true
+        }
     }
 })
 

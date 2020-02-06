@@ -10,7 +10,7 @@ export const state2query: AppSelector<Query> = state => {
     const parts: string[] = []
     if (state.search.options.hh) parts.push('HH')
     if (state.search.options.vh) parts.push('VH')
-    if (state.search.options.neighbors) parts.push('NEIGHBORS')
+    if (state.search.options.hh && state.search.options.neighbors) parts.push('NEIGHBORS')
     parts.push(state.search.options.publications.toString())
     parts.push(state.search.options.methods.toString())
     parts.push(ncbi_taxon_id.toString())

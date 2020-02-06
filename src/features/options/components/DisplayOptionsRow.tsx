@@ -11,20 +11,6 @@ type Props = {
 
 export const DisplayOptionsRow: React.FC<Props> = ({ hh, vh, neighbors, setHH, setVH, setNeighbors }) => (
     <div className="row">
-        <div className="col-6">
-            <div className="form-check form-check-inline">
-                <input
-                    id="neighbors"
-                    type="checkbox"
-                    className="form-check-input"
-                    checked={neighbors}
-                    onChange={e => setNeighbors(e.target.checked)}
-                />
-                <label className="form-check-label" htmlFor="neighbors">
-                    Include neighbors
-                </label>
-            </div>
-        </div>
         <div className="col">
             <div className="form-check form-check-inline">
                 <input
@@ -50,6 +36,21 @@ export const DisplayOptionsRow: React.FC<Props> = ({ hh, vh, neighbors, setHH, s
                 />
                 <label className="form-check-label" htmlFor="vh">
                     Show VH ppi
+                </label>
+            </div>
+        </div>
+        <div className="col-6">
+            <div className="form-check form-check-inline">
+                <input
+                    id="neighbors"
+                    type="checkbox"
+                    className="form-check-input"
+                    checked={hh && neighbors}
+                    onChange={e => setNeighbors(e.target.checked)}
+                    disabled={!hh}
+                />
+                <label className="form-check-label" htmlFor="neighbors">
+                    Include human neighbors
                 </label>
             </div>
         </div>

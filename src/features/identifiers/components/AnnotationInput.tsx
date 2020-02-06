@@ -36,6 +36,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
     }, [source, query])
 
     const selectAndClose = useCallback((annotation: Annotation) => {
+        setSource('')
         setQuery('')
         select(annotation)
     }, [select])
