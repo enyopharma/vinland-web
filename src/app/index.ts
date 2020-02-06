@@ -1,14 +1,12 @@
 import { useCallback } from 'react'
-import { AnyAction, ActionCreator } from 'redux'
 import { TypedUseSelectorHook } from 'react-redux'
-import { createStore, combineReducers } from 'redux'
 import { useSelector, useDispatch } from 'react-redux'
+import { AnyAction, ActionCreator } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import { reducer as search } from './search'
 
-type AppState = ReturnType<typeof reducer>
+type AppState = ReturnType<typeof store.getState>
 type AppDispatch = typeof store.dispatch
-
-const reducer = combineReducers({ search })
 
 export type AppSelector<T> = (state: AppState) => T
 
@@ -22,4 +20,6 @@ export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T)
     }, [dispatch, creator])
 }
 
-export const store = createStore(reducer)
+export const store = configureStore({
+    reducer: { search }
+})

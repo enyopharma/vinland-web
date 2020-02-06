@@ -2,7 +2,7 @@ import React from 'react'
 import { useActionCreator } from 'app'
 
 import { Options } from 'features/options'
-import { creators } from 'features/options'
+import { actions } from 'features/options'
 
 import { FilterOptionsRow } from './FilterOptionsRow'
 import { DisplayOptionsRow } from './DisplayOptionsRow'
@@ -12,11 +12,11 @@ type Props = {
 }
 
 export const OptionsCard: React.FC<Props> = ({ options }) => {
-    const setHH = useActionCreator(creators.setHH)
-    const setVH = useActionCreator(creators.setVH)
-    const setNeighbors = useActionCreator(creators.setNeighbors)
-    const setPublications = useActionCreator(creators.setPublications)
-    const setMethods = useActionCreator(creators.setMethods)
+    const setHH = useActionCreator(actions.setHH)
+    const setVH = useActionCreator(actions.setVH)
+    const setNeighbors = useActionCreator(actions.setNeighbors)
+    const setPublications = useActionCreator(actions.setPublications)
+    const setMethods = useActionCreator(actions.setMethods)
 
     return (
         <div className="card">

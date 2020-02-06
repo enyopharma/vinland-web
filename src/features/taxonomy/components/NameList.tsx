@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { useActionCreator } from 'app'
 
 import { Name } from 'features/taxonomy'
-import { creators } from 'features/taxonomy'
+import { actions } from 'features/taxonomy'
 
 type Props = {
     names: Name[]
@@ -10,7 +10,7 @@ type Props = {
 }
 
 export const NameList: React.FC<Props> = ({ names, selected }) => {
-    const update = useActionCreator(creators.update)
+    const update = useActionCreator(actions.update)
 
     const classes = useCallback((name: Name) => {
         return selected.includes(name)

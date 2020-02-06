@@ -3,7 +3,7 @@ import { useSpring, animated } from 'react-spring'
 import { useActionCreator } from 'app'
 
 import { IdentifierList } from 'features/identifiers'
-import { creators, parse } from 'features/identifiers'
+import { actions, parse } from 'features/identifiers'
 
 import { AnnotationInput } from './AnnotationInput'
 import { IdentifierListFormGroup } from './IdentifierListFormGroup'
@@ -20,10 +20,10 @@ type AnimatedProps = {
 }
 
 export const IdentifierCard: React.FC<Props> = ({ lists }) => {
-    const add = useActionCreator(creators.add)
-    const select = useActionCreator(creators.select)
-    const update = useActionCreator(creators.update)
-    const remove = useActionCreator(creators.remove)
+    const add = useActionCreator(actions.add)
+    const select = useActionCreator(actions.select)
+    const update = useActionCreator(actions.update)
+    const remove = useActionCreator(actions.remove)
 
     const parsed = useMemo(() => parse(lists).length, [lists])
 
@@ -35,7 +35,7 @@ export const IdentifierCard: React.FC<Props> = ({ lists }) => {
                 {lists.map((list, i) => (
                     <AnimatedIdentifierListFormGroup
                         key={list.i}
-                        enabled={i > 0}
+                        enabled={list.i > 0}
                         list={list}
                         update={(identifiers: string) => update(i, identifiers)}
                         remove={() => remove(i)}

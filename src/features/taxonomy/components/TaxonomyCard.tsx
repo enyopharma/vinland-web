@@ -3,7 +3,7 @@ import { useActionCreator } from 'app'
 import { Taxonomy, Taxon, Name } from 'features/taxonomy'
 
 import { cache } from 'features/taxonomy'
-import { creators } from 'features/taxonomy'
+import { actions } from 'features/taxonomy'
 
 import { NameList } from './NameList'
 import { TaxonInput } from './TaxonInput'
@@ -34,7 +34,7 @@ export const TaxonomyCard: React.FC<Props> = ({ taxonomy }) => {
 }
 
 const CardWithoutSelectedTaxon: React.FC = () => {
-    const select = useActionCreator(creators.select)
+    const select = useActionCreator(actions.select)
 
     return (
         <div className="card">
@@ -46,7 +46,7 @@ const CardWithoutSelectedTaxon: React.FC = () => {
 }
 
 const CardWithSelectedTaxon: React.FC<SelectedTaxonProps> = ({ taxon, names }) => {
-    const unselect = useActionCreator(creators.unselect)
+    const unselect = useActionCreator(actions.unselect)
 
     return (
         <div className="card">
