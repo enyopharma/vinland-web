@@ -42,7 +42,7 @@ final class InteractionViewSql implements InteractionViewInterface
             : $query;
     }
 
-    private function selectInteractionsQuery(string $type, bool $neighbors, int ...$ids): Query
+    private function selectHHInteractionsQuery(int $nb, bool $neighbors): Query
     {
         $query = Query::instance($this->pdo)
             ->select('DISTINCT i.type, i.nb_publications, i.nb_methods')
@@ -52,22 +52,40 @@ final class InteractionViewSql implements InteractionViewInterface
             ->where('i.id = e.interaction_id')
             ->where('p1.id = i.protein1_id')
             ->where('p2.id = i.protein2_id')
-            ->where('i.type = ?')
+            ->where(sprintf('i.type = \'%s\'', self::HH))
+            ->where('i.nb_publications >= ?')
+            ->where('i.nb_methods >= ?')
+            ->in('e.source_id', $nb);
+
+        return $neighbors ? $query : $query->in('e.target_id', $nb);
+    }
+
+    private function selectVHInteractionsQuery(int $nbh, int $nbv): Query
+    {
+        $query = Query::instance($this->pdo)
+            ->select('DISTINCT i.type, i.nb_publications, i.nb_methods')
+            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
+            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
+            ->select('t.ncbi_taxon_id, t.name AS taxon_name')
+            ->select('s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name')
+            ->from('interactions AS i, proteins AS p1, proteins AS p2, taxa AS t, taxa AS s')
+            ->where('p1.id = i.protein1_id')
+            ->where('p2.id = i.protein2_id')
+            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
+            ->where('s.ncbi_taxon_id = t.ncbi_species_id')
+            ->where(sprintf('i.type = \'%s\'', self::VH))
             ->where('i.nb_publications >= ?')
             ->where('i.nb_methods >= ?');
 
-        if ($type == self::VH) {
-            $query = $query
-                ->select('t.ncbi_taxon_id, t.name AS taxon_name')
-                ->select('s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name')
-                ->from('taxa AS t, taxa AS s')
-                ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
-                ->where('s.ncbi_taxon_id = t.ncbi_species_id');
+        if ($nbh > 0) {
+            $query = $query->in('p1.id', $nbh);
         }
 
-        $query = $query->in('e.source_id', count($ids));
+        if ($nbv > 0) {
+            $query = $query->in('p2.id', $nbv);
+        }
 
-        return $neighbors ? $query : $query->in('e.target_id', count($ids));
+        return $query;
     }
 
     public function all(QueryInput $input): Statement
@@ -79,17 +97,15 @@ final class InteractionViewSql implements InteractionViewInterface
         [$ncbi_taxon_id, $names] = $input->virus();
         [$nb_publications, $nb_methods] = $input->filters();
 
-        $ids = [
-            ...$this->humanProteinIds(...$identifiers),
-            ...$this->viralProteinIds($ncbi_taxon_id, ...$names),
-        ];
+        $idhs = $this->humanProteinIds(...$identifiers);
+        $idvs = $this->viralProteinIds($ncbi_taxon_id, ...$names);
 
         $hhinteractions = $hh
-            ? $this->interactions(self::HH, $neighbors, $nb_publications, $nb_methods, ...$ids)
+            ? $this->HHInteractions($idhs, $nb_publications, $nb_methods, $neighbors)
             : [];
 
         $vhinteractions = $vh
-            ? $this->interactions(self::VH, $neighbors, $nb_publications, $nb_methods, ...$ids)
+            ? $this->VHInteractions($idhs, $idvs, $nb_publications, $nb_methods)
             : [];
 
         return Statement::from($this->merged($hhinteractions, $vhinteractions));
@@ -133,17 +149,32 @@ final class InteractionViewSql implements InteractionViewInterface
         return $ids;
     }
 
-    private function interactions(string $type, bool $neighbors, int $nb_publications, int $nb_methods, int ...$ids): iterable
+    private function HHInteractions(array $ids, int $nb_publications, int $nb_methods, bool $neighbors): iterable
     {
         if (count($ids) == 0) {
             return [];
         }
 
         $params = $neighbors
-            ? [$type, $nb_publications, $nb_methods, ...$ids]
-            : [$type, $nb_publications, $nb_methods, ...$ids, ...$ids];
+            ? [$nb_publications, $nb_methods, ...$ids]
+            : [$nb_publications, $nb_methods, ...$ids, ...$ids];
 
-        $select_interactions_sth = $this->selectInteractionsQuery($type, $neighbors, ...$ids)->prepare();
+        $select_interactions_sth = $this->selectHHInteractionsQuery(count($ids), $neighbors)->prepare();
+
+        $select_interactions_sth->execute($params);
+
+        return $this->generator($select_interactions_sth);
+    }
+
+    private function VHInteractions(array $idhs, array $idvs, int $nb_publications, int $nb_methods): iterable
+    {
+        if (count($idhs) + count($idvs) == 0) {
+            return [];
+        }
+
+        $params = [$nb_publications, $nb_methods, ...$idhs, ...$idvs];
+
+        $select_interactions_sth = $this->selectVHInteractionsQuery(count($idhs), count($idvs))->prepare();
 
         $select_interactions_sth->execute($params);
 
