@@ -110,7 +110,9 @@ final class TaxonSql implements TaxonInterface
 
         $select_names_sth->execute([$this->left_value, $this->right_value]);
 
-        if (! $names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN)) {
+        $names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($names === false) {
             throw new \LogicException;
         }
 

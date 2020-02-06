@@ -105,7 +105,9 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_ids_sth->execute($identifiers);
 
-        if (! $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN)) {
+        $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($ids === false) {
             throw new \LogicException;
         }
 
@@ -122,7 +124,9 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_ids_sth->execute([$ncbi_taxon_id, ...$names]);
 
-        if (! $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN)) {
+        $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($ids === false) {
             throw new \LogicException;
         }
 
