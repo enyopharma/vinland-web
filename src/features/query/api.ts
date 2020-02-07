@@ -1,22 +1,17 @@
 import fetch from 'cross-fetch'
+import { newCache } from 'utils/cache'
 
 import { Query, QueryResult, QueryResultStatuses } from '.'
 
-const interactions: Record<string, QueryResult> = {}
+const result = newCache<QueryResult>()
 
-export const cache = {
-    read: (query: Query): QueryResult => {
-        if (interactions[query.key]) return interactions[query.key]
-
-        throw new Promise(resolve => {
-            setTimeout(() => fetchInteractions(query)
-                .then(result => interactions[query.key] = result)
-                .then(resolve), 500)
-        })
+export const resources = {
+    result: (query: Query) => {
+        return result.resource(query.key, () => fetchResult(query), 300)
     }
 }
 
-const fetchInteractions = async (query: Query) => {
+const fetchResult = async (query: Query) => {
     const params = {
         method: 'POST',
         body: JSON.stringify(query),

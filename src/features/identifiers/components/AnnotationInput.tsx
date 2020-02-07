@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 import { Annotation } from 'features/identifiers'
-import { cache } from 'features/identifiers'
+import { resources } from 'features/identifiers'
 
 import { Overlay, SearchResultList } from 'features/autocomplete'
 
@@ -32,7 +32,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
     }, [query])
 
     const search = useCallback(() => {
-        return cache.read(source, query)
+        return resources.annotations(source, query).read()
     }, [source, query])
 
     const selectAndClose = useCallback((annotation: Annotation) => {

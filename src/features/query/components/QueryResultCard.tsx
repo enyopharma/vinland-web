@@ -3,7 +3,7 @@ import React, { Suspense, useState, useEffect } from 'react'
 import { Interaction, Query, QueryResult, QueryResultStatuses } from 'features/query'
 
 import { toast } from 'features/toast'
-import { cache } from 'features/query'
+import { resources } from 'features/query'
 
 import { InteractionTable } from './InteractionTable'
 import { QueryResultPagination } from './QueryResultPagination'
@@ -33,7 +33,7 @@ export const QueryResultCard: React.FC<Props> = ({ query }) => (
 )
 
 const CardFetcher: React.FC<Props> = ({ query }) => {
-    const result = cache.read(query)
+    const result = resources.result(query).read()
 
     return <CardSwitch result={result} />
 }

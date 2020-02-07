@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react'
 
 import { Taxon } from 'features/taxonomy'
-import { cache } from 'features/taxonomy'
+import { resources } from 'features/taxonomy'
 
 import { Overlay, SearchResultList } from 'features/autocomplete'
 
@@ -15,7 +15,7 @@ export const TaxonInput: React.FC<Props> = ({ select }) => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     const search = useCallback(() => {
-        return cache.read(query)
+        return resources.taxa(query).read()
     }, [query])
 
     const selectAndClose = useCallback((taxon: Taxon) => {

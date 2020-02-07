@@ -11,6 +11,11 @@ export type Taxon = {
 
 export type Name = string
 
-export { cache } from './api'
+export type RelatedTaxa = {
+    readonly parent: Taxon | null
+    readonly children: Taxon[]
+}
+
+export { resources } from './api'
 export { reducer, actions } from './reducer'
 export { TaxonomyCard } from './components/TaxonomyCard'

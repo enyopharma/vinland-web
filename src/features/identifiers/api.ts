@@ -1,26 +1,20 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
+import { newCache } from 'utils/cache'
 
 import { Annotation } from '.'
 import { SearchResult } from 'features/autocomplete'
 
 const limit = 5
-const annotations: Record<string, SearchResult<Annotation>[]> = {}
 
-export const cache = {
-    read: (source: string, query: string) => {
-        if (source.trim().length === 0) return []
-        if (query.trim().length === 0) return []
+const annotations = newCache<SearchResult<Annotation>[]>()
 
-        const key = `${source}:${query}`
+export const resources = {
+    annotations: (source: string, query: string) => {
+        if (source.trim().length === 0) return { read: () => [] }
+        if (query.trim().length === 0) return { read: () => [] }
 
-        if (annotations[key]) return annotations[key]
-
-        throw new Promise(resolve => {
-            setTimeout(() => fetchAnnotations(source, query)
-                .then(results => annotations[key] = results)
-                .then(resolve), 300)
-        })
+        return annotations.resource(`${source}:${query}`, () => fetchAnnotations(source, query), 300)
     }
 }
 

@@ -61,6 +61,6 @@ export type Interactor = {
     }
 }
 
-export { cache } from './api'
+export { resources } from './api'
 export { QueryResultCard } from './components/QueryResultCard'
 export { isSuccessfulQueryResult } from './utils'

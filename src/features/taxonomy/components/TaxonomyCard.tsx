@@ -2,7 +2,7 @@ import React, { Suspense } from 'react'
 import { useActionCreator } from 'app'
 import { Taxonomy, Taxon, Name } from 'features/taxonomy'
 
-import { cache } from 'features/taxonomy'
+import { resources } from 'features/taxonomy'
 import { actions } from 'features/taxonomy'
 
 import { NameList } from './NameList'
@@ -78,13 +78,13 @@ const ProgressBar: React.FC = () => (
 )
 
 const RelatedFormRowFetcher: React.FC<RelatedFormRowProps> = ({ ncbi_taxon_id }) => {
-    const { parent, children } = cache.related(ncbi_taxon_id)
+    const { parent, children } = resources.related(ncbi_taxon_id).read()
 
     return <RelatedFormRow parent={parent} children={children} />
 }
 
 const NameListFetcher: React.FC<NameListProps> = ({ ncbi_taxon_id, selected }) => {
-    const names = cache.names(ncbi_taxon_id)
+    const names = resources.names(ncbi_taxon_id).read()
 
     return <NameList names={names} selected={selected} />
 }
