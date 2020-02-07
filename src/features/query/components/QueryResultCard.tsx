@@ -27,7 +27,7 @@ type SuccessProps = {
 }
 
 export const QueryResultCard: React.FC<Props> = ({ query }) => (
-    <Suspense fallback={CardProgressBar}>
+    <Suspense fallback={<CardProgressBar />}>
         <CardFetcher query={query} />
     </Suspense>
 )
