@@ -32,6 +32,12 @@ export const QueryResultCard: React.FC<Props> = ({ query }) => (
     </Suspense>
 )
 
+const CardFetcher: React.FC<Props> = ({ query }) => {
+    const result = cache.read(query)
+
+    return <CardSwitch result={result} />
+}
+
 const CardProgressBar: React.FC = () => (
     <div className="card">
         <div className="card-body">
@@ -44,12 +50,6 @@ const CardProgressBar: React.FC = () => (
         </div>
     </div>
 )
-
-const CardFetcher: React.FC<Props> = ({ query }) => {
-    const result = cache.read(query)
-
-    return <CardSwitch result={result} />
-}
 
 const CardSwitch: React.FC<SwitchProps> = ({ result }) => {
     switch (result.status) {
