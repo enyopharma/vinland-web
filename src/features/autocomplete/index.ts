@@ -3,5 +3,5 @@ export type SearchResult<T> = {
     readonly value: T
 }
 
-export { Overlay } from './components/Overlay'
-export { SearchResultList } from './components/SearchResultList'
+export * from './components/Overlay'
+export * from './components/SearchResultList'

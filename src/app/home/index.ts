@@ -1,1 +1,1 @@
-export { HomePage } from './components/HomePage'
+export * from './components/HomePage'

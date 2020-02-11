@@ -6,5 +6,5 @@ export type Options = {
     readonly methods: number
 }
 
-export { reducer, actions } from './reducer'
-export { OptionsCard } from './components/OptionsCard'
+export * from './reducer'
+export * from './components/OptionsCard'

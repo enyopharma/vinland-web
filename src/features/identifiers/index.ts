@@ -11,7 +11,7 @@ export type IdentifierList = {
     readonly identifiers: string
 }
 
-export { resources } from './api'
-export { reducer, actions } from './reducer'
-export { parse } from './utils'
-export { IdentifierCard } from './components/IdentifierCard'
+export * from './api'
+export * from './reducer'
+export * from './utils'
+export * from './components/IdentifierCard'

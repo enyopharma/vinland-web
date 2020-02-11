@@ -7,7 +7,7 @@ const initialState: Taxonomy = {
     names: [],
 }
 
-const slice = createSlice({
+export const { reducer, actions } = createSlice({
     name: 'taxonomy',
     initialState: initialState,
     reducers: {
@@ -31,5 +31,3 @@ const slice = createSlice({
         },
     }
 })
-
-export const { reducer, actions } = slice

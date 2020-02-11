@@ -1,6 +1,6 @@
 export type Taxonomy = {
-    taxon: Taxon | null
-    names: Name[]
+    readonly taxon: Taxon | null
+    readonly names: Name[]
 }
 
 export type Taxon = {
@@ -16,6 +16,6 @@ export type RelatedTaxa = {
     readonly children: Taxon[]
 }
 
-export { resources } from './api'
-export { reducer, actions } from './reducer'
-export { TaxonomyCard } from './components/TaxonomyCard'
+export * from './api'
+export * from './reducer'
+export * from './components/TaxonomyCard'

@@ -1,9 +1,11 @@
 type Key = number | string
 
-type Resource<T> = { read: () => T }
+type Resource<T> = {
+    readonly read: () => T
+}
 
 type Cache<T> = {
-    resource: (key: Key, factory: () => Promise<T>, delay?: number) => Resource<T>
+    readonly resource: (key: Key, factory: () => Promise<T>, delay?: number) => Resource<T>
 }
 
 enum ResourceStatuses { PENDING, SUCCESS, FAILURE }

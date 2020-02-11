@@ -12,7 +12,7 @@ const initialState: IdentifierList[] = [{
     identifiers: '',
 }]
 
-const slice = createSlice({
+export const { reducer, actions } = createSlice({
     name: 'identifiers',
     initialState: initialState,
     reducers: {
@@ -50,5 +50,3 @@ const slice = createSlice({
         },
     }
 })
-
-export const { reducer, actions } = slice

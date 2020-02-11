@@ -61,6 +61,6 @@ export type Protein = {
     }
 }
 
-export { resources } from './api'
-export { QueryResultSection } from './components/QueryResultSection'
-export { isSuccessfulQueryResult } from './utils'
+export * from './api'
+export * from './components/QueryResultSection'
+export * from './utils'

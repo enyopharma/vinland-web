@@ -1,3 +1,3 @@
-export { reducer } from './reducer'
-export { state2query } from './utils'
-export { SearchPage } from './components/SearchPage'
+export * from './reducer'
+export * from './utils'
+export * from './components/SearchPage'

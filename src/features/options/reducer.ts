@@ -11,7 +11,7 @@ const initialState: Options = {
     methods: 1,
 }
 
-const slice = createSlice({
+export const { reducer, actions } = createSlice({
     name: 'options',
     initialState: initialState,
     reducers: {
@@ -52,5 +52,3 @@ const slice = createSlice({
         }
     }
 })
-
-export const { reducer, actions } = slice

@@ -1,2 +1,2 @@
-export { Navbar } from './components/Navbar'
-export { PageLoader } from './components/PageLoader'
+export * from './components/Navbar'
+export * from './components/PageLoader'

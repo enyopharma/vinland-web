@@ -1,18 +1,18 @@
 type Node = {
-    data: {
-        id: string
-        type: 'h' | 'v'
-        name: string
+    readonly data: {
+        readonly id: string
+        readonly type: 'h' | 'v'
+        readonly name: string
     }
 }
 
 type Edge = {
-    data: {
-        source: string
-        target: string
+    readonly data: {
+        readonly source: string
+        readonly target: string
     }
 }
 
 export type Element = Node | Edge
 
-export { CytoscapeWrapper } from './components/CytoscapeWrapper'
+export * from './components/CytoscapeWrapper'
