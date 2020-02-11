@@ -1,42 +1,61 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Interaction } from 'features/query'
 
+import { Pagination } from './Pagination'
+
+const limit = 20
+
 type Props = {
     interactions: Interaction[]
-    limit: number
 }
 
 type TrProps = {
     interaction: Interaction
 }
 
-export const InteractionTable: React.FC<Props> = ({ interactions, limit }) => (
-    <table className="table card-striped table-stripped table-hover">
-        <thead>
-            <tr>
-                <th className="col-1 text-center">
-                    -
-                </th>
-                <th className="col-2 text-center" colSpan={2}>
-                    Interactor 1
-                </th>
-                <th className="col-2 text-center" colSpan={2}>
-                    Interactor 2
-                </th>
-                <th className="col-8 text-center">
-                    Taxon
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {[...Array(limit - 1)].map((_, i) => interactions[i]
-                ? <InteractionTr key={i} interaction={interactions[i]} />
-                : <SkeletonTr key={i} />
-            )}
-        </tbody>
-    </table>
-)
+export const ListCardBody: React.FC<Props> = ({ interactions }) => {
+    const [offset, setOffset] = useState<number>(0)
+
+    useEffect(() => { setOffset(0) }, [interactions])
+
+    const slice = interactions.slice(offset, offset + limit);
+
+    return (
+        <React.Fragment>
+            <div className="card-body">
+                <Pagination offset={offset} limit={limit} total={interactions.length} update={setOffset} />
+            </div>
+            <table className="table card-table table-stripped table-hover">
+                <thead>
+                    <tr>
+                        <th className="col-1 text-center">
+                            -
+                        </th>
+                        <th className="col-2 text-center" colSpan={2}>
+                            Protein 1
+                        </th>
+                        <th className="col-2 text-center" colSpan={2}>
+                            Protein 2
+                        </th>
+                        <th className="col-8 text-center">
+                            Taxon
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {[...Array(limit - 1)].map((_, i) => slice[i]
+                        ? <InteractionTr key={i} interaction={slice[i]} />
+                        : <SkeletonTr key={i} />
+                    )}
+                </tbody>
+            </table>
+            <div className="card-body">
+                <Pagination offset={offset} limit={limit} total={interactions.length} update={setOffset} />
+            </div>
+        </React.Fragment>
+    )
+}
 
 const SkeletonTr: React.FC = () => (
     <tr>

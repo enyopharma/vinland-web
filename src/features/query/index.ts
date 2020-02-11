@@ -40,13 +40,13 @@ export interface FailedQueryResult {
 
 export type Interaction = {
     readonly type: 'hh' | 'vh'
-    readonly protein1: Interactor
-    readonly protein2: Interactor
+    readonly protein1: Protein
+    readonly protein2: Protein
     readonly publications: { nb: number }
     readonly methods: { nb: number }
 }
 
-export type Interactor = {
+export type Protein = {
     readonly type: 'h' | 'v'
     readonly accession: string
     readonly name: string
@@ -62,5 +62,5 @@ export type Interactor = {
 }
 
 export { resources } from './api'
-export { QueryResultCard } from './components/QueryResultCard'
+export { QueryResultSection } from './components/QueryResultSection'
 export { isSuccessfulQueryResult } from './utils'

@@ -7,7 +7,7 @@ import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
 import { ToastContainer } from 'features/toast'
 import { IdentifierCard } from 'features/identifiers'
-import { QueryResultCard } from 'features/query'
+import { QueryResultSection } from 'features/query'
 
 export const SearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.search.identifiers)
@@ -34,7 +34,7 @@ export const SearchPage: React.FC = () => {
             </form>
             <h2 id="results">Query result</h2>
             <ToastContainer target="results" />
-            <QueryResultCard query={query} />
+            <QueryResultSection query={query} />
         </div>
     )
 }

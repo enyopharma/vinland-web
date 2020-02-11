@@ -24,7 +24,7 @@ type NavLinkLiProps = {
     update: (i: number) => void
 }
 
-export const QueryResultPagination: React.FC<Props> = ({ offset, total, limit, update }) => {
+export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) => {
     const cur = Math.floor(offset / limit) + 1
     const max = Math.ceil(total / limit)
 
