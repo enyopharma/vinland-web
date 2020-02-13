@@ -15,4 +15,4 @@ type Edge = {
 
 export type Element = Node | Edge
 
-export * from './components/CytoscapeWrapper'
+export * from './components/NetworkD3'
