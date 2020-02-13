@@ -1,9 +1,9 @@
 export type Options = {
-    readonly hh: boolean
-    readonly vh: boolean
-    readonly neighbors: boolean
-    readonly publications: number
-    readonly methods: number
+    hh: boolean
+    vh: boolean
+    neighbors: boolean
+    publications: number
+    methods: number
 }
 
 export * from './reducer'

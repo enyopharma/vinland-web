@@ -1,19 +1,19 @@
 export type Taxonomy = {
-    readonly taxon: Taxon | null
-    readonly names: Name[]
+    taxon: Taxon | null
+    names: Name[]
 }
 
 export type Taxon = {
-    readonly ncbi_taxon_id: number
-    readonly name: string
-    readonly nb_interactions: number
+    ncbi_taxon_id: number
+    name: string
+    nb_interactions: number
 }
 
 export type Name = string
 
 export type RelatedTaxa = {
-    readonly parent: Taxon | null
-    readonly children: Taxon[]
+    parent: Taxon | null
+    children: Taxon[]
 }
 
 export * from './api'

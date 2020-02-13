@@ -1,15 +1,15 @@
 type Node = {
-    readonly data: {
-        readonly id: string
-        readonly type: 'h' | 'v'
-        readonly name: string
+    data: {
+        id: string
+        type: 'h' | 'v'
+        name: string
     }
 }
 
 type Edge = {
-    readonly data: {
-        readonly source: string
-        readonly target: string
+    data: {
+        source: string
+        target: string
     }
 }
 

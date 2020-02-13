@@ -2,15 +2,15 @@
  * types.
  */
 export type Query = {
-    readonly key: string
-    readonly identifiers: string[]
-    readonly ncbi_taxon_id: number
-    readonly names: string[]
-    readonly hh: boolean
-    readonly vh: boolean
-    readonly neighbors: boolean
-    readonly publications: number
-    readonly methods: number
+    key: string
+    identifiers: string[]
+    ncbi_taxon_id: number
+    names: string[]
+    hh: boolean
+    vh: boolean
+    neighbors: boolean
+    publications: number
+    methods: number
 }
 
 export type QueryResult =
@@ -25,39 +25,39 @@ export enum QueryResultStatuses {
 }
 
 export interface IncompleteQueryResult {
-    readonly status: typeof QueryResultStatuses.INCOMPLETE
+    status: typeof QueryResultStatuses.INCOMPLETE
 }
 
 export interface SuccessfulQueryResult {
-    readonly status: typeof QueryResultStatuses.SUCCESS
-    readonly interactions: Interaction[]
+    status: typeof QueryResultStatuses.SUCCESS
+    interactions: Interaction[]
 }
 
 export interface FailedQueryResult {
-    readonly status: typeof QueryResultStatuses.FAILURE
-    readonly errors: string[]
+    status: typeof QueryResultStatuses.FAILURE
+    errors: string[]
 }
 
 export type Interaction = {
-    readonly type: 'hh' | 'vh'
-    readonly protein1: Protein
-    readonly protein2: Protein
-    readonly publications: { nb: number }
-    readonly methods: { nb: number }
+    type: 'hh' | 'vh'
+    protein1: Protein
+    protein2: Protein
+    publications: { nb: number }
+    methods: { nb: number }
 }
 
 export type Protein = {
-    readonly type: 'h' | 'v'
-    readonly accession: string
-    readonly name: string
-    readonly description: string
-    readonly taxon: {
-        readonly ncbi_taxon_id: number
-        readonly name: string
+    type: 'h' | 'v'
+    accession: string
+    name: string
+    description: string
+    taxon: {
+        ncbi_taxon_id: number
+        name: string
     }
-    readonly species: {
-        readonly ncbi_taxon_id: number
-        readonly name: string
+    species: {
+        ncbi_taxon_id: number
+        name: string
     }
 }
 

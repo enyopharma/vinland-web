@@ -1,14 +1,14 @@
 export type Annotation = {
-    readonly source: string
-    readonly ref: string
-    readonly name: string
-    readonly accessions: string[]
+    source: string
+    ref: string
+    name: string
+    accessions: string[]
 }
 
 export type IdentifierList = {
-    readonly i: number
-    readonly name: string
-    readonly identifiers: string
+    i: number
+    name: string
+    identifiers: string
 }
 
 export * from './api'
