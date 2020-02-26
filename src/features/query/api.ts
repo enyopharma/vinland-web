@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch'
 import { newCache } from 'utils/cache'
 
-import { Query, QueryResult, QueryResultStatuses } from '.'
+import { Query, QueryResult, QueryResultStatuses } from './types'
 
 const result = newCache<QueryResult>()
 

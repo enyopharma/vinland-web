@@ -16,14 +16,14 @@ export const newCache = <T>(): Cache<T> => {
     return {
         resource: (key, factory, delay = 0) => {
             if (!map[key]) {
-                map[key] = newResource<T>(withTimeout(factory(), delay))
+                map[key] = resource<T>(withTimeout(factory(), delay))
             }
             return map[key]
         }
     }
 }
 
-export const newResource = <T>(promise: Promise<T>) => {
+const resource = <T>(promise: Promise<T>) => {
     let status = ResourceStatuses.PENDING
     let result: T
     let suspender = promise.then(

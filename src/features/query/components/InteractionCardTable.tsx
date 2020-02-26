@@ -2,48 +2,37 @@ import React from 'react'
 
 import { Interaction } from 'features/query'
 
-const limit = 20
-
 type Props = {
     interactions: Interaction[]
-    offset: number
-    setOffset: (offset: number) => void
+    limit: number
 }
 
-type TrProps = {
-    interaction: Interaction
-}
-
-export const ListCardBody: React.FC<Props> = ({ interactions, offset, setOffset }) => {
-    const slice = interactions.slice(offset, offset + limit);
-
-    return (
-        <table className="table card-table table-stripped table-hover">
-            <thead>
-                <tr>
-                    <th className="col-1 text-center">
-                        -
+export const InteractionCardTable: React.FC<Props> = ({ interactions, limit }) => (
+    <table className="table card-table table-stripped table-hover">
+        <thead>
+            <tr>
+                <th className="col-1 text-center">
+                    -
                         </th>
-                    <th className="col-2 text-center" colSpan={2}>
-                        Protein 1
+                <th className="col-2 text-center" colSpan={2}>
+                    Protein 1
                         </th>
-                    <th className="col-2 text-center" colSpan={2}>
-                        Protein 2
+                <th className="col-2 text-center" colSpan={2}>
+                    Protein 2
                         </th>
-                    <th className="col-8 text-center">
-                        Taxon
+                <th className="col-8 text-center">
+                    Taxon
                         </th>
-                </tr>
-            </thead>
-            <tbody>
-                {[...Array(limit - 1)].map((_, i) => slice[i]
-                    ? <InteractionTr key={i} interaction={slice[i]} />
-                    : <SkeletonTr key={i} />
-                )}
-            </tbody>
-        </table>
-    )
-}
+            </tr>
+        </thead>
+        <tbody>
+            {[...Array(limit - 1)].map((_, i) => interactions[i]
+                ? <InteractionTr key={i} interaction={interactions[i]} />
+                : <SkeletonTr key={i} />
+            )}
+        </tbody>
+    </table>
+)
 
 const SkeletonTr: React.FC = () => (
     <tr>
@@ -56,7 +45,7 @@ const SkeletonTr: React.FC = () => (
     </tr>
 )
 
-const InteractionTr: React.FC<TrProps> = ({ interaction }) => (
+const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) => (
     <tr>
         <td className="text-center">
             <a href="/" style={{ textDecoration: 'none' }}>

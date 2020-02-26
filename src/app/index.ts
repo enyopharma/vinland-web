@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TypedUseSelectorHook } from 'react-redux'
 import { useSelector, useDispatch } from 'react-redux'
 import { AnyAction, ActionCreator } from '@reduxjs/toolkit'
@@ -18,6 +18,20 @@ export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T)
     return useCallback((...args: Parameters<T>) => {
         dispatch(creator(...args))
     }, [dispatch, creator])
+}
+
+export const useDebounce = <T = any>(value: T, ms: number = 100): T => {
+    const [v, update] = useState<T>(value)
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            update(value)
+        }, ms)
+
+        return () => clearTimeout(timeout)
+    }, [value, ms])
+
+    return v
 }
 
 export const store = configureStore({
