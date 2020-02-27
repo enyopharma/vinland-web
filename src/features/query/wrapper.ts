@@ -25,10 +25,10 @@ const getProteinCache = (type: Protein['type'], result: SuccessfulQueryResult) =
     let cache: Protein[] | null = null
 
     return () => {
-        if (cache === null) throw new Promise((resolve => setTimeout(() => {
+        if (cache === null) throw new Promise(resolve => setTimeout(() => {
             cache = filter(type, result.interactions)
             resolve()
-        }, 0)))
+        }, 0))
 
         return cache
     }
