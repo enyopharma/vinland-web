@@ -1,13 +1,13 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
-import { newCache } from 'utils/cache'
+import { cache } from 'utils/cache'
 
 import { Annotation } from './types'
 import { SearchResult } from 'features/autocomplete'
 
 const limit = 5
 
-const annotations = newCache<SearchResult<Annotation>[]>()
+const annotations = cache<SearchResult<Annotation>[]>()
 
 export const resources = {
     annotations: (source: string, query: string) => {

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { ToastContainer as RawToastContainer, toast } from 'react-toastify'
 
 type Props = {
@@ -6,10 +6,10 @@ type Props = {
 }
 
 export const ToastContainer: React.FC<Props> = ({ target }) => {
-    const scrollToResult = useCallback(() => {
+    const scrollToResult = () => {
         const elem = window.document.getElementById(target)
         if (elem) elem.scrollIntoView(true);
-    }, [target])
+    }
 
     return (
         <RawToastContainer

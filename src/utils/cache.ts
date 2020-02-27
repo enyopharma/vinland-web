@@ -10,7 +10,7 @@ type Cache<T> = {
 
 enum ResourceStatuses { PENDING, SUCCESS, FAILURE }
 
-export const newCache = <T>(): Cache<T> => {
+export const cache = <T>(): Cache<T> => {
     const map: Record<Key, Resource<T>> = {}
 
     return {

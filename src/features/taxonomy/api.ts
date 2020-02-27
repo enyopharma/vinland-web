@@ -1,6 +1,6 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
-import { newCache } from 'utils/cache'
+import { cache } from 'utils/cache'
 
 import { Taxon, RelatedTaxa, Name } from './types'
 
@@ -8,9 +8,9 @@ import { SearchResult } from 'features/autocomplete'
 
 const limit = 5
 
-const taxa = newCache<SearchResult<Taxon>[]>()
-const names = newCache<Name[]>()
-const related = newCache<RelatedTaxa>()
+const taxa = cache<SearchResult<Taxon>[]>()
+const names = cache<Name[]>()
+const related = cache<RelatedTaxa>()
 
 export const resources = {
     taxa: (query: string) => {
