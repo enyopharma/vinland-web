@@ -26,7 +26,7 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins, limit }) => (
             </tr>
         </thead>
         <tbody>
-            {[...Array(limit - 1)].map((_, i) => proteins[i]
+            {[...Array(limit)].map((_, i) => proteins[i]
                 ? <ProteinTr key={i} protein={proteins[i]} />
                 : <SkeletonTr key={i} />
             )}

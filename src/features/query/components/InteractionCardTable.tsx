@@ -13,20 +13,20 @@ export const InteractionCardTable: React.FC<Props> = ({ interactions, limit }) =
             <tr>
                 <th className="col-1 text-center">
                     -
-                        </th>
+                </th>
                 <th className="col-2 text-center" colSpan={2}>
                     Protein 1
-                        </th>
+                </th>
                 <th className="col-2 text-center" colSpan={2}>
                     Protein 2
-                        </th>
+                </th>
                 <th className="col-8 text-center">
                     Taxon
-                        </th>
+                </th>
             </tr>
         </thead>
         <tbody>
-            {[...Array(limit - 1)].map((_, i) => interactions[i]
+            {[...Array(limit)].map((_, i) => interactions[i]
                 ? <InteractionTr key={i} interaction={interactions[i]} />
                 : <SkeletonTr key={i} />
             )}
