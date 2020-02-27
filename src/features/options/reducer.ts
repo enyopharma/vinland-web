@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import { Options } from '.'
+import { Options } from './types'
 import { actions as taxonomy } from 'features/taxonomy'
 
 const initialState: Options = {

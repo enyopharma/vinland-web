@@ -1,13 +1,12 @@
 import md5 from 'md5'
-import { AppSelector } from 'app'
-import { Query } from 'features/query'
+import { AppState } from 'app'
 import { parse as parseIdentifiers } from 'features/identifiers'
 
 /**
  * Caution: Array.sort() mutates the array which is not allowed.
  * Need to clone identifiers and names (parseIdentifiers() or Array.slice()) before sorting.
  */
-export const state2query: AppSelector<Query> = state => {
+export const state2query = (state: AppState) => {
     const identifiers = parseIdentifiers(state.search.identifiers)
     const names = state.search.taxonomy.names.slice()
     const ncbi_taxon_id = state.search.taxonomy.taxon === null ? 0 : state.search.taxonomy.taxon.ncbi_taxon_id

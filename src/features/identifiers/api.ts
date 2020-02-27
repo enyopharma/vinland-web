@@ -2,7 +2,7 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { newCache } from 'utils/cache'
 
-import { Annotation } from '.'
+import { Annotation } from './types'
 import { SearchResult } from 'features/autocomplete'
 
 const limit = 5

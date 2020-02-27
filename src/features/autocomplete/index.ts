@@ -1,7 +1,3 @@
-export type SearchResult<T> = {
-    label: string
-    value: T
-}
-
+export * from './types'
 export * from './components/Overlay'
 export * from './components/SearchResultList'
