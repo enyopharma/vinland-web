@@ -31,3 +31,7 @@ div.row, div.form-group, div.form-row, div.card, div.alert, div.animation, form,
     border-color: lighten($info, 20%);
     background-color: lighten($info, 20%);
 }
+
+.nav-item > a {
+    outline-style: none;
+}
