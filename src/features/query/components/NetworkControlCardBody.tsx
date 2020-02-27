@@ -44,7 +44,7 @@ export const NetworkControlCardBody: React.FC<Props> = ({ ratio, labels, network
                         className="btn btn-block btn-primary"
                         onClick={() => setLabels(!labels)}
                     >
-                        Labels <input type="checkbox" checked={labels} />
+                        {labels ? 'Hide labels' : 'Show labels'}
                     </button>
                 </div>
             </div>
