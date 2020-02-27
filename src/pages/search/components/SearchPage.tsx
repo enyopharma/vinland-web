@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { useAppSelector } from 'app'
-import { state2query } from 'app/search'
+import { state2query } from 'pages/search'
 
 import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
