@@ -15,11 +15,12 @@ export const { reducer, actions } = createSlice({
             prepare: (taxon: Taxon) => ({ payload: { taxon } }),
             reducer: (state, action: PayloadAction<{ taxon: Taxon }>) => {
                 state.taxon = action.payload.taxon
+                state.names = []
             },
         },
         unselect: {
             prepare: () => ({ payload: {} }),
-            reducer: (state, action: PayloadAction<{}>) => {
+            reducer: (state) => {
                 state.taxon = null
             },
         },
