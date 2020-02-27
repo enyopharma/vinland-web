@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 
-import { Query, QueryResult, isSuccessfulQueryResult } from 'features/query'
+import { Query } from 'features/query'
 import { resources, wrapper } from 'features/query'
+import { isSuccessfulQueryResult } from 'features/query'
 
 import { QueryResultCard } from './QueryResultCard'
 import { QueryResultAlert } from './QueryResultAlert'
@@ -11,12 +12,12 @@ type Props = {
 }
 
 export const QueryResultSection: React.FC<Props> = ({ query }) => (
-    <Suspense fallback={<ProgressBar />}>
-        <Fetcher query={query} />
-    </Suspense>
+    <React.Suspense fallback={<SectionFallback />}>
+        <SectionLoader query={query} />
+    </React.Suspense>
 )
 
-const ProgressBar: React.FC = () => (
+const SectionFallback: React.FC = () => (
     <div className="progress">
         <div
             className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
@@ -25,17 +26,13 @@ const ProgressBar: React.FC = () => (
     </div>
 )
 
-const Fetcher: React.FC<Props> = ({ query }) => {
+const SectionLoader: React.FC<Props> = ({ query }) => {
     const result = resources.result(query).read()
 
-    return <Section result={result} />
-}
-
-const Section: React.FC<{ result: QueryResult }> = ({ result }) => {
     return (
         <section>
             <QueryResultAlert result={result} />
-            {isSuccessfulQueryResult(result) && (
+            {!isSuccessfulQueryResult(result) ? null : (
                 <QueryResultCard result={wrapper(result)} />
             )}
         </section>

@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import { ResultWrapper } from 'features/query'
 
@@ -8,16 +8,24 @@ const InteractionCardTable = React.lazy(() => import('./InteractionCardTable').t
 const NetworkControlCardBody = React.lazy(() => import('./NetworkControlCardBody').then(module => ({ default: module.NetworkControlCardBody })))
 const NetworkStageCardBody = React.lazy(() => import('./NetworkStageCardBody').then(module => ({ default: module.NetworkStageCardBody })))
 
-type Tab = 'list' | 'human' | 'virus' | 'network'
+const limit = 20
+
+type Tab = 'ppi' | 'h' | 'v' | 'network'
 
 type Props = {
     result: ResultWrapper
 }
 
-export const QueryResultCard: React.FC<Props> = ({ result }) => {
-    const [tab, setTab] = useState<Tab>('list')
+let savedtab = 'ppi' as Tab
 
-    const getHandleClick = (tab: Tab) => (e: any) => {
+const TabContext = React.createContext({ tab: savedtab })
+
+export const QueryResultCard: React.FC<Props> = ({ result }) => {
+    const [tab, setTab] = useState<Tab>(savedtab)
+
+    useEffect(() => { savedtab = tab }, [tab])
+
+    const getOnClick = (tab: Tab) => (e: React.MouseEvent) => {
         e.preventDefault()
         setTab(tab)
     }
@@ -29,8 +37,8 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                     <li className="nav-item">
                         <a
                             href="/"
-                            className={tab === 'list' ? 'nav-link active' : 'nav-link'}
-                            onClick={getHandleClick('list')}
+                            className={tab === 'ppi' ? 'nav-link active' : 'nav-link'}
+                            onClick={getOnClick('ppi')}
                         >
                             List view
                         </a>
@@ -38,8 +46,8 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                     <li className="nav-item">
                         <a
                             href="/"
-                            className={tab === 'human' ? 'nav-link active' : 'nav-link'}
-                            onClick={getHandleClick('human')}
+                            className={tab === 'h' ? 'nav-link active' : 'nav-link'}
+                            onClick={getOnClick('h')}
                         >
                             Human proteins
                         </a>
@@ -47,8 +55,8 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                     <li className="nav-item">
                         <a
                             href="/"
-                            className={tab === 'virus' ? 'nav-link active' : 'nav-link'}
-                            onClick={getHandleClick('virus')}
+                            className={tab === 'v' ? 'nav-link active' : 'nav-link'}
+                            onClick={getOnClick('v')}
                         >
                             Viral proteins
                         </a>
@@ -57,21 +65,27 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                         <a
                             href="/"
                             className={tab === 'network' ? 'nav-link active' : 'nav-link'}
-                            onClick={getHandleClick('network')}
+                            onClick={getOnClick('network')}
                         >
                             Network view
                         </a>
                     </li>
                 </ul>
             </div>
-            <Suspense fallback={<ProgressBarCardBody />}>
-                <CardBody tab={tab} result={result} />
-            </Suspense>
+            <TabContext.Provider value={{ tab: tab }}>
+                <CardBody result={result} />
+            </TabContext.Provider>
         </div>
     )
 }
 
-const ProgressBarCardBody = () => (
+const CardBody: React.FC<Props> = ({ result }) => (
+    <React.Suspense fallback={<CardBodyFallback />}>
+        <CardBodyLoader result={result} />
+    </React.Suspense>
+)
+
+const CardBodyFallback = () => (
     <div className="card-body">
         <div className="progress">
             <div
@@ -82,8 +96,8 @@ const ProgressBarCardBody = () => (
     </div>
 )
 
-const CardBody: React.FC<{ tab: Tab } & Props> = ({ tab, result }) => {
-    const limit = 20
+const CardBodyLoader: React.FC<Props> = ({ result }) => {
+    const { tab } = useContext(TabContext)
 
     const [offseti, setOffseti] = useState(0)
     const [offseth, setOffseth] = useState(0)
@@ -98,7 +112,7 @@ const CardBody: React.FC<{ tab: Tab } & Props> = ({ tab, result }) => {
     useEffect(() => { setLabels(false) }, [result])
 
     switch (tab) {
-        case 'list': {
+        case 'ppi': {
             const interactions = result.interactions.slice(offseti, offseti + limit);
 
             return (
@@ -113,7 +127,7 @@ const CardBody: React.FC<{ tab: Tab } & Props> = ({ tab, result }) => {
                 </React.Fragment>
             )
         }
-        case 'human': {
+        case 'h': {
             const proteins = result.proteins.human()
 
             const slice = proteins.slice(offseth, offseth + limit)
@@ -130,7 +144,7 @@ const CardBody: React.FC<{ tab: Tab } & Props> = ({ tab, result }) => {
                 </React.Fragment>
             )
         }
-        case 'virus': {
+        case 'v': {
             const proteins = result.proteins.virus()
 
             const slice = proteins.slice(offsetv, offsetv + limit)

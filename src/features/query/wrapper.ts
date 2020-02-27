@@ -5,10 +5,10 @@ export const wrapper = (result: SuccessfulQueryResult) => {
     return {
         interactions: result.interactions,
         proteins: {
-            human: getProteinCache('h', result),
-            virus: getProteinCache('v', result),
+            human: getProteinCache('h', result.interactions),
+            virus: getProteinCache('v', result.interactions),
         },
-        network: getNetworkCache(result),
+        network: getNetworkCache(result.interactions),
     }
 }
 
@@ -21,12 +21,12 @@ const filter = (type: Protein['type'], interactions: Interaction[]) => {
     return Object.values(map)
 }
 
-const getProteinCache = (type: Protein['type'], result: SuccessfulQueryResult) => {
+const getProteinCache = (type: Protein['type'], interactions: Interaction[]) => {
     let cache: Protein[] | null = null
 
     return () => {
         if (cache === null) throw new Promise(resolve => setTimeout(() => {
-            cache = filter(type, result.interactions)
+            cache = filter(type, interactions)
             resolve()
         }, 0))
 
@@ -34,12 +34,12 @@ const getProteinCache = (type: Protein['type'], result: SuccessfulQueryResult) =
     }
 }
 
-const getNetworkCache = (result: SuccessfulQueryResult) => {
+const getNetworkCache = (interactions: Interaction[]) => {
     let cache: Network | null = null
 
     return () => {
         if (cache === null) throw new Promise(resolve => setTimeout(() => {
-            cache = network(result.interactions)
+            cache = network(interactions)
             resolve()
         }, 0))
 
