@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { ResultWrapper } from 'features/query'
+import { proteins2csv, interactions2csv } from 'features/query'
 
 const Pagination = React.lazy(() => import('./Pagination').then(module => ({ default: module.Pagination })))
 const ProteinCardTable = React.lazy(() => import('./ProteinCardTable').then(module => ({ default: module.ProteinCardTable })))
@@ -10,15 +11,13 @@ const NetworkStageCardBody = React.lazy(() => import('./NetworkStageCardBody').t
 
 const limit = 20
 
-type Tab = 'ppi' | 'h' | 'v' | 'network'
+type Tab = 'interactions' | 'proteins' | 'network'
 
 type Props = {
     result: ResultWrapper
 }
 
-let savedtab = 'ppi' as Tab
-
-const TabContext = React.createContext({ tab: savedtab })
+let savedtab = 'interactions' as Tab
 
 export const QueryResultCard: React.FC<Props> = ({ result }) => {
     const [tab, setTab] = useState<Tab>(savedtab)
@@ -37,29 +36,20 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                     <li className="nav-item">
                         <a
                             href="/"
-                            className={tab === 'ppi' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('ppi')}
+                            className={tab === 'interactions' ? 'nav-link active' : 'nav-link'}
+                            onClick={getOnClick('interactions')}
                         >
-                            List view
-                        </a>
+                            Interactions
+                    </a>
                     </li>
                     <li className="nav-item">
                         <a
                             href="/"
-                            className={tab === 'h' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('h')}
+                            className={tab === 'proteins' ? 'nav-link active' : 'nav-link'}
+                            onClick={getOnClick('proteins')}
                         >
-                            Human proteins
-                        </a>
-                    </li>
-                    <li className="nav-item">
-                        <a
-                            href="/"
-                            className={tab === 'v' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('v')}
-                        >
-                            Viral proteins
-                        </a>
+                            Proteins
+                    </a>
                     </li>
                     <li className="nav-item">
                         <a
@@ -67,23 +57,17 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
                             className={tab === 'network' ? 'nav-link active' : 'nav-link'}
                             onClick={getOnClick('network')}
                         >
-                            Network view
-                        </a>
+                            Network
+                    </a>
                     </li>
                 </ul>
             </div>
-            <TabContext.Provider value={{ tab: tab }}>
-                <CardBody result={result} />
-            </TabContext.Provider>
+            <React.Suspense fallback={<CardBodyFallback />}>
+                <CardBodyLoader tab={tab} result={result} />
+            </React.Suspense>
         </div>
     )
 }
-
-const CardBody: React.FC<Props> = ({ result }) => (
-    <React.Suspense fallback={<CardBodyFallback />}>
-        <CardBodyLoader result={result} />
-    </React.Suspense>
-)
 
 const CardBodyFallback = () => (
     <div className="card-body">
@@ -96,71 +80,127 @@ const CardBodyFallback = () => (
     </div>
 )
 
-const CardBodyLoader: React.FC<Props> = ({ result }) => {
-    const { tab } = useContext(TabContext)
+type CardBodyProps = {
+    tab: Tab
+    result: ResultWrapper
+}
 
+type ProteinTab = 'a' | 'h' | 'v'
+
+let savedptab = 'a' as ProteinTab
+
+const CardBodyLoader: React.FC<CardBodyProps> = ({ tab, result }) => {
+    const [ptab, setPtab] = useState<ProteinTab>(savedptab)
     const [offseti, setOffseti] = useState(0)
-    const [offseth, setOffseth] = useState(0)
-    const [offsetv, setOffsetv] = useState(0)
+    const [offsetp, setOffsetp] = useState(0)
     const [ratio, setRatio] = useState(100)
     const [labels, setLabels] = useState(false)
 
+    useEffect(() => { setOffsetp(0) }, [ptab])
+    useEffect(() => { savedptab = ptab }, [ptab])
     useEffect(() => { setOffseti(0) }, [result])
-    useEffect(() => { setOffseth(0) }, [result])
-    useEffect(() => { setOffsetv(0) }, [result])
+    useEffect(() => { setOffsetp(0) }, [result])
     useEffect(() => { setRatio(100) }, [result])
     useEffect(() => { setLabels(false) }, [result])
 
+    const download = (csv: () => string) => (e: React.MouseEvent) => {
+        e.preventDefault()
+        window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(csv()))
+    }
+
     switch (tab) {
-        case 'ppi': {
-            const interactions = result.interactions.slice(offseti, offseti + limit);
+        case 'interactions': {
+            const interactions = result.interactions
 
             return (
                 <React.Fragment>
                     <div className="card-body">
-                        <Pagination offset={offseti} limit={limit} total={result.interactions.length} update={setOffseti} />
+                        <p className="text-right">
+                            <a href="/" onClick={download(() => interactions2csv(interactions))}>
+                                Download as csv
+                            </a>
+                        </p>
+                        <Pagination offset={offseti} limit={limit} total={interactions.length} update={setOffseti} />
                     </div>
-                    <InteractionCardTable interactions={interactions} limit={limit} />
+                    <InteractionCardTable
+                        interactions={interactions.slice(offseti, offseti + limit)}
+                        limit={limit}
+                    />
                     <div className="card-body">
-                        <Pagination offset={offseti} limit={limit} total={result.interactions.length} update={setOffseti} />
+                        <Pagination offset={offseti} limit={limit} total={interactions.length} update={setOffseti} />
                     </div>
                 </React.Fragment>
             )
         }
-        case 'h': {
-            const proteins = result.proteins.human()
 
-            const slice = proteins.slice(offseth, offseth + limit)
+        case 'proteins': {
+            const { human, viral } = result.proteins()
+
+            const proteins = ptab === 'h' ? human : ptab === 'v' ? viral : [...human, ...viral]
 
             return (
                 <React.Fragment>
                     <div className="card-body">
-                        <Pagination offset={offseth} limit={limit} total={proteins.length} update={setOffseth} />
+                        <div className="row">
+                            <div className="col">
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        id="ptab-a"
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="ptab"
+                                        value="a"
+                                        checked={ptab === 'a'}
+                                        onChange={() => setPtab('a')}
+                                    />
+                                    <label className="form-check-label" htmlFor="ptab-a">all</label>
+                                </div>
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        id="ptab-h"
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="ptab"
+                                        value="h"
+                                        checked={ptab === 'h'}
+                                        onChange={() => setPtab('h')}
+                                    />
+                                    <label className="form-check-label" htmlFor="ptab-h">human</label>
+                                </div>
+                                <div className="form-check form-check-inline">
+                                    <input
+                                        id="ptab-v"
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="ptab"
+                                        value="v"
+                                        checked={ptab === 'v'}
+                                        onChange={() => setPtab('v')}
+                                    />
+                                    <label className="form-check-label" htmlFor="ptab-v">virus</label>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <p className="text-right">
+                                    <a href="/" onClick={download(() => proteins2csv(proteins))} className="text-right">
+                                        Download as csv
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                        <Pagination offset={offsetp} limit={limit} total={proteins.length} update={setOffsetp} />
                     </div>
-                    <ProteinCardTable proteins={slice} limit={limit} />
+                    <ProteinCardTable
+                        proteins={proteins.slice(offsetp, offsetp + limit)}
+                        limit={limit}
+                    />
                     <div className="card-body">
-                        <Pagination offset={offseth} limit={limit} total={proteins.length} update={setOffseth} />
+                        <Pagination offset={offsetp} limit={limit} total={proteins.length} update={setOffsetp} />
                     </div>
                 </React.Fragment>
             )
         }
-        case 'v': {
-            const proteins = result.proteins.virus()
 
-            const slice = proteins.slice(offsetv, offsetv + limit)
-
-            return (
-                <React.Fragment>
-                    <div className="card-body">
-                        <Pagination offset={offsetv} limit={limit} total={proteins.length} update={setOffsetv} />
-                    </div>
-                    <ProteinCardTable proteins={slice} limit={limit} />
-                    <div className="card-body">
-                        <Pagination offset={offsetv} limit={limit} total={proteins.length} update={setOffsetv} />
-                    </div>
-                </React.Fragment>
-            )
-        }
         case 'network': {
             const network = result.network()
 
@@ -177,6 +217,7 @@ const CardBodyLoader: React.FC<Props> = ({ result }) => {
                 </React.Fragment>
             )
         }
+
         default:
             throw new Error()
     }

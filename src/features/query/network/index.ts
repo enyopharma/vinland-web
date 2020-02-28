@@ -211,7 +211,7 @@ const setUpStage = (network: { nodes: Node[], links: Link[] }) => {
         },
         save: () => {
             if (ref === null) return
-            downloadURI(ref.toDataURL({ pixelRatio: 2 }), 'network.png')
+            window.open(ref.toDataURL({ pixelRatio: 2 }))
         },
         remove: () => {
             if (ref === null) return
@@ -325,16 +325,4 @@ const getLink = (l: Link) => {
         perfectDrawEnabled: false,
         closed: l.source === l.target,
     })
-}
-
-const link: { current: HTMLAnchorElement | null } = { current: null }
-
-const downloadURI = (uri: string, name: string) => {
-    link.current = document.createElement('a');
-    link.current.download = name;
-    link.current.href = uri;
-    document.body.appendChild(link.current);
-    link.current.click();
-    document.body.removeChild(link.current);
-    delete link.current;
 }
