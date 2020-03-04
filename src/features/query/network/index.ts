@@ -1,15 +1,14 @@
 import Konva from 'konva'
 import { Interaction, Protein, Node, Link } from 'features/query'
-import { getLabels } from './labels';
-import { getSelection } from './selection';
-import { getSimulation } from './simulation';
+import { config } from 'features/query'
+import { getLabels } from './labels'
+import { getSelection } from './selection'
+import { getSimulation } from './simulation'
 import { getColorPicker } from './color'
-
-const radius = 6
 
 const style = {
     nodes: {
-        radius: radius,
+        radius: config.radius,
         stroke: {
             width: 1,
             color: {
@@ -90,7 +89,7 @@ const getNodesAndLinks = (interactions: Interaction[]) => {
 
 const setUpStage = (network: { nodes: Node[], links: Link[] }) => {
     const ui = { labels: getLabels(), selection: getSelection(network) }
-    const simulation = getSimulation(network, { radius: radius })
+    const simulation = getSimulation(network)
     const listeners: Array<() => void> = []
 
     /**
@@ -161,8 +160,8 @@ const setUpStage = (network: { nodes: Node[], links: Link[] }) => {
 
                 const visibility = ui.selection.isNodeInNeighborhood(n) && ui.labels.visibility()
 
-                label.x(n.x + radius + style.nodes.stroke.width)
-                label.y(n.y - (radius / 2))
+                label.x(n.x + config.radius + style.nodes.stroke.width)
+                label.y(n.y - (config.radius / 2))
                 label.visible(visibility)
             }
         })
@@ -281,7 +280,7 @@ const setUpStage = (network: { nodes: Node[], links: Link[] }) => {
 
 const getNode = (n: Node) => {
     const node = new Konva.Circle({
-        radius: radius,
+        radius: config.radius,
         fill: n.data.color,
         stroke: style.nodes.stroke.color.default,
         strokeWidth: style.nodes.stroke.width,

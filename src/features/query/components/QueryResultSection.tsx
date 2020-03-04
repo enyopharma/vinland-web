@@ -1,8 +1,7 @@
 import React from 'react'
 
 import { Query } from 'features/query'
-import { resources, wrapper } from 'features/query'
-import { isSuccessfulQueryResult } from 'features/query'
+import { resources } from 'features/query'
 
 import { QueryResultCard } from './QueryResultCard'
 import { QueryResultAlert } from './QueryResultAlert'
@@ -13,9 +12,20 @@ type Props = {
 
 export const QueryResultSection: React.FC<Props> = ({ query }) => (
     <React.Suspense fallback={<SectionFallback />}>
-        <SectionLoader query={query} />
+        <Section query={query} />
     </React.Suspense>
 )
+
+const Section: React.FC<Props> = ({ query }) => {
+    const result = resources.result(query).read()
+
+    return (
+        <section>
+            <QueryResultAlert result={result} />
+            <QueryResultCard result={result} />
+        </section>
+    )
+}
 
 const SectionFallback: React.FC = () => (
     <div className="progress">
@@ -25,16 +35,3 @@ const SectionFallback: React.FC = () => (
         ></div>
     </div>
 )
-
-const SectionLoader: React.FC<Props> = ({ query }) => {
-    const result = resources.result(query).read()
-
-    return (
-        <section>
-            <QueryResultAlert result={result} />
-            {!isSuccessfulQueryResult(result) ? null : (
-                <QueryResultCard result={wrapper(result)} />
-            )}
-        </section>
-    )
-}

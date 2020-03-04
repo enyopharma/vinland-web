@@ -1,82 +1,52 @@
 import React from 'react'
 
-type NavLink = {
-    page: number
-    active: boolean
-}
-
-type NavItem = NavLink | {}
+import { config } from 'features/query'
 
 type Props = {
     offset: number
     total: number
-    limit: number
-    update: (page: number) => void
+    setOffset: (offset: number) => void
 }
 
-type NavItemLiProps = {
-    item: NavItem
-    update: (i: number) => void
-}
+export const Pagination: React.FC<Props> = ({ offset, total, setOffset }) => {
+    const cur = Math.floor(offset / config.limit) + 1
+    const max = Math.ceil(total / config.limit)
 
-type NavLinkLiProps = {
-    link: NavLink
-    update: (i: number) => void
-}
-
-export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) => {
-    const cur = Math.floor(offset / limit) + 1
-    const max = Math.ceil(total / limit)
+    const update = (page: number) => setOffset((page - 1) * config.limit)
 
     return (
         <nav>
             <ul className="pagination justify-content-center">
-                <li className={cur === 1 ? 'page-item disabled' : 'page-item'}>
-                    <a
-                        href="/"
-                        className="page-link"
-                        onClick={e => { e.preventDefault(); update(offset - limit) }}
-                    >
-                        &laquo;
-                    </a>
-                </li>
-                {items(10, cur, max).map((item, i) => <ItemLi key={i} item={item} update={i => update(i * limit)} />)}
-                <li className={cur === max ? 'page-item disabled' : 'page-item'}>
-                    <a
-                        href="/"
-                        className="page-link"
-                        onClick={e => { e.preventDefault(); update(offset + limit) }}
-                    >
-                        &raquo;
-                    </a>
-                </li>
+                <ItemLi state={cur === 1 ? 'disabled' : null} update={() => update(cur - 1)}>
+                    &laquo;
+                </ItemLi>
+                {items(10, cur, max).map((item, i) => item
+                    ? <ItemLi key={i} state={item.active ? 'active' : null} update={() => update(item.page)}>{item.page}</ItemLi>
+                    : <ItemLi key={i} state={'disabled'} update={() => { }}>&hellip;</ItemLi>
+                )}
+                <ItemLi state={cur === max ? 'disabled' : null} update={() => update(cur + 1)}>
+                    &raquo;
+                </ItemLi>
             </ul>
         </nav>
     )
 }
 
-const ItemLi: React.FC<NavItemLiProps> = ({ item, update }) => {
-    return isNavLink(item) ? <NavLinkLi link={item} update={update} /> : <PlaceholderLi />
-}
+const ItemLi: React.FC<{ state: 'active' | 'disabled' | null, update: () => void }> = (props) => {
+    const { state, update, children } = props
 
-const NavLinkLi: React.FC<NavLinkLiProps> = ({ link, update }) => (
-    <li className={link.active ? 'page-item active' : 'page-item'}>
-        <a href="/" className="page-link" onClick={e => { e.preventDefault(); update(link.page - 1) }}>
-            {link.page}
-        </a>
-    </li>
-)
+    const onClick = (e: React.MouseEvent) => {
+        e.preventDefault()
+        update()
+    }
 
-const PlaceholderLi: React.FC = () => (
-    <li className="page-item disabled">
-        <a href="/" className="page-link" onClick={e => e.preventDefault()}>
-            &hellip;
-        </a>
-    </li >
-)
-
-function isNavLink(item: NavItem): item is NavLink {
-    return typeof (item as NavLink).page !== 'undefined'
+    return (
+        <li className={`page-item ${state === null ? '' : ' ' + state}`}>
+            <a href="/" className="page-link" onClick={onClick}>
+                {children}
+            </a>
+        </li>
+    )
 }
 
 const items = (nb: number, cur: number, max: number) => {
@@ -86,7 +56,7 @@ const items = (nb: number, cur: number, max: number) => {
 
     if (cur <= nb - 3) return [
         ...[...Array(nb - 2)].map((_, i) => ({ page: i + 1, active: cur === i + 1 })),
-        {},
+        null,
         { page: max - 1, active: false },
         { page: max, active: false },
     ]
@@ -94,20 +64,20 @@ const items = (nb: number, cur: number, max: number) => {
     if (cur > max - nb + 3) return [
         { page: 1, active: false },
         { page: 2, active: false },
-        {},
+        null,
         ...[...Array(nb - 2)].map((_, i) => ({ page: max - nb + 3 + i, active: cur === max - nb + 3 + i })),
     ]
 
     return [
         { page: 1, active: false },
         { page: 2, active: false },
-        {},
+        null,
         { page: cur - 2, active: false },
         { page: cur - 1, active: false },
         { page: cur, active: true },
         { page: cur + 1, active: false },
         { page: cur + 2, active: false },
-        {},
+        null,
         { page: max - 1, active: cur === max - 1 },
         { page: max, active: cur === max },
     ]

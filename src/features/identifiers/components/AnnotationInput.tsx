@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 import { Annotation } from 'features/identifiers'
 import { resources } from 'features/identifiers'
 
-import { Overlay, SearchResultList } from 'features/autocomplete'
+import { SearchResultList } from 'features/autocomplete'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -15,37 +15,26 @@ type Props = {
     select: (annotation: Annotation) => void,
 }
 
+const isSourceSelected = (source: string) => source.trim().length > 0
+
 export const AnnotationInput: React.FC<Props> = ({ select }) => {
-    const input = useRef<HTMLInputElement>(null)
-    const [source, setSource] = useState<string>('')
+    const ref = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
-    const [enabled, setEnabled] = useState<boolean>(false)
+    const [source, setSource] = useState<string>('')
 
     useEffect(() => {
-        if (input.current && source.trim().length > 0) {
-            input.current.focus()
+        if (isSourceSelected(source)) {
+            ref.current?.focus()
         }
     }, [source])
 
-    useEffect(() => {
-        setEnabled(query.trim().length > 0)
-    }, [query])
+    const search = (query: string) => resources.annotations(source, query).read()
 
-    const search = useCallback(() => {
-        return resources.annotations(source, query).read()
-    }, [source, query])
-
-    const selectAndClose = useCallback((annotation: Annotation) => {
+    const selectAndReset = (annotation: Annotation) => {
         setSource('')
         setQuery('')
         select(annotation)
-    }, [select])
-
-    const handleKeyDown = useCallback((code: number) => {
-        if (input.current && code === 27) {
-            input.current.blur()
-        }
-    }, [input])
+    }
 
     return (
         <div className="form-group">
@@ -56,7 +45,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                 <select
                     className="form-control form-control-lg col-2"
                     value={source}
-                    onChange={e => setSource(e.target.value)}
+                    onChange={e => { setSource(e.target.value) }}
                 >
                     <option value="">Source</option>
                     {sources.map((source, i) => (
@@ -64,21 +53,16 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                     ))}
                 </select>
                 <input
-                    ref={input}
+                    ref={ref}
                     type="text"
                     className="form-control form-control-lg"
                     placeholder="Search for a predefined human annotation"
                     value={query}
                     disabled={source === ''}
                     onChange={e => setQuery(e.target.value)}
-                    onFocus={e => setEnabled(true)}
-                    onBlur={e => setEnabled(false)}
-                    onKeyDown={e => handleKeyDown(e.keyCode)}
                 />
             </div>
-            <Overlay display={enabled && query.trim().length > 0}>
-                <SearchResultList input={input} query={query} search={search} select={selectAndClose} />
-            </Overlay>
+            <SearchResultList input={ref} query={query} search={search} select={selectAndReset} />
         </div>
     )
 }

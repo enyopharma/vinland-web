@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { useAppSelector } from 'app'
+
 import { state2query } from 'pages/search'
 
 import { OptionsCard } from 'features/options'
@@ -32,8 +33,8 @@ export const SearchPage: React.FC = () => {
                     <OptionsCard options={options} />
                 </fieldset>
             </form>
-            <h2 id="results">Query result</h2>
-            <ToastContainer target="results" />
+            <h2 id="result">Query result</h2>
+            <ToastContainer target='result' />
             <QueryResultSection query={query} />
         </div>
     )

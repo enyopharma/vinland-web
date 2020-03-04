@@ -1,13 +1,13 @@
 import React from 'react'
 
 import { Protein } from 'features/query'
+import { config } from 'features/query'
 
 type Props = {
     proteins: Protein[]
-    limit: number
 }
 
-export const ProteinCardTable: React.FC<Props> = ({ proteins, limit }) => (
+export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
     <table className="table card-table table-stripped table-hover">
         <thead>
             <tr>
@@ -26,7 +26,7 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins, limit }) => (
             </tr>
         </thead>
         <tbody>
-            {[...Array(limit)].map((_, i) => proteins[i]
+            {[...Array(config.limit)].map((_, i) => proteins[i]
                 ? <ProteinTr key={i} protein={proteins[i]} />
                 : <SkeletonTr key={i} />
             )}

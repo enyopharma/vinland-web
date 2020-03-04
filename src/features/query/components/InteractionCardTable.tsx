@@ -1,13 +1,13 @@
 import React from 'react'
 
 import { Interaction } from 'features/query'
+import { config } from 'features/query'
 
 type Props = {
     interactions: Interaction[]
-    limit: number
 }
 
-export const InteractionCardTable: React.FC<Props> = ({ interactions, limit }) => (
+export const InteractionCardTable: React.FC<Props> = ({ interactions }) => (
     <table className="table card-table table-stripped table-hover">
         <thead>
             <tr>
@@ -26,7 +26,7 @@ export const InteractionCardTable: React.FC<Props> = ({ interactions, limit }) =
             </tr>
         </thead>
         <tbody>
-            {[...Array(limit)].map((_, i) => interactions[i]
+            {[...Array(config.limit)].map((_, i) => interactions[i]
                 ? <InteractionTr key={i} interaction={interactions[i]} />
                 : <SkeletonTr key={i} />
             )}

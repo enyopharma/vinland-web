@@ -20,11 +20,9 @@ export const IdentifierListFormGroup: React.FC<Props> = ({ list, update, remove 
                     onChange={e => update(e.target.value)}
                 />
                 <div className="input-group-append">
-                    <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={e => remove()}
-                    >X</button>
+                    <button type="button" className="btn btn-danger" onClick={remove}>
+                        X
+                    </button>
                 </div>
             </div>
         </div>

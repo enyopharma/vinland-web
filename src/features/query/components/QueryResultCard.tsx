@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 
-import { ResultWrapper } from 'features/query'
+import { QueryResult, ResultWrapper } from 'features/query'
+import { isSuccessfulQueryResult, wrapper } from 'features/query'
 import { proteins2csv, interactions2csv } from 'features/query'
+import { config } from 'features/query'
 
 const Pagination = React.lazy(() => import('./Pagination').then(module => ({ default: module.Pagination })))
 const ProteinCardTable = React.lazy(() => import('./ProteinCardTable').then(module => ({ default: module.ProteinCardTable })))
@@ -9,24 +11,24 @@ const InteractionCardTable = React.lazy(() => import('./InteractionCardTable').t
 const NetworkControlCardBody = React.lazy(() => import('./NetworkControlCardBody').then(module => ({ default: module.NetworkControlCardBody })))
 const NetworkStageCardBody = React.lazy(() => import('./NetworkStageCardBody').then(module => ({ default: module.NetworkStageCardBody })))
 
-const limit = 20
-
-type Tab = 'interactions' | 'proteins' | 'network'
-
 type Props = {
-    result: ResultWrapper
+    result: QueryResult
 }
 
-let savedtab = 'interactions' as Tab
+type TypeTab = 'interactions' | 'proteins' | 'network'
+type ProteinTab = 'a' | 'h' | 'v'
 
 export const QueryResultCard: React.FC<Props> = ({ result }) => {
-    const [tab, setTab] = useState<Tab>(savedtab)
+    const [ttab, setTypeTab] = useState<TypeTab>('interactions')
+    const [ptab, setProteinTab] = useState<ProteinTab>('a')
+    const [wrapped, setWrapped] = useState<ResultWrapper | null>(null)
 
-    useEffect(() => { savedtab = tab }, [tab])
+    useEffect(() => {
+        setWrapped(isSuccessfulQueryResult(result) ? wrapper(result) : null)
+    }, [result])
 
-    const getOnClick = (tab: Tab) => (e: React.MouseEvent) => {
-        e.preventDefault()
-        setTab(tab)
+    if (wrapped === null) {
+        return null
     }
 
     return (
@@ -34,81 +36,37 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
             <div className="card-header pb-0">
                 <ul className="nav nav-tabs card-header-tabs">
                     <li className="nav-item">
-                        <a
-                            href="/"
-                            className={tab === 'interactions' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('interactions')}
-                        >
-                            Interactions
-                    </a>
+                        <TypeNavLink current={ttab} value="interactions" label="Interactions" update={setTypeTab} />
                     </li>
                     <li className="nav-item">
-                        <a
-                            href="/"
-                            className={tab === 'proteins' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('proteins')}
-                        >
-                            Proteins
-                    </a>
+                        <TypeNavLink current={ttab} value="proteins" label="Proteins" update={setTypeTab} />
                     </li>
                     <li className="nav-item">
-                        <a
-                            href="/"
-                            className={tab === 'network' ? 'nav-link active' : 'nav-link'}
-                            onClick={getOnClick('network')}
-                        >
-                            Network
-                    </a>
+                        <TypeNavLink current={ttab} value="network" label="Network" update={setTypeTab} />
                     </li>
                 </ul>
             </div>
             <React.Suspense fallback={<CardBodyFallback />}>
-                <CardBodyLoader tab={tab} result={result} />
+                <CardBody ttab={ttab} ptab={ptab} result={wrapped} setProteinTab={setProteinTab} />
             </React.Suspense>
         </div>
     )
 }
 
-const CardBodyFallback = () => (
-    <div className="card-body">
-        <div className="progress">
-            <div
-                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                style={{ width: '100%' }}
-            ></div>
-        </div>
-    </div>
-)
+const CardBody: React.FC<{ ttab: TypeTab, ptab: ProteinTab, result: ResultWrapper, setProteinTab: (ptab: ProteinTab) => void }> = (props) => {
+    const { ttab, ptab, result, setProteinTab } = props
 
-type CardBodyProps = {
-    tab: Tab
-    result: ResultWrapper
-}
+    const [offseti, setOffseti] = useState<number>(0)
+    const [offsetp, setOffsetp] = useState<number>(0)
+    const [ratio, setRatio] = useState<number>(config.ratio)
+    const [labels, setLabels] = useState<boolean>(false)
 
-type ProteinTab = 'a' | 'h' | 'v'
-
-let savedptab = 'a' as ProteinTab
-
-const CardBodyLoader: React.FC<CardBodyProps> = ({ tab, result }) => {
-    const [ptab, setPtab] = useState<ProteinTab>(savedptab)
-    const [offseti, setOffseti] = useState(0)
-    const [offsetp, setOffsetp] = useState(0)
-    const [ratio, setRatio] = useState(100)
-    const [labels, setLabels] = useState(false)
-
-    useEffect(() => { setOffsetp(0) }, [ptab])
-    useEffect(() => { savedptab = ptab }, [ptab])
     useEffect(() => { setOffseti(0) }, [result])
-    useEffect(() => { setOffsetp(0) }, [result])
-    useEffect(() => { setRatio(100) }, [result])
+    useEffect(() => { setOffsetp(0) }, [result, ptab])
+    useEffect(() => { setRatio(config.ratio) }, [result])
     useEffect(() => { setLabels(false) }, [result])
 
-    const download = (csv: () => string) => (e: React.MouseEvent) => {
-        e.preventDefault()
-        window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(csv()))
-    }
-
-    switch (tab) {
+    switch (ttab) {
         case 'interactions': {
             const interactions = result.interactions
 
@@ -116,18 +74,13 @@ const CardBodyLoader: React.FC<CardBodyProps> = ({ tab, result }) => {
                 <React.Fragment>
                     <div className="card-body">
                         <p className="text-right">
-                            <a href="/" onClick={download(() => interactions2csv(interactions))}>
-                                Download as csv
-                            </a>
+                            <CsvDownloadButton csv={() => interactions2csv(interactions)} />
                         </p>
-                        <Pagination offset={offseti} limit={limit} total={interactions.length} update={setOffseti} />
+                        <Pagination offset={offseti} total={interactions.length} setOffset={setOffseti} />
                     </div>
-                    <InteractionCardTable
-                        interactions={interactions.slice(offseti, offseti + limit)}
-                        limit={limit}
-                    />
+                    <InteractionCardTable interactions={interactions.slice(offseti, offseti + config.limit)} />
                     <div className="card-body">
-                        <Pagination offset={offseti} limit={limit} total={interactions.length} update={setOffseti} />
+                        <Pagination offset={offseti} total={interactions.length} setOffset={setOffseti} />
                     </div>
                 </React.Fragment>
             )
@@ -143,59 +96,21 @@ const CardBodyLoader: React.FC<CardBodyProps> = ({ tab, result }) => {
                     <div className="card-body">
                         <div className="row">
                             <div className="col">
-                                <div className="form-check form-check-inline">
-                                    <input
-                                        id="ptab-a"
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="ptab"
-                                        value="a"
-                                        checked={ptab === 'a'}
-                                        onChange={() => setPtab('a')}
-                                    />
-                                    <label className="form-check-label" htmlFor="ptab-a">all</label>
-                                </div>
-                                <div className="form-check form-check-inline">
-                                    <input
-                                        id="ptab-h"
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="ptab"
-                                        value="h"
-                                        checked={ptab === 'h'}
-                                        onChange={() => setPtab('h')}
-                                    />
-                                    <label className="form-check-label" htmlFor="ptab-h">human</label>
-                                </div>
-                                <div className="form-check form-check-inline">
-                                    <input
-                                        id="ptab-v"
-                                        className="form-check-input"
-                                        type="radio"
-                                        name="ptab"
-                                        value="v"
-                                        checked={ptab === 'v'}
-                                        onChange={() => setPtab('v')}
-                                    />
-                                    <label className="form-check-label" htmlFor="ptab-v">virus</label>
-                                </div>
+                                <ProteinNavCheckbox current={ptab} value="a" label="all" update={setProteinTab} />
+                                <ProteinNavCheckbox current={ptab} value="h" label="human" update={setProteinTab} />
+                                <ProteinNavCheckbox current={ptab} value="v" label="viral" update={setProteinTab} />
                             </div>
                             <div className="col">
                                 <p className="text-right">
-                                    <a href="/" onClick={download(() => proteins2csv(proteins))} className="text-right">
-                                        Download as csv
-                                    </a>
+                                    <CsvDownloadButton csv={() => proteins2csv(proteins)} />
                                 </p>
                             </div>
                         </div>
-                        <Pagination offset={offsetp} limit={limit} total={proteins.length} update={setOffsetp} />
+                        <Pagination offset={offsetp} total={proteins.length} setOffset={setOffsetp} />
                     </div>
-                    <ProteinCardTable
-                        proteins={proteins.slice(offsetp, offsetp + limit)}
-                        limit={limit}
-                    />
+                    <ProteinCardTable proteins={proteins.slice(offsetp, offsetp + config.limit)} />
                     <div className="card-body">
-                        <Pagination offset={offsetp} limit={limit} total={proteins.length} update={setOffsetp} />
+                        <Pagination offset={offsetp} total={proteins.length} setOffset={setOffsetp} />
                     </div>
                 </React.Fragment>
             )
@@ -222,3 +137,60 @@ const CardBodyLoader: React.FC<CardBodyProps> = ({ tab, result }) => {
             throw new Error()
     }
 }
+
+const TypeNavLink: React.FC<{ current: TypeTab, value: TypeTab, label: string, update: (tab: TypeTab) => void }> = (props) => {
+    const { current, value, label, update } = props
+
+    const classes = current === value ? 'nav-link active' : 'nav-link'
+
+    const onClick = (e: React.MouseEvent) => {
+        e.preventDefault()
+        update(value)
+    }
+
+    return <a href="/" className={classes} onClick={onClick}>{label}</a>
+}
+
+const ProteinNavCheckbox: React.FC<{ current: ProteinTab, value: ProteinTab, label: string, update: (tab: ProteinTab) => void }> = (props) => {
+    const { current, value, label, update } = props
+
+    return (
+        <div className="form-check form-check-inline">
+            <input
+                id={`ptab-${value}`}
+                className="form-check-input"
+                type="radio"
+                name="ptab"
+                value={value}
+                checked={current === value}
+                onChange={() => update(value)}
+            />
+            <label className="form-check-label" htmlFor={`ptab-${value}`}>
+                {label}
+            </label>
+        </div>
+    )
+}
+
+const CsvDownloadButton: React.FC<{ csv: () => string }> = ({ csv }) => {
+    const prefix = 'data:text/csv;charset=utf-8,'
+
+    const download = () => window.open(prefix + encodeURIComponent(csv()))
+
+    return (
+        <button className="btn btn-link p-0" onClick={download}>
+            Download as csv
+        </button>
+    )
+}
+
+const CardBodyFallback: React.FC = () => (
+    <div className="card-body">
+        <div className="progress">
+            <div
+                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                style={{ width: '100%' }}
+            ></div>
+        </div>
+    </div>
+)

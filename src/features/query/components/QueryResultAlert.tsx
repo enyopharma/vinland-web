@@ -1,19 +1,10 @@
 import React, { useEffect } from 'react'
 
 import { QueryResultStatuses, QueryResult } from 'features/query'
-
 import { toast } from 'features/toast'
 
 type Props = {
     result: QueryResult
-}
-
-type FailureProps = {
-    errors: string[]
-}
-
-type SuccessProps = {
-    nb: number
 }
 
 export const QueryResultAlert: React.FC<Props> = ({ result }) => {
@@ -33,8 +24,10 @@ const AlertIncomplete: React.FC = () => (
     </div>
 )
 
-const AlertFailure: React.FC<FailureProps> = ({ errors }) => {
-    useEffect(() => { toast('invalid query', { type: toast.TYPE.ERROR }) }, [errors])
+const AlertFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
+    useEffect(() => {
+        toast('invalid query', { type: toast.TYPE.ERROR })
+    }, [errors])
 
     return (
         <div className="alert alert-danger">
@@ -43,10 +36,12 @@ const AlertFailure: React.FC<FailureProps> = ({ errors }) => {
     )
 }
 
-const AlertSuccess: React.FC<SuccessProps> = ({ nb }) => {
-    const message = `${nb} ${nb > 1 ? 'interactions' : 'interaction'} found.`
+const AlertSuccess: React.FC<{ nb: number }> = ({ nb }) => {
+    useEffect(() => {
+        toast(message(nb), { type: toast.TYPE.SUCCESS })
+    }, [nb])
 
-    useEffect(() => { toast(message, { type: toast.TYPE.SUCCESS }) }, [message])
-
-    return <div className="alert alert-success">{message}</div>
+    return <div className="alert alert-success">{message(nb)}</div>
 }
+
+const message = (nb: number) => `${nb} ${nb > 1 ? 'interactions' : 'interaction'} found.`

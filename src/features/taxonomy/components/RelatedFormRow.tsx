@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react'
+import React from 'react'
+
 import { useActionCreator } from 'app'
 
 import { Taxon } from 'features/taxonomy'
@@ -12,15 +13,9 @@ type Props = {
 export const RelatedFormRow: React.FC<Props> = ({ parent, children }) => {
     const select = useActionCreator(actions.select)
 
-    const selectParent = useCallback(() => {
-        if (parent === null) return;
-        select(parent)
-    }, [select, parent])
+    const selectParent = () => parent && select(parent)
 
-    const selectChild = useCallback((value: string) => {
-        if (value === '') return;
-        select(children[parseInt(value)])
-    }, [select, children])
+    const selectChild = (value: string) => value !== '' && select(children[parseInt(value)])
 
     return (
         <div className="form-row">

@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 
-import { Network } from 'features/query'
 import { useDebounce } from 'app'
+
+import { Network } from 'features/query'
 
 type Props = {
     ratio: number

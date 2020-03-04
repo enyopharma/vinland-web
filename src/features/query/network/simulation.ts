@@ -1,12 +1,9 @@
 import * as d3 from 'd3-force'
 import { Node, Link } from 'features/query'
+import { config } from 'features/query'
 
-type Params = {
-    radius: number
-}
-
-export const getSimulation = (network: { nodes: Node[], links: Link[] }, params: Params) => {
-    let ratio = 100
+export const getSimulation = (network: { nodes: Node[], links: Link[] }) => {
+    let ratio = config.ratio
 
     const forces = {
         x: d3.forceX(),
@@ -14,7 +11,7 @@ export const getSimulation = (network: { nodes: Node[], links: Link[] }, params:
         center: d3.forceCenter(),
         links: d3.forceLink<Node, Link>(network.links).id(n => n.id),
         charge: d3.forceManyBody(),
-        collide: d3.forceCollide(params.radius)
+        collide: d3.forceCollide(config.radius)
     }
 
     const simulation = d3.forceSimulation(network.nodes)

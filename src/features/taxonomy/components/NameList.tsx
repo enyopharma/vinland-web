@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react'
+import React from 'react'
+
 import { useActionCreator } from 'app'
 
 import { Name } from 'features/taxonomy'
@@ -12,19 +13,17 @@ type Props = {
 export const NameList: React.FC<Props> = ({ names, selected }) => {
     const update = useActionCreator(actions.update)
 
-    const classes = useCallback((name: Name) => {
-        return selected.includes(name)
-            ? 'm-1 btn btn-sm btn-danger'
-            : 'm-1 btn btn-sm btn-outline-danger'
-    }, [selected])
+    const classes = (name: Name) => selected.includes(name)
+        ? 'm-1 btn btn-sm btn-danger'
+        : 'm-1 btn btn-sm btn-outline-danger'
 
-    const toggle = useCallback((name: Name) => {
+    const toggle = (name: Name) => {
         const names = selected.includes(name)
             ? selected.filter(n => n !== name)
             : [...selected, name]
 
         return update(names)
-    }, [selected, update])
+    }
 
     return (
         <p>

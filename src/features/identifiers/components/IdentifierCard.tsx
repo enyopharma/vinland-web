@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
-import { useSpring, animated } from 'react-spring'
+import { animated, useSpring } from 'react-spring'
+
 import { useActionCreator } from 'app'
 
 import { IdentifierList } from 'features/identifiers'
@@ -10,13 +11,6 @@ import { IdentifierListFormGroup } from './IdentifierListFormGroup'
 
 type Props = {
     lists: IdentifierList[]
-}
-
-type AnimatedProps = {
-    enabled: boolean
-    list: IdentifierList
-    update: (identifiers: string) => void
-    remove: () => void
 }
 
 export const IdentifierCard: React.FC<Props> = ({ lists }) => {
@@ -33,15 +27,16 @@ export const IdentifierCard: React.FC<Props> = ({ lists }) => {
                 <AnnotationInput select={select} />
                 <hr />
                 {lists.map((list, i) => (
-                    <AnimatedIdentifierListFormGroup
-                        key={list.i}
-                        enabled={list.i > 0}
-                        list={list}
-                        update={(identifiers: string) => update(i, identifiers)}
-                        remove={() => remove(i)}
-                    />
+                    <FadeIn key={list.i} enabled={list.i > 0}>
+                        <IdentifierListFormGroup
+                            key={list.i}
+                            list={list}
+                            update={(identifiers: string) => update(i, identifiers)}
+                            remove={() => remove(i)}
+                        />
+                    </FadeIn>
                 ))}
-                <button type="button" className="btn btn-primary btn-block" onClick={e => add()}>
+                <button type="button" className="btn btn-primary btn-block" onClick={add}>
                     Add a new identifier list
                 </button>
             </div>
@@ -52,7 +47,7 @@ export const IdentifierCard: React.FC<Props> = ({ lists }) => {
     )
 }
 
-const AnimatedIdentifierListFormGroup: React.FC<AnimatedProps> = ({ enabled, ...props }) => {
+const FadeIn: React.FC<{ enabled: boolean }> = ({ enabled, children }) => {
     const style = useSpring({
         config: { duration: 500 },
         from: { opacity: 0 },
@@ -61,7 +56,7 @@ const AnimatedIdentifierListFormGroup: React.FC<AnimatedProps> = ({ enabled, ...
 
     return (
         <animated.div className="animation" style={enabled ? style : {}}>
-            <IdentifierListFormGroup {...props} />
+            {children}
         </animated.div>
     )
 }
