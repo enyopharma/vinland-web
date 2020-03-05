@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext, useReducer, useState, useEffect } from 'react'
 
 import { QueryResult, ResultWrapper } from 'features/query'
 import { isSuccessfulQueryResult, wrapper } from 'features/query'
@@ -15,144 +15,220 @@ type Props = {
     result: QueryResult
 }
 
-type TypeTab = 'interactions' | 'proteins' | 'network'
-type ProteinTab = 'a' | 'h' | 'v'
+type NavState = {
+    tab: 'interactions' | 'proteins' | 'network'
+    interactions: { offset: number }
+    proteins: { tab: 'a' | 'h' | 'v', offsets: { a: number, h: number, v: number } }
+    network: { ratio: number, labels: boolean }
+}
+
+type NavAction =
+    | { type: 'tab', payload: NavState['tab'] }
+    | { type: 'interactions.offset', payload: NavState['interactions']['offset'] }
+    | { type: 'proteins.tab', payload: NavState['proteins']['tab'] }
+    | { type: 'proteins.offset', payload: { tab: NavState['proteins']['tab'], offset: number } }
+    | { type: 'network.ratio', payload: number }
+    | { type: 'network.labels', payload: boolean }
+    | { type: 'reset' }
+
+const init = {
+    tab: 'interactions' as NavState['tab'],
+    interactions: { offset: 0 },
+    proteins: { tab: 'a' as NavState['proteins']['tab'], offsets: { a: 0, h: 0, v: 0 } },
+    network: { ratio: config.ratio, labels: false },
+}
+
+const reducer = (state: NavState, action: NavAction) => {
+    switch (action.type) {
+        case 'tab':
+            return { ...state, tab: action.payload }
+        case 'interactions.offset':
+            return { ...state, interactions: { offset: action.payload } }
+        case 'proteins.tab':
+            return { ...state, proteins: { ...state.proteins, tab: action.payload } }
+        case 'proteins.offset':
+            const offsets = { ...state.proteins.offsets, [action.payload.tab]: action.payload.offset }
+
+            return { ...state, proteins: { ...state.proteins, offsets } }
+        case 'network.ratio':
+            return { ...state, network: { ...state.network, ratio: action.payload } }
+        case 'network.labels':
+            return { ...state, network: { ...state.network, labels: action.payload } }
+        case 'reset':
+            return {
+                tab: state.tab,
+                interactions: { offset: 0 },
+                proteins: { tab: state.proteins.tab, offsets: { a: 0, h: 0, v: 0 } },
+                network: { ratio: config.ratio, labels: false },
+            }
+        default:
+            throw new Error()
+    }
+}
+
+const NavContext = React.createContext<{ state: NavState, dispatch: (action: NavAction) => void }>({
+    state: init,
+    dispatch: (_: NavAction) => { },
+})
 
 export const QueryResultCard: React.FC<Props> = ({ result }) => {
-    const [ttab, setTypeTab] = useState<TypeTab>('interactions')
-    const [ptab, setProteinTab] = useState<ProteinTab>('a')
+    const [state, dispatch] = useReducer(reducer, init)
     const [wrapped, setWrapped] = useState<ResultWrapper | null>(null)
 
-    useEffect(() => {
-        setWrapped(isSuccessfulQueryResult(result) ? wrapper(result) : null)
-    }, [result])
+    useEffect(() => { dispatch({ type: 'reset' }) }, [result])
+    useEffect(() => { setWrapped(isSuccessfulQueryResult(result) ? wrapper(result) : null) }, [result])
 
     if (wrapped === null) {
         return null
     }
 
     return (
-        <div className="card">
-            <div className="card-header pb-0">
-                <ul className="nav nav-tabs card-header-tabs">
-                    <li className="nav-item">
-                        <TypeNavLink current={ttab} value="interactions" label="Interactions" update={setTypeTab} />
-                    </li>
-                    <li className="nav-item">
-                        <TypeNavLink current={ttab} value="proteins" label="Proteins" update={setTypeTab} />
-                    </li>
-                    <li className="nav-item">
-                        <TypeNavLink current={ttab} value="network" label="Network" update={setTypeTab} />
-                    </li>
-                </ul>
+        <NavContext.Provider value={{ state, dispatch }}>
+            <div className="card">
+                <div className="card-header pb-0">
+                    <ul className="nav nav-tabs card-header-tabs">
+                        <li className="nav-item">
+                            <TypeTabLink value="interactions">Interactions</TypeTabLink>
+                        </li>
+                        <li className="nav-item">
+                            <TypeTabLink value="proteins">Proteins</TypeTabLink>
+                        </li>
+                        <li className="nav-item">
+                            <TypeTabLink value="network">Network</TypeTabLink>
+                        </li>
+                    </ul>
+                </div>
+                <React.Suspense fallback={<CardBodyFallback />}>
+                    <CardBody result={wrapped} />
+                </React.Suspense>
             </div>
-            <React.Suspense fallback={<CardBodyFallback />}>
-                <CardBody ttab={ttab} ptab={ptab} result={wrapped} setProteinTab={setProteinTab} />
-            </React.Suspense>
-        </div>
+        </NavContext.Provider>
     )
 }
 
-const CardBody: React.FC<{ ttab: TypeTab, ptab: ProteinTab, result: ResultWrapper, setProteinTab: (ptab: ProteinTab) => void }> = (props) => {
-    const { ttab, ptab, result, setProteinTab } = props
+const CardBody: React.FC<{ result: ResultWrapper }> = ({ result }) => {
+    const { state: { tab } } = useContext(NavContext)
 
-    const [offseti, setOffseti] = useState<number>(0)
-    const [offsetp, setOffsetp] = useState<number>(0)
-    const [ratio, setRatio] = useState<number>(config.ratio)
-    const [labels, setLabels] = useState<boolean>(false)
-
-    useEffect(() => { setOffseti(0) }, [result])
-    useEffect(() => { setOffsetp(0) }, [result, ptab])
-    useEffect(() => { setRatio(config.ratio) }, [result])
-    useEffect(() => { setLabels(false) }, [result])
-
-    switch (ttab) {
-        case 'interactions': {
-            const interactions = result.interactions
-
-            return (
-                <React.Fragment>
-                    <div className="card-body">
-                        <p className="text-right">
-                            <CsvDownloadButton csv={() => interactions2csv(interactions)} />
-                        </p>
-                        <Pagination offset={offseti} total={interactions.length} setOffset={setOffseti} />
-                    </div>
-                    <InteractionCardTable interactions={interactions.slice(offseti, offseti + config.limit)} />
-                    <div className="card-body">
-                        <Pagination offset={offseti} total={interactions.length} setOffset={setOffseti} />
-                    </div>
-                </React.Fragment>
-            )
-        }
-
-        case 'proteins': {
-            const { human, viral } = result.proteins()
-
-            const proteins = ptab === 'h' ? human : ptab === 'v' ? viral : [...human, ...viral]
-
-            return (
-                <React.Fragment>
-                    <div className="card-body">
-                        <div className="row">
-                            <div className="col">
-                                <ProteinNavCheckbox current={ptab} value="a" label="all" update={setProteinTab} />
-                                <ProteinNavCheckbox current={ptab} value="h" label="human" update={setProteinTab} />
-                                <ProteinNavCheckbox current={ptab} value="v" label="viral" update={setProteinTab} />
-                            </div>
-                            <div className="col">
-                                <p className="text-right">
-                                    <CsvDownloadButton csv={() => proteins2csv(proteins)} />
-                                </p>
-                            </div>
-                        </div>
-                        <Pagination offset={offsetp} total={proteins.length} setOffset={setOffsetp} />
-                    </div>
-                    <ProteinCardTable proteins={proteins.slice(offsetp, offsetp + config.limit)} />
-                    <div className="card-body">
-                        <Pagination offset={offsetp} total={proteins.length} setOffset={setOffsetp} />
-                    </div>
-                </React.Fragment>
-            )
-        }
-
-        case 'network': {
-            const network = result.network()
-
-            return (
-                <React.Fragment>
-                    <NetworkControlCardBody
-                        ratio={ratio}
-                        labels={labels}
-                        network={network}
-                        setRatio={setRatio}
-                        setLabels={setLabels}
-                    />
-                    <NetworkStageCardBody network={network} />
-                </React.Fragment>
-            )
-        }
-
+    switch (tab) {
+        case 'interactions':
+            return <InteractionCardBody result={result} />
+        case 'proteins':
+            return <ProteinCardBody result={result} />
+        case 'network':
+            return <NetworkCardBody result={result} />
         default:
             throw new Error()
     }
 }
 
-const TypeNavLink: React.FC<{ current: TypeTab, value: TypeTab, label: string, update: (tab: TypeTab) => void }> = (props) => {
-    const { current, value, label, update } = props
+const CardBodyFallback: React.FC = () => (
+    <div className="card-body">
+        <div className="progress">
+            <div
+                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                style={{ width: '100%' }}
+            ></div>
+        </div>
+    </div>
+)
 
-    const classes = current === value ? 'nav-link active' : 'nav-link'
+const InteractionCardBody: React.FC<{ result: ResultWrapper }> = ({ result }) => {
+    const { state: { interactions: { offset } }, dispatch } = useContext(NavContext)
+
+    const interactions = result.interactions
+
+    const setOffset = (payload: number) => dispatch({ type: 'interactions.offset', payload })
+
+    return (
+        <React.Fragment>
+            <div className="card-body">
+                <p className="text-right">
+                    <CsvDownloadButton csv={() => interactions2csv(interactions)} />
+                </p>
+                <Pagination offset={offset} total={interactions.length} update={setOffset} />
+            </div>
+            <InteractionCardTable interactions={interactions.slice(offset, offset + config.limit)} />
+            <div className="card-body">
+                <Pagination offset={offset} total={interactions.length} update={setOffset} />
+            </div>
+        </React.Fragment>
+    )
+}
+
+const ProteinCardBody: React.FC<{ result: ResultWrapper }> = ({ result }) => {
+    const { state: { proteins: { tab, offsets } }, dispatch } = useContext(NavContext)
+
+    const { human, viral } = result.proteins()
+
+    const proteins = tab === 'h' ? human : tab === 'v' ? viral : [...human, ...viral]
+
+    const setOffset = (offset: number) => dispatch({
+        type: 'proteins.offset',
+        payload: { tab, offset }
+    })
+
+    return (
+        <React.Fragment>
+            <div className="card-body">
+                <div className="row">
+                    <div className="col">
+                        <ProteinTabCheckbox value="a">All</ProteinTabCheckbox>
+                        <ProteinTabCheckbox value="h">Human</ProteinTabCheckbox>
+                        <ProteinTabCheckbox value="v">Viral</ProteinTabCheckbox>
+                    </div>
+                    <div className="col">
+                        <p className="text-right">
+                            <CsvDownloadButton csv={() => proteins2csv(proteins)} />
+                        </p>
+                    </div>
+                </div>
+                <Pagination offset={offsets[tab]} total={proteins.length} update={setOffset} />
+            </div>
+            <ProteinCardTable proteins={proteins.slice(offsets[tab], offsets[tab] + config.limit)} />
+            <div className="card-body">
+                <Pagination offset={offsets[tab]} total={proteins.length} update={setOffset} />
+            </div>
+        </React.Fragment>
+    )
+}
+
+const NetworkCardBody: React.FC<{ result: ResultWrapper }> = ({ result }) => {
+    const { state: { network: { ratio, labels } }, dispatch } = useContext(NavContext)
+
+    const network = result.network()
+
+    const setRatio = (payload: number) => dispatch({ type: 'network.ratio', payload })
+    const setLabels = (payload: boolean) => dispatch({ type: 'network.labels', payload })
+
+    return (
+        <React.Fragment>
+            <NetworkControlCardBody
+                ratio={ratio}
+                labels={labels}
+                network={network}
+                setRatio={setRatio}
+                setLabels={setLabels}
+            />
+            <NetworkStageCardBody network={network} />
+        </React.Fragment>
+    )
+}
+
+const TypeTabLink: React.FC<{ value: NavState['tab'] }> = ({ value, children }) => {
+    const { state: { tab }, dispatch } = useContext(NavContext)
 
     const onClick = (e: React.MouseEvent) => {
         e.preventDefault()
-        update(value)
+        dispatch({ type: 'tab', payload: value })
     }
 
-    return <a href="/" className={classes} onClick={onClick}>{label}</a>
+    return <a href="/" className={tab === value ? 'nav-link active' : 'nav-link'} onClick={onClick}>{children}</a>
 }
 
-const ProteinNavCheckbox: React.FC<{ current: ProteinTab, value: ProteinTab, label: string, update: (tab: ProteinTab) => void }> = (props) => {
-    const { current, value, label, update } = props
+const ProteinTabCheckbox: React.FC<{ value: NavState['proteins']['tab'] }> = ({ value, children }) => {
+    const { state: { proteins: { tab } }, dispatch } = useContext(NavContext)
+
+    const onChange = () => dispatch({ type: 'proteins.tab', payload: value })
 
     return (
         <div className="form-check form-check-inline">
@@ -162,11 +238,11 @@ const ProteinNavCheckbox: React.FC<{ current: ProteinTab, value: ProteinTab, lab
                 type="radio"
                 name="ptab"
                 value={value}
-                checked={current === value}
-                onChange={() => update(value)}
+                checked={tab === value}
+                onChange={onChange}
             />
             <label className="form-check-label" htmlFor={`ptab-${value}`}>
-                {label}
+                {children}
             </label>
         </div>
     )
@@ -183,14 +259,3 @@ const CsvDownloadButton: React.FC<{ csv: () => string }> = ({ csv }) => {
         </button>
     )
 }
-
-const CardBodyFallback: React.FC = () => (
-    <div className="card-body">
-        <div className="progress">
-            <div
-                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                style={{ width: '100%' }}
-            ></div>
-        </div>
-    </div>
-)
