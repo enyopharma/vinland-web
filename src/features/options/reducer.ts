@@ -47,7 +47,7 @@ export const { reducer, actions } = createSlice({
         },
     },
     extraReducers: {
-        [taxonomy.select.toString()]: (state, action) => {
+        [taxonomy.select.toString()]: (state) => {
             state.vh = true
         }
     }

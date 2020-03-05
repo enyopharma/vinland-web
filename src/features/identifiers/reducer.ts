@@ -2,12 +2,12 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 import { IdentifierList, Annotation } from './types'
 
-let listkeycounter = 0
+let listKeyCounter = 0
 
 const defaultname = 'Manual selection'
 
 const initialState: IdentifierList[] = [{
-    i: listkeycounter,
+    i: listKeyCounter,
     name: defaultname,
     identifiers: '',
 }]
@@ -18,8 +18,8 @@ export const { reducer, actions } = createSlice({
     reducers: {
         add: {
             prepare: () => ({ payload: {} }),
-            reducer: (state, action: PayloadAction<{}>) => {
-                state.push({ i: ++listkeycounter, name: defaultname, identifiers: '' })
+            reducer: (state) => {
+                state.push({ i: ++listKeyCounter, name: defaultname, identifiers: '' })
             },
         },
         update: {
@@ -38,7 +38,7 @@ export const { reducer, actions } = createSlice({
             prepare: (annotation: Annotation) => ({ payload: { annotation } }),
             reducer: (state, action: PayloadAction<{ annotation: Annotation }>) => {
                 const list = {
-                    i: ++listkeycounter,
+                    i: ++listKeyCounter,
                     name: `${action.payload.annotation.source} - ${action.payload.annotation.ref} (${action.payload.annotation.name})`,
                     identifiers: action.payload.annotation.accessions.join(', '),
                 }
