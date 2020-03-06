@@ -1,7 +1,7 @@
 import { SuccessfulQueryResult, Protein, Interaction, Network } from './types'
 import { network } from './network'
 
-export const wrapper = (result: SuccessfulQueryResult) => {
+export const cache = (result: SuccessfulQueryResult) => {
     return {
         interactions: result.interactions,
         proteins: getProteinCache(result.interactions),

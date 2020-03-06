@@ -1,6 +1,6 @@
 import { SimulationNodeDatum, SimulationLinkDatum } from 'd3-force'
 import { network } from './network'
-import { wrapper } from './wrapper'
+import { cache } from './cache'
 
 export type Query = {
     key: string
@@ -87,4 +87,4 @@ export interface Link extends SimulationLinkDatum<Node> {
 }
 
 export type Network = ReturnType<typeof network>
-export type ResultWrapper = ReturnType<typeof wrapper>
+export type ComputationCache = ReturnType<typeof cache>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 
 import { Network } from 'features/query'
 
@@ -6,7 +6,7 @@ type Props = {
     network: Network
 }
 
-export const NetworkStageCardBody: React.FC<Props> = ({ network }) => {
+export const NetworkStage: React.FC<Props> = ({ network }) => {
     const ref = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -19,22 +19,19 @@ export const NetworkStageCardBody: React.FC<Props> = ({ network }) => {
         window.addEventListener('resize', resize)
 
         return () => { window.removeEventListener('resize', resize) }
-    })
+    }, [network])
 
     useEffect(() => {
         if (ref.current) {
             const stage = network.container(ref.current)
 
-            return () => {
-                network.stop()
-                stage.remove()
-            }
+            return () => { stage.remove() }
         }
     }, [network])
 
-    return (
-        <div className="card-body">
-            <div ref={ref}></div>
-        </div>
-    )
+    useEffect(() => {
+        return () => { network.stop() }
+    }, [network])
+
+    return <div ref={ref}></div>
 }
