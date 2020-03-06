@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { Query, ComputationCache } from 'features/query'
 import { isSuccessfulQueryResult, cache, resources } from 'features/query'
@@ -40,12 +40,10 @@ const SectionFallback: React.FC = () => (
 )
 
 const QueryResultCardContext: React.FC<{ result: ComputationCache | null }> = ({ result }) => {
-    const [nav, dispatch] = useNavState()
-
-    useEffect(() => { dispatch({ type: 'reset' }) }, [dispatch, result])
+    const value = useNavState(result)
 
     return !result ? null : (
-        <NavContext.Provider value={[nav, dispatch]}>
+        <NavContext.Provider value={value}>
             <QueryResultCard result={result} />
         </NavContext.Provider>
     )

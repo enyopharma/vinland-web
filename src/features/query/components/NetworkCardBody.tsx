@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import { ComputationCache } from 'features/query'
-import { useNavContext } from 'features/query'
+import { useNetworkContext } from 'features/query'
 
 import { NetworkStage } from './NetworkStage'
 import { CardBodyFallback } from './CardBodyFallback'
@@ -19,7 +19,7 @@ export const NetworkCardBody: React.FC<Props> = (props) => (
 const CardBody: React.FC<Props> = ({ result }) => {
     const network = result.network()
 
-    const [{ network: { ratio, labels } }, dispatch] = useNavContext()
+    const { ratio, labels, setRatio, setLabels } = useNetworkContext()
 
     useEffect(() => {
         const timeout = setTimeout(() => network.setRatio(ratio), 100)
@@ -32,9 +32,6 @@ const CardBody: React.FC<Props> = ({ result }) => {
 
         return () => { clearTimeout(timeout) }
     }, [network, labels])
-
-    const setRatio = (payload: number) => dispatch({ type: 'network.ratio', payload })
-    const setLabels = (payload: boolean) => dispatch({ type: 'network.labels', payload })
 
     return (
         <React.Fragment>

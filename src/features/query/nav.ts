@@ -1,4 +1,5 @@
-import { createContext, useReducer, useContext } from 'react'
+import { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
+import { ComputationCache } from './types'
 import { config } from './config'
 
 export type TypeTab = 'interactions' | 'proteins' | 'network'
@@ -60,6 +61,52 @@ export const NavContext = createContext<[NavState, (action: NavAction) => void]>
     initialState, (action: NavAction) => { }
 ])
 
-export const useNavState = () => useReducer(reducer, initialState)
+export const useNavState = (result: ComputationCache | null) => {
+    const store = useReducer(reducer, initialState)
 
-export const useNavContext = () => useContext(NavContext)
+    const dispatch = store[1]
+
+    useEffect(() => { dispatch({ type: 'reset' }) }, [dispatch, result])
+
+    return store
+}
+
+export const useTabContext = () => {
+    const [{ tab }, dispatch] = useContext(NavContext)
+
+    return {
+        tab,
+        setTab: useCallback((payload: TypeTab) => dispatch({ type: 'tab', payload }), [dispatch])
+    }
+}
+
+export const useInteractionsContext = () => {
+    const [{ interactions: { offset } }, dispatch] = useContext(NavContext)
+
+    return {
+        offset,
+        setOffset: useCallback((payload: number) => dispatch({ type: 'interactions.offset', payload }), [dispatch])
+    }
+}
+
+export const useProteinsContext = () => {
+    const [{ proteins: { tab, offsets } }, dispatch] = useContext(NavContext)
+
+    return {
+        tab,
+        offset: offsets[tab],
+        setTab: useCallback((payload: ProteinTab) => dispatch({ type: 'proteins.tab', payload }), [dispatch]),
+        setOffset: useCallback((offset: number) => dispatch({ type: 'proteins.offset', payload: { tab, offset } }), [tab, dispatch]),
+    }
+}
+
+export const useNetworkContext = () => {
+    const [{ network: { ratio, labels } }, dispatch] = useContext(NavContext)
+
+    return {
+        ratio,
+        labels,
+        setRatio: useCallback((payload: number) => dispatch({ type: 'network.ratio', payload }), [dispatch]),
+        setLabels: useCallback((payload: boolean) => dispatch({ type: 'network.labels', payload }), [dispatch]),
+    }
+}

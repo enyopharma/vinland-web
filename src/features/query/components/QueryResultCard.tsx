@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ComputationCache } from 'features/query'
-import { useNavContext, TypeTab as Tab } from 'features/query'
+import { useTabContext, TypeTab as Tab } from 'features/query'
 
 import { CardBodyFallback } from './CardBodyFallback'
 
@@ -35,7 +35,7 @@ export const QueryResultCard: React.FC<Props> = (props) => (
 )
 
 const CardBody: React.FC<{ result: ComputationCache }> = ({ result }) => {
-    const [{ tab }] = useNavContext()
+    const { tab } = useTabContext()
 
     switch (tab) {
         case 'interactions':
@@ -50,13 +50,13 @@ const CardBody: React.FC<{ result: ComputationCache }> = ({ result }) => {
 }
 
 const TabLink: React.FC<{ tab: Tab }> = ({ tab, children }) => {
-    const [{ tab: current }, dispatch] = useNavContext()
+    const { tab: current, setTab } = useTabContext()
 
     const classes = current === tab ? 'nav-link active' : 'nav-link'
 
     const onClick = (e: React.MouseEvent) => {
         e.preventDefault()
-        dispatch({ type: 'tab', payload: tab })
+        setTab(tab)
     }
 
     return <a href="/" className={classes} onClick={onClick}>{children}</a>

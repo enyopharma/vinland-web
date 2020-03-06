@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ComputationCache, Interaction } from 'features/query'
-import { useNavContext } from 'features/query'
+import { useInteractionsContext } from 'features/query'
 import { config, interactions2csv } from 'features/query'
 
 import { Pagination } from './Pagination'
@@ -14,11 +14,9 @@ type Props = {
 export const InteractionsCardBody: React.FC<Props> = ({ result }) => {
     const interactions = result.interactions
 
-    const [{ interactions: { offset } }, dispatch] = useNavContext()
+    const { offset, setOffset } = useInteractionsContext()
 
     const slice = interactions.slice(offset, offset + config.limit)
-
-    const setOffset = (payload: number) => dispatch({ type: 'interactions.offset', payload })
 
     return (
         <React.Fragment>
