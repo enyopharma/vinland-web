@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ComputationCache, Interaction } from 'features/query'
-import { useInteractionsContext } from 'features/query'
+import { usePersistentState } from 'features/query'
 import { config, interactions2csv } from 'features/query'
 
 import { Pagination } from './Pagination'
@@ -14,7 +14,7 @@ type Props = {
 export const InteractionsCardBody: React.FC<Props> = ({ result }) => {
     const interactions = result.interactions
 
-    const { offset, setOffset } = useInteractionsContext()
+    const [offset, setOffset] = usePersistentState<number>('interactions.offset', 0, [result])
 
     const slice = interactions.slice(offset, offset + config.limit)
 

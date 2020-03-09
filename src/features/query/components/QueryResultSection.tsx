@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { Query, ComputationCache } from 'features/query'
+import { Query } from 'features/query'
 import { isSuccessfulQueryResult, cache, resources } from 'features/query'
-import { NavContext, useNavState } from 'features/query'
 
 import { QueryResultAlert } from './QueryResultAlert'
 import { QueryResultCard } from './QueryResultCard'
@@ -20,12 +19,10 @@ export const QueryResultSection: React.FC<Props> = (props) => (
 const Section: React.FC<Props> = ({ query }) => {
     const result = resources.result(query).read()
 
-    const cached = isSuccessfulQueryResult(result) ? cache(result) : null
-
     return (
         <section>
             <QueryResultAlert result={result} />
-            <QueryResultCardContext result={cached} />
+            {isSuccessfulQueryResult(result) ? <QueryResultCard result={cache(result)} /> : null}
         </section>
     )
 }
@@ -38,13 +35,3 @@ const SectionFallback: React.FC = () => (
         ></div>
     </div>
 )
-
-const QueryResultCardContext: React.FC<{ result: ComputationCache | null }> = ({ result }) => {
-    const value = useNavState(result)
-
-    return !result ? null : (
-        <NavContext.Provider value={value}>
-            <QueryResultCard result={result} />
-        </NavContext.Provider>
-    )
-}

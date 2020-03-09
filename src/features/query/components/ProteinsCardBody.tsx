@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { ComputationCache, Protein } from 'features/query'
-import { useProteinsContext, ProteinTab as Tab } from 'features/query'
+import { usePersistentState } from 'features/query'
 import { config, proteins2csv } from 'features/query'
 
 import { Pagination } from './Pagination'
@@ -12,6 +12,8 @@ type Props = {
     result: ComputationCache
 }
 
+type Tab = 'a' | 'h' | 'v'
+
 export const ProteinsCardBody: React.FC<Props> = (props) => (
     <React.Suspense fallback={<CardBodyFallback />}>
         <CardBody {...props} />
@@ -21,9 +23,12 @@ export const ProteinsCardBody: React.FC<Props> = (props) => (
 const CardBody: React.FC<Props> = ({ result }) => {
     const { human, viral } = result.proteins()
 
-    const { tab, offset, setOffset } = useProteinsContext()
+    const [tab, setTab] = usePersistentState<Tab>('proteins.tab', 'a')
+    const [offsets, setOffsets] = usePersistentState<Record<Tab, number>>('proteins.offsets', { a: 0, h: 0, v: 0 }, [result])
 
     const proteins = tab === 'h' ? human : tab === 'v' ? viral : [...human, ...viral]
+    const offset = offsets[tab]
+    const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })
 
     const slice = proteins.slice(offset, offset + config.limit)
 
@@ -32,9 +37,15 @@ const CardBody: React.FC<Props> = ({ result }) => {
             <div className="card-body">
                 <div className="row">
                     <div className="col">
-                        <TabCheckbox tab="a">All</TabCheckbox>
-                        <TabCheckbox tab="h">Human</TabCheckbox>
-                        <TabCheckbox tab="v">Viral</TabCheckbox>
+                        <TabCheckbox tab="a" current={tab} update={setTab}>
+                            All
+                        </TabCheckbox>
+                        <TabCheckbox tab="h" current={tab} update={setTab}>
+                            Human
+                        </TabCheckbox>
+                        <TabCheckbox tab="v" current={tab} update={setTab}>
+                            Viral
+                        </TabCheckbox>
                     </div>
                     <div className="col">
                         <p className="text-right">
@@ -67,10 +78,10 @@ const CardBody: React.FC<Props> = ({ result }) => {
     )
 }
 
-const TabCheckbox: React.FC<{ tab: Tab }> = ({ tab, children }) => {
-    const { tab: current, setTab } = useProteinsContext()
+const TabCheckbox: React.FC<{ tab: Tab, current: Tab, update: (tab: Tab) => void }> = (props) => {
+    const { tab, current, update, children } = props
 
-    const onChange = () => setTab(tab)
+    const onChange = () => update(tab)
 
     return (
         <div className="form-check form-check-inline">

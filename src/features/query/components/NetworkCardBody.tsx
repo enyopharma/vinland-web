@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 
 import { ComputationCache } from 'features/query'
-import { useNetworkContext } from 'features/query'
+import { usePersistentState } from 'features/query'
+import { config } from 'features/query'
 
 import { NetworkStage } from './NetworkStage'
 import { CardBodyFallback } from './CardBodyFallback'
@@ -19,7 +20,8 @@ export const NetworkCardBody: React.FC<Props> = (props) => (
 const CardBody: React.FC<Props> = ({ result }) => {
     const network = result.network()
 
-    const { ratio, labels, setRatio, setLabels } = useNetworkContext()
+    const [ratio, setRatio] = usePersistentState<number>('network.ratio', config.ratio, [result])
+    const [labels, setLabels] = usePersistentState<boolean>('network.labels', false)
 
     useEffect(() => {
         const timeout = setTimeout(() => network.setRatio(ratio), 100)
