@@ -49,7 +49,9 @@ const CardBody: React.FC<Props> = ({ result }) => {
                     </div>
                     <div className="col">
                         <p className="text-right">
-                            <CsvDownloadButton csv={() => proteins2csv(proteins)} />
+                            <CsvDownloadButton csv={() => proteins2csv(proteins)}>
+                                Download as csv
+                            </CsvDownloadButton>
                         </p>
                     </div>
                 </div>
