@@ -10,7 +10,7 @@ const SearchPage = React.lazy(() => import('pages/search').then(module => ({ def
 export const App: React.FC = () => {
     return (
         <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter basename="/">
                 <Navbar />
                 <React.Suspense fallback={<PageLoader />}>
                     <Switch>
