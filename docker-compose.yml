@@ -9,8 +9,7 @@ services:
             - default
             - proxy
         labels:
-            - traefik.enable=true
-            - traefik.frontend.rule=Host:${APP_HOST}
+            - traefik.http.routers.vinland.rule=Host(`${APP_HOST}`)
         depends_on:
             - app
     app:
