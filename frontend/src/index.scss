@@ -1,0 +1,37 @@
+@import "~bootswatch/dist/minty/variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootswatch/dist/minty/bootswatch";
+
+body {
+    padding-bottom: $spacer * 50;
+}
+
+div.row, div.form-group, div.form-row, div.card, div.alert, div.animation, form, fieldset, ul, p, table {
+    margin-bottom: $spacer;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.page-link {
+    border-color: $info;
+    background-color: $info;
+    &:hover {
+        border-color: darken($info, 20%);
+        background-color: darken($info, 20%);
+    }
+}
+
+.page-item.active .page-link {
+    border-color: darken($info, 20%);
+    background-color: darken($info, 20%);
+}
+
+.page-item.disabled .page-link {
+    border-color: lighten($info, 20%);
+    background-color: lighten($info, 20%);
+}
+
+.nav-item > a {
+    outline-style: none;
+}
