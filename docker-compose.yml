@@ -1,0 +1,16 @@
+version: '3'
+services:
+    app:
+        build: ./app
+        environment:
+            - APP_HOST=${APP_HOST}
+            - SSO_HOST=${SSO_HOST}
+            - DB_HOSTNAME=${DB_HOSTNAME}
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_PORT=${DB_PORT}
+    backend:
+        build: ./backend
+        depends_on:
+            - app

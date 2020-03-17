@@ -1,0 +1,18 @@
+version: '3'
+services:
+    app:
+        user: ${UID}:${GID}
+        volumes:
+            - ./app:/var/www/html:rw
+    backend:
+        volumes:
+            - ./backend/default.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./app:/var/www/html:ro
+        networks:
+            - default
+            - proxy
+        labels:
+            - traefik.http.routers.drakkar.rule=Host(`${APP_HOST}`)
+networks:
+    proxy:
+        external: true
