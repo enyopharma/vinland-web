@@ -1,0 +1,43 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use Data::Dumper;
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_interactions_sth = $vinland->prepare('
+    SELECT * FROM interactions
+');
+
+my @edges = ();
+
+$select_interactions_sth->execute;
+
+while (my $interaction = $select_interactions_sth->fetchrow_hashref) {
+    push(@edges, [
+        $interaction->{'id'},
+        $interaction->{'protein1_id'},
+        $interaction->{'protein2_id'},
+    ]);
+
+    if ($interaction->{'protein1_id'} != $interaction->{'protein2_id'}) {
+        push(@edges, [
+            $interaction->{'id'},
+            $interaction->{'protein2_id'},
+            $interaction->{'protein1_id'},
+        ]);
+    }
+}
+
+$select_interactions_sth->finish;
+
+$vinland->do('COPY edges(interaction_id, source_id, target_id) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@edges);
+
+$vinland->pg_putcopyend();

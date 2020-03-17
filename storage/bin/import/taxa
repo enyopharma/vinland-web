@@ -1,0 +1,66 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use Data::Dumper;
+
+my $virus_left_value = 2;
+my $virus_right_value = 390481;
+
+my $drakkar = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
+    $ENV{'DB_USERNAME_PROD'},
+    $ENV{'DB_PASSWORD_PROD'},
+);
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_species_sth = $drakkar->prepare('
+    SELECT ncbi_taxon_id AS ncbi_species_id, left_value, right_value
+    FROM taxon
+    WHERE node_rank=\'species\'
+    AND left_value >= ?
+    AND right_value <= ?
+');
+
+my $select_taxa_sth = $drakkar->prepare('
+    SELECT t.taxon_id, t.parent_taxon_id, t.ncbi_taxon_id, t.left_value, t.right_value, tn.name
+    FROM taxon AS t, taxon_name AS tn
+    WHERE t.taxon_id = tn.taxon_id
+    AND left_value >= ? AND right_value <= ?
+    AND tn.name_class = \'scientific name\'
+');
+
+my @entries = ();
+
+$select_species_sth->execute($virus_left_value, $virus_right_value);
+
+while (my $species = $select_species_sth->fetchrow_hashref) {
+    $select_taxa_sth->execute($species->{'left_value'}, $species->{'right_value'});
+
+    while (my $taxon = $select_taxa_sth->fetchrow_hashref) {
+        push(@entries, [
+            $taxon->{'taxon_id'},
+            $taxon->{'parent_taxon_id'},
+            $taxon->{'ncbi_taxon_id'},
+            $species->{'ncbi_species_id'},
+            $taxon->{'name'},
+            $taxon->{'left_value'},
+            $taxon->{'right_value'},
+        ]);
+    }
+
+    $select_taxa_sth->finish;
+}
+
+$select_species_sth->finish;
+
+$vinland->do('COPY taxa(taxon_id, parent_taxon_id, ncbi_taxon_id, ncbi_species_id, name, left_value, right_value) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@entries);
+
+$vinland->pg_putcopyend();

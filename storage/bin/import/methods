@@ -1,0 +1,31 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use Data::Dumper;
+
+my $drakkar = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
+    $ENV{'DB_USERNAME_PROD'},
+    $ENV{'DB_PASSWORD_PROD'},
+);
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_methods_sth = $drakkar->prepare('
+    SELECT psimi_id, name FROM methods ORDER BY id ASC
+');
+
+$select_methods_sth->execute;
+
+my $methods = $select_methods_sth->fetchall_arrayref;
+
+$vinland->do('COPY methods(psimi_id, name) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@{$methods});
+
+$vinland->pg_putcopyend();

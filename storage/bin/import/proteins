@@ -1,0 +1,73 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use Data::Dumper;
+
+my $drakkar = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
+    $ENV{'DB_USERNAME_PROD'},
+    $ENV{'DB_PASSWORD_PROD'},
+);
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_human_proteins_sth = $drakkar->prepare('
+    SELECT type, taxon_id, accession, name, description
+    FROM proteins
+    WHERE type = \'h\'
+    ORDER BY accession ASC
+');
+
+my $select_viral_proteins_sth = $drakkar->prepare('
+    SELECT p.type, p.taxon_id, p.accession, i.name, p.description
+    FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p
+    WHERE a.id = d.association_id
+    AND (i.id = d.interactor1_id OR i.id = d.interactor2_id)
+    AND p.id = i.protein_id
+    AND a.state = \'curated\'
+    AND d.deleted_at IS NULL
+    AND p.type=\'v\'
+    GROUP BY p.type, p.taxon_id, p.accession, i.name, p.description
+    ORDER BY p.accession ASC
+');
+
+my @proteins = ();
+
+$select_human_proteins_sth->execute;
+
+while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
+    push(@proteins, [
+        $protein->{'type'},
+        $protein->{'taxon_id'},
+        $protein->{'accession'},
+        $protein->{'name'},
+        $protein->{'description'},
+    ]);
+}
+
+$select_human_proteins_sth->finish;
+
+$select_viral_proteins_sth->execute;
+
+while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
+    push(@proteins, [
+        $protein->{'type'},
+        $protein->{'taxon_id'},
+        $protein->{'accession'},
+        $protein->{'name'},
+        $protein->{'description'},
+    ]);
+}
+
+$select_viral_proteins_sth->finish;
+
+$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
+
+$vinland->pg_putcopyend();

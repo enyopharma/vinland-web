@@ -1,0 +1,65 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use JSON qw(from_json);
+use Data::Dumper;
+
+my $drakkar = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
+    $ENV{'DB_USERNAME_PROD'},
+    $ENV{'DB_PASSWORD_PROD'},
+);
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_publications_sth = $drakkar->prepare('
+    SELECT p.pmid, p.metadata
+    FROM associations AS a, descriptions AS d, publications AS p
+    WHERE a.id = d.association_id
+    AND a.pmid = p.pmid
+    AND a.state = \'curated\'
+    AND d.deleted_at IS NULL
+    GROUP BY p.pmid
+');
+
+my @publications = ();
+
+$select_publications_sth->execute;
+
+while (my $publication = $select_publications_sth->fetchrow_hashref) {
+    my $pmid = $publication->{'pmid'};
+    my $metadata = from_json $publication->{'metadata'};
+
+    if ($metadata->{'PubmedArticle'}) {
+        my $article = $metadata->{'PubmedArticle'}->{'MedlineCitation'}->{'Article'};
+
+        my $title = $article->{'ArticleTitle'};
+        my $year = $article->{'Journal'}->{'JournalIssue'}->{'PubDate'}->{'Year'}
+             // $article->{'Journal'}->{'JournalIssue'}->{'PubDate'}->{'MedlineDate'};
+
+        $year =~ s/^.*?([0-9]{4}).*?$/$1/;
+
+        die(sprintf('%s: no title', $pmid)) if (! $title || $title =~ /^\s*?$/);
+        die(sprintf('%s: no year', $pmid)) if (! $year || $year =~ /^\s*?$/);
+        die(sprintf('%s: malformated year', $pmid)) if ($year !~ /^[0-9]{4}$/);
+
+        push(@publications, [$pmid, $title, $year]);
+    }
+
+    if ($metadata->{'PubmedBookArticle'}) {
+        die(sprintf('%s: book not handled yet', $pmid));
+    }
+}
+
+$select_publications_sth->finish;
+
+$vinland->do('COPY publications(pmid, title, year) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@publications);
+
+$vinland->pg_putcopyend();

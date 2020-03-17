@@ -1,0 +1,140 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DBI;
+use JSON qw(from_json);
+use Data::Dumper;
+
+my $drakkar = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
+    $ENV{'DB_USERNAME_PROD'},
+    $ENV{'DB_PASSWORD_PROD'},
+);
+
+my $vinland = DBI->connect(
+    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
+    $ENV{'DB_USERNAME_DEV'},
+    $ENV{'DB_PASSWORD_DEV'},
+);
+
+my $select_descriptions_sth = $drakkar->prepare('
+    SELECT
+        m.psimi_id, a.pmid,
+        p1.accession AS accession1, i1.name AS name1,
+        p2.accession AS accession2, i2.name AS name2,
+        i1.mapping AS mapping1, i2.mapping AS mapping2
+    FROM
+        associations AS a, descriptions AS d, methods AS m,
+        interactors AS i1, interactors AS i2, proteins AS p1, proteins AS p2
+    WHERE a.id = d.association_id
+    AND m.id = d.method_id
+    AND i1.id = d.interactor1_id
+    AND i2.id = d.interactor2_id
+    AND p1.id = i1.protein_id
+    AND p2.id = i2.protein_id
+    AND a.state = \'curated\'
+    AND d.deleted_at IS NULL
+');
+
+my $select_protein_sth = $vinland->prepare('
+    SELECT * FROM proteins WHERE accession = ? AND name = ?
+');
+
+my $select_edge_sth = $vinland->prepare('
+    SELECT * FROM edges WHERE source_id = ? AND target_id = ?
+');
+
+my $select_sequence_sth = $vinland->prepare('
+    SELECT * FROM sequences WHERE accession = ?
+');
+
+my $select_description_sth = $vinland->prepare('
+    SELECT d.id
+    FROM methods AS m, interactions AS i, descriptions AS d
+    WHERE m.id = d.method_id AND i.id = d.interaction_id
+    AND d.pmid = ?
+    AND m.psimi_id = ?
+    AND i.protein1_id = ?
+    AND i.protein2_id = ?
+    ORDER BY i.protein1_id ASC, i.protein2_id ASC
+');
+
+my @alignments = ();
+
+$select_descriptions_sth->execute;
+
+while (my $description = $select_descriptions_sth->fetchrow_hashref) {
+    $select_protein_sth->execute($description->{'accession1'}, $description->{'name1'});
+    my $protein1 = $select_protein_sth->fetchrow_hashref;
+    $select_protein_sth->finish;
+
+    die(sprintf('protein not found %s - %s', $description->{'accession1'}, $description->{'name1'})) if (! $protein1);
+
+    $select_protein_sth->execute($description->{'accession2'}, $description->{'name2'});
+    my $protein2 = $select_protein_sth->fetchrow_hashref;
+    $select_protein_sth->finish;
+
+    die(sprintf('protein not found %s - %s', $description->{'accession2'}, $description->{'name2'})) if (! $protein2);
+
+    my @sorted = sort {
+        return +1 if ($a->{'type'} eq 'v');
+        return -1 if ($b->{'type'} eq 'v');
+        return $a->{'accession'} cmp $b->{'accession'};
+    } ($protein1, $protein2);
+
+    $select_description_sth->execute($description->{'pmid'}, $description->{'psimi_id'}, $sorted[0]->{'id'}, $sorted[1]->{'id'});
+    my($description_id) = $select_description_sth->fetchrow_array;
+    $select_description_sth->finish;
+
+    die('description not found') if (! $description);
+
+    my @entries = ({
+        'mapping' => (from_json $description->{'mapping1'}),
+        'source_id' => $sorted[0]->{'id'},
+        'target_id' => $sorted[1]->{'id'},
+    }, {
+        'mapping' => (from_json $description->{'mapping2'}),
+        'source_id' => $sorted[1]->{'id'},
+        'target_id' => $sorted[0]->{'id'},
+    });
+
+    foreach my $entry (@entries) {
+        if (@{$entry->{'mapping'}} > 0) {
+            $select_edge_sth->execute($entry->{'source_id'}, $entry->{'target_id'});
+            my $edge = $select_edge_sth->fetchrow_hashref;
+            $select_edge_sth->finish;
+
+            die(sprintf('edge not found %s - %s', $entry->{'source_id'}, $entry->{'target_id'})) if (! $edge);
+
+            foreach my $mapping (@{$entry->{'mapping'}}) {
+                foreach my $isoform (@{$mapping->{'isoforms'}}) {
+                    $select_sequence_sth->execute($isoform->{'accession'});
+                    my $sequence = $select_sequence_sth->fetchrow_hashref;
+                    $select_sequence_sth->finish;
+
+                    die('sequence not found') if (! $sequence);
+
+                    foreach my $occurrence (@{$isoform->{'occurrences'}}) {
+                        push(@alignments, [
+                            $edge->{'id'},
+                            $sequence->{'id'},
+                            $description_id,
+                            $occurrence->{'start'},
+                            $occurrence->{'stop'},
+                            $occurrence->{'identity'},
+                            $mapping->{'sequence'},
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+$select_descriptions_sth->finish;
+
+$vinland->do('COPY mappings(edge_id, sequence_id, description_id, start, stop, identity, sequence) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@alignments);
+
+$vinland->pg_putcopyend();
