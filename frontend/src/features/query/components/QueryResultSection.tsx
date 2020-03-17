@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Query } from 'features/query'
+import { Query, QueryResult } from 'features/query'
 import { isSuccessfulQueryResult, cache, resources } from 'features/query'
 
 import { QueryResultAlert } from './QueryResultAlert'
@@ -22,9 +22,15 @@ const Section: React.FC<Props> = ({ query }) => {
     return (
         <section>
             <QueryResultAlert result={result} />
-            {isSuccessfulQueryResult(result) ? <QueryResultCard result={cache(result)} /> : null}
+            <Card result={result} />
         </section>
     )
+}
+
+const Card: React.FC<{ result: QueryResult }> = ({ result }) => {
+    return isSuccessfulQueryResult(result) && result.interactions.length > 0
+        ? <QueryResultCard result={cache(result)} />
+        : null
 }
 
 const SectionFallback: React.FC = () => (

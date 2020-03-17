@@ -105,7 +105,7 @@ final class InteractionViewSql implements InteractionViewInterface
             : [];
 
         $vhinteractions = $vh
-            ? $this->VHInteractions($idhs, $idvs, $nb_publications, $nb_methods)
+            ? $this->VHInteractions($idhs, $idvs, $ncbi_taxon_id, $nb_publications, $nb_methods)
             : [];
 
         return Statement::from($this->merged($hhinteractions, $vhinteractions));
@@ -166,9 +166,9 @@ final class InteractionViewSql implements InteractionViewInterface
         return $this->generator($select_interactions_sth);
     }
 
-    private function VHInteractions(array $idhs, array $idvs, int $nb_publications, int $nb_methods): iterable
+    private function VHInteractions(array $idhs, array $idvs, int $ncbi_taxon_id, int $nb_publications, int $nb_methods): iterable
     {
-        if (count($idhs) + count($idvs) == 0) {
+        if ((count($idhs) == 0 || $ncbi_taxon_id > 0) && count($idvs) == 0) {
             return [];
         }
 
