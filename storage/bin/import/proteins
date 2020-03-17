@@ -3,17 +3,18 @@ use strict;
 use warnings;
 use DBI;
 use Data::Dumper;
+use Dotenv -load;
 
 my $drakkar = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
-    $ENV{'DB_USERNAME_PROD'},
-    $ENV{'DB_PASSWORD_PROD'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'DRAKKAR_DB_DATABASE'}, $ENV{'DRAKKAR_DB_HOSTNAME'}),
+    $ENV{'DRAKKAR_DB_USERNAME'},
+    $ENV{'DRAKKAR_DB_PASSWORD'},
 );
 
 my $vinland = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
-    $ENV{'DB_USERNAME_DEV'},
-    $ENV{'DB_PASSWORD_DEV'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'VINLAND_DB_DATABASE'}, $ENV{'VINLAND_DB_HOSTNAME'}),
+    $ENV{'VINLAND_DB_USERNAME'},
+    $ENV{'VINLAND_DB_PASSWORD'},
 );
 
 my $select_human_proteins_sth = $drakkar->prepare('
@@ -27,11 +28,11 @@ my $select_viral_proteins_sth = $drakkar->prepare('
     SELECT p.type, p.taxon_id, p.accession, i.name, p.description
     FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p
     WHERE a.id = d.association_id
-    AND (i.id = d.interactor1_id OR i.id = d.interactor2_id)
-    AND p.id = i.protein_id
-    AND a.state = \'curated\'
-    AND d.deleted_at IS NULL
-    AND p.type=\'v\'
+      AND (i.id = d.interactor1_id OR i.id = d.interactor2_id)
+      AND p.id = i.protein_id
+      AND a.state = \'curated\'
+      AND d.deleted_at IS NULL
+      AND p.type=\'v\'
     GROUP BY p.type, p.taxon_id, p.accession, i.name, p.description
     ORDER BY p.accession ASC
 ');

@@ -3,20 +3,21 @@ use strict;
 use warnings;
 use DBI;
 use Data::Dumper;
+use Dotenv -load;
 
 my $virus_left_value = 2;
 my $virus_right_value = 390481;
 
 my $drakkar = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
-    $ENV{'DB_USERNAME_PROD'},
-    $ENV{'DB_PASSWORD_PROD'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'DRAKKAR_DB_DATABASE'}, $ENV{'DRAKKAR_DB_HOSTNAME'}),
+    $ENV{'DRAKKAR_DB_USERNAME'},
+    $ENV{'DRAKKAR_DB_PASSWORD'},
 );
 
 my $vinland = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
-    $ENV{'DB_USERNAME_DEV'},
-    $ENV{'DB_PASSWORD_DEV'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'VINLAND_DB_DATABASE'}, $ENV{'VINLAND_DB_HOSTNAME'}),
+    $ENV{'VINLAND_DB_USERNAME'},
+    $ENV{'VINLAND_DB_PASSWORD'},
 );
 
 my $select_species_sth = $drakkar->prepare('

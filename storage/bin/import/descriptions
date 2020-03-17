@@ -3,37 +3,40 @@ use strict;
 use warnings;
 use DBI;
 use Data::Dumper;
+use Dotenv -load;
 
 my $drakkar = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'drakkar', $ENV{'DB_HOSTNAME_PROD'}),
-    $ENV{'DB_USERNAME_PROD'},
-    $ENV{'DB_PASSWORD_PROD'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'DRAKKAR_DB_DATABASE'}, $ENV{'DRAKKAR_DB_HOSTNAME'}),
+    $ENV{'DRAKKAR_DB_USERNAME'},
+    $ENV{'DRAKKAR_DB_PASSWORD'},
 );
 
 my $vinland = DBI->connect(
-    sprintf('DBI:Pg:database=%s;host=%s', 'vinland_3', $ENV{'DB_HOSTNAME_DEV'}),
-    $ENV{'DB_USERNAME_DEV'},
-    $ENV{'DB_PASSWORD_DEV'},
+    sprintf('DBI:Pg:database=%s;host=%s', $ENV{'VINLAND_DB_DATABASE'}, $ENV{'VINLAND_DB_HOSTNAME'}),
+    $ENV{'VINLAND_DB_USERNAME'},
+    $ENV{'VINLAND_DB_PASSWORD'},
 );
 
 my $select_descriptions_sth = $drakkar->prepare('
     SELECT
-        a.pmid, m.psimi_id,
+        a.pmid,
+        m.psimi_id,
         p1.accession AS accession1, i1.name AS name1,
         p2.accession AS accession2, i2.name AS name2
     FROM
-        associations AS a, descriptions AS d,
         methods AS m,
-        interactors AS i1, interactors AS i2,
-        proteins AS p1, proteins AS p2
+        associations AS a,
+        descriptions AS d,
+        interactors AS i1, proteins AS p1,
+        interactors AS i2, proteins AS p2
     WHERE a.id = d.association_id
-    AND m.id = d.method_id
-    AND i1.id = d.interactor1_id
-    AND i2.id = d.interactor2_id
-    AND p1.id = i1.protein_id
-    AND p2.id = i2.protein_id
-    AND a.state = \'curated\'
-    AND d.deleted_at IS NULL
+      AND m.id = d.method_id
+      AND i1.id = d.interactor1_id
+      AND i2.id = d.interactor2_id
+      AND p1.id = i1.protein_id
+      AND p2.id = i2.protein_id
+      AND a.state = \'curated\'
+      AND d.deleted_at IS NULL
     ORDER BY p1.accession ASC, p2.accession ASC
 ');
 
