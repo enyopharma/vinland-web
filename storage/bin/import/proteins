@@ -48,6 +48,7 @@ while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
         $protein->{'accession'},
         $protein->{'name'},
         $protein->{'description'},
+        join(' ', $protein->{'accession'}, $protein->{'name'}, $protein->{'description'}),
     ]);
 }
 
@@ -62,12 +63,13 @@ while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
         $protein->{'accession'},
         $protein->{'name'},
         $protein->{'description'},
+        join(' ', $protein->{'accession'}, $protein->{'name'}, $protein->{'description'}),
     ]);
 }
 
 $select_viral_proteins_sth->finish;
 
-$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description) FROM STDIN');
+$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description, search) FROM STDIN');
 
 $vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
 

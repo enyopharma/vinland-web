@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
--- Dumped by pg_dump version 10.10 (Ubuntu 10.10-0ubuntu0.18.04.1)
+-- Dumped from database version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
+-- Dumped by pg_dump version 10.12 (Ubuntu 10.12-0ubuntu0.18.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -239,6 +239,7 @@ CREATE TABLE public.proteins (
     accession character varying(10) NOT NULL,
     name character varying NOT NULL,
     description text NOT NULL,
+    search text NOT NULL,
     CONSTRAINT proteins_type_check CHECK (((type)::text = ANY (ARRAY[('h'::character varying)::text, ('v'::character varying)::text])))
 );
 
@@ -572,10 +573,10 @@ CREATE INDEX proteins_ncbi_taxon_id_key ON public.proteins USING btree (ncbi_tax
 
 
 --
--- Name: proteins_taxon_id_key; Type: INDEX; Schema: public; Owner: -
+-- Name: proteins_search_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX proteins_taxon_id_key ON public.proteins USING btree (ncbi_taxon_id);
+CREATE INDEX proteins_search_key ON public.proteins USING gin (search public.gin_trgm_ops);
 
 
 --
