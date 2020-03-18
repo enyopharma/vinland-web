@@ -41,6 +41,7 @@ export interface FailedQueryResult {
 }
 
 export type Interaction = {
+    id: number
     type: 'hh' | 'vh'
     protein1: Protein
     protein2: Protein
@@ -49,6 +50,7 @@ export type Interaction = {
 }
 
 export type Protein = {
+    id: number
     type: 'h' | 'v'
     accession: string
     name: string

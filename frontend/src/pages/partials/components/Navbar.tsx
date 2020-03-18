@@ -11,12 +11,21 @@ export const Navbar: React.FC = () => (
             <div id="navcontent" className="collapse navbar-collapse">
                 <ul className="navbar-nav">
                     <li>
-                        <Link className="nav-link" to="/interactions">Search interactions</Link>
+                        <Link className="nav-link" to="/proteins">
+                            Proteins
+                        </Link>
+                    </li>
+                    <li>
+                        <Link className="nav-link" to="/interactions">
+                            Interactions
+                        </Link>
                     </li>
                 </ul>
                 <ul className="navbar-nav ml-auto">
                     <li className="nav-item">
-                        <Link className="nav-link" to="/">Contact</Link>
+                        <Link className="nav-link" to="/">
+                            Contact
+                        </Link>
                     </li>
                 </ul>
             </div>

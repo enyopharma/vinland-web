@@ -45,9 +45,9 @@ final class InteractionViewSql implements InteractionViewInterface
     private function selectHHInteractionsQuery(int $nb, bool $neighbors): Query
     {
         $query = Query::instance($this->pdo)
-            ->select('DISTINCT i.type, i.nb_publications, i.nb_methods')
-            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
+            ->select('DISTINCT i.id, i.type, i.nb_publications, i.nb_methods')
+            ->select('p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
+            ->select('p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
             ->from('edges AS e, interactions AS i, proteins AS p1, proteins AS p2')
             ->where('i.id = e.interaction_id')
             ->where('p1.id = i.protein1_id')
@@ -63,9 +63,9 @@ final class InteractionViewSql implements InteractionViewInterface
     private function selectVHInteractionsQuery(int $nbh, int $nbv): Query
     {
         $query = Query::instance($this->pdo)
-            ->select('DISTINCT i.type, i.nb_publications, i.nb_methods')
-            ->select('p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
+            ->select('DISTINCT i.id, i.type, i.nb_publications, i.nb_methods')
+            ->select('p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
+            ->select('p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
             ->select('t.ncbi_taxon_id, t.name AS taxon_name')
             ->select('s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name')
             ->from('interactions AS i, proteins AS p1, proteins AS p2, taxa AS t, taxa AS s')
@@ -194,8 +194,10 @@ final class InteractionViewSql implements InteractionViewInterface
     {
         while ($row = $sth->fetch()) {
             yield new Entity([
+                'id' => $row['id'],
                 'type' => $row['type'],
                 'protein1' => [
+                    'id' => $row['id1'],
                     'type' => $row['type1'],
                     'accession' => $row['accession1'],
                     'name' => $row['name1'],
@@ -210,6 +212,7 @@ final class InteractionViewSql implements InteractionViewInterface
                     ],
                 ],
                 'protein2' => [
+                    'id' => $row['id2'],
                     'type' => $row['type2'],
                     'accession' => $row['accession2'],
                     'name' => $row['name2'],

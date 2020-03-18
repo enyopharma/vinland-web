@@ -7,6 +7,7 @@ import { config, proteins2csv } from 'features/query'
 import { Pagination } from './Pagination'
 import { CardBodyFallback } from './CardBodyFallback'
 import { CsvDownloadButton } from './CsvDownloadButton'
+import { ProteinLink } from 'pages/partials'
 
 type Props = {
     result: ComputationCache
@@ -115,18 +116,18 @@ const SkeletonTr: React.FC = () => (
 const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
     <tr>
         <td className="text-center">
-            <a href="/" style={{ textDecoration: 'none' }}>
+            <ProteinLink {...protein} target="_blank">
                 <img
                     src={`/img/${protein.type}.png`}
                     alt={`${protein.type.toUpperCase()} protein`}
                     style={{ maxWidth: '1em' }}
                 />
-            </a>
+            </ProteinLink>
         </td>
         <td className="text-center">
-            <a href="/" className={protein.type === 'h' ? 'text-info' : 'text-danger'}>
+            <ProteinLink {...protein} target="_blank">
                 {protein.accession}
-            </a>
+            </ProteinLink>
         </td>
         <td className="text-center">
             {protein.name}

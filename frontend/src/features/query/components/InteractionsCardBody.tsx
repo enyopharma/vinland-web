@@ -6,6 +6,7 @@ import { config, interactions2csv } from 'features/query'
 
 import { Pagination } from './Pagination'
 import { CsvDownloadButton } from './CsvDownloadButton'
+import { ProteinLink, InteractionLink } from 'pages/partials'
 
 type Props = {
     result: ComputationCache
@@ -65,26 +66,26 @@ const SkeletonTr: React.FC = () => (
 const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) => (
     <tr>
         <td className="text-center">
-            <a href="/" style={{ textDecoration: 'none' }}>
+            <InteractionLink {...interaction} target="_blank">
                 <img
                     src={`/img/${interaction.type}.png`}
                     alt={`${interaction.type.toUpperCase()} interaction`}
                     style={{ maxWidth: '1em' }}
                 />
-            </a>
+            </InteractionLink>
         </td>
         <td className="text-center">
-            <a href="/" className="text-info">
+            <ProteinLink {...interaction.protein1} target="_blank">
                 {interaction.protein1.accession}
-            </a>
+            </ProteinLink>
         </td>
         <td className="text-center">
             {interaction.protein1.name}
         </td>
         <td className="text-center">
-            <a href="/" className={interaction.protein2.type === 'h' ? 'text-info' : 'text-danger'}>
+            <ProteinLink {...interaction.protein2} target="_blank">
                 {interaction.protein2.accession}
-            </a>
+            </ProteinLink>
         </td>
         <td className="text-center">
             {interaction.protein2.name}
