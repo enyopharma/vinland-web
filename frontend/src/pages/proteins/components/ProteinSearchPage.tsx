@@ -1,9 +1,12 @@
 import React from 'react'
 
-export const ProteinSearchPage: React.FC = () => {
-    return (
-        <div className="container">
-            <h1>Search for proteins</h1>
-        </div>
-    )
-}
+import { ProteinCard } from 'features/proteins'
+
+export const ProteinSearchPage: React.FC = () => (
+    <div className="container">
+        <h1>Search for proteins</h1>
+        <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
+            <ProteinCard />
+        </form>
+    </div>
+)

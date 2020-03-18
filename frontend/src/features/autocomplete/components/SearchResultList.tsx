@@ -7,6 +7,7 @@ type Props = {
     query: string,
     select: (value: any) => void
     search: (query: string) => SearchResult<any>[]
+    flushed?: boolean
 }
 
 export const SearchResultList: React.FC<Props> = (props) => (
@@ -28,7 +29,7 @@ const ListFallback: React.FC = () => (
     </ul>
 )
 
-const ListLoader: React.FC<Props> = ({ input, search, query, select }) => {
+const ListLoader: React.FC<Props> = ({ input, search, query, select, flushed = false, children }) => {
     const results = search(query)
 
     const [active, setActive] = useState<number>(0)
@@ -56,6 +57,10 @@ const ListLoader: React.FC<Props> = ({ input, search, query, select }) => {
         }
     })
 
+    const classes = flushed
+        ? 'list-group list-group-flush'
+        : 'list-group'
+
     const regex = query.trim()
         .replace(/\s*\+$/, '')
         .replace(/\s*\+\s*/g, '|');
@@ -65,10 +70,10 @@ const ListLoader: React.FC<Props> = ({ input, search, query, select }) => {
         : label
 
     return (
-        <ul className="list-group">
+        <ul className={classes}>
             {results.length > 0 ? null : (
                 <li className="list-group-item">
-                    No entry found
+                    {children ?? 'No entry found'}
                 </li>
             )}
             {results.map((result, i) => (
