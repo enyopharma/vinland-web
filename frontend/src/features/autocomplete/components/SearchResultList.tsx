@@ -9,65 +9,11 @@ type Props = {
     search: (query: string) => SearchResult<any>[]
 }
 
-const isQueryNotEmpty = (query: string) => query.trim().length > 0
-
-export const SearchResultList: React.FC<Props> = (props) => {
-    const { input, query } = props
-
-    const [display, setDisplay] = useState<boolean>(false)
-
-    useEffect(() => {
-        setDisplay(isQueryNotEmpty(query))
-    }, [query])
-
-    useEffect(() => {
-        if (input.current) {
-            const target = input.current
-
-            const focus = () => { setDisplay(isQueryNotEmpty(query)) }
-
-            target.addEventListener('focus', focus)
-
-            return () => { target.removeEventListener('focus', focus) }
-        }
-    })
-
-    useEffect(() => {
-        if (input.current) {
-            const target = input.current
-
-            const blur = () => { setDisplay(false) }
-
-            target.addEventListener('blur', blur)
-
-            return () => { target.removeEventListener('blur', blur) }
-        }
-    })
-
-    useEffect(() => {
-        if (input.current) {
-            const target = input.current
-
-            const keydown = (e: KeyboardEvent) => {
-                if (e.keyCode === 27) target.blur()
-            }
-
-            target.addEventListener('keydown', keydown)
-
-            return () => { target.removeEventListener('keydown', keydown) }
-        }
-    })
-
-    return !display ? null : (
-        <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', width: '100%', zIndex: 100 }}>
-                <React.Suspense fallback={<ListFallback />}>
-                    <ListLoader {...props} />
-                </React.Suspense>
-            </div>
-        </div>
-    )
-}
+export const SearchResultList: React.FC<Props> = (props) => (
+    <React.Suspense fallback={<ListFallback />}>
+        <ListLoader {...props} />
+    </React.Suspense>
+)
 
 const ListFallback: React.FC = () => (
     <ul className="list-group">

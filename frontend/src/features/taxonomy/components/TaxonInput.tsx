@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import { Taxon } from 'features/taxonomy'
 import { resources } from 'features/taxonomy'
 
-import { SearchResultList } from 'features/autocomplete'
+import { Overlay, SearchResultList } from 'features/autocomplete'
 
 type Props = {
     select: (taxon: Taxon) => void,
@@ -30,7 +30,9 @@ export const TaxonInput: React.FC<Props> = ({ select }) => {
                     onChange={e => setQuery(e.target.value)}
                 />
             </div>
-            <SearchResultList input={ref} query={query} search={search} select={select} />
+            <Overlay input={ref}>
+                <SearchResultList input={ref} query={query} search={search} select={select} />
+            </Overlay>
         </div>
     )
 }

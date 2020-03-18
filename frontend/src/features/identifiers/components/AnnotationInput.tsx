@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Annotation } from 'features/identifiers'
 import { resources } from 'features/identifiers'
 
-import { SearchResultList } from 'features/autocomplete'
+import { Overlay, SearchResultList } from 'features/autocomplete'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -31,6 +31,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
     const search = (query: string) => resources.annotations(source, query).read()
 
     const selectAndReset = (annotation: Annotation) => {
+        ref.current?.blur()
         setSource('')
         setQuery('')
         select(annotation)
@@ -62,7 +63,9 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                     onChange={e => setQuery(e.target.value)}
                 />
             </div>
-            <SearchResultList input={ref} query={query} search={search} select={selectAndReset} />
+            <Overlay input={ref}>
+                <SearchResultList input={ref} query={query} search={search} select={selectAndReset} />
+            </Overlay>
         </div>
     )
 }
