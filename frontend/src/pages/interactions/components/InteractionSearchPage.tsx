@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useAppSelector } from 'app'
 
-import { state2query } from 'pages/search'
+import { state2query } from 'pages/interactions'
 
 import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
@@ -10,10 +10,10 @@ import { ToastContainer } from 'features/toast'
 import { IdentifierCard } from 'features/identifiers'
 import { QueryResultSection } from 'features/query'
 
-export const SearchPage: React.FC = () => {
-    const lists = useAppSelector(state => state.search.identifiers)
-    const taxonomy = useAppSelector(state => state.search.taxonomy)
-    const options = useAppSelector(state => state.search.options)
+export const InteractionSearchPage: React.FC = () => {
+    const lists = useAppSelector(state => state.interactions.search.identifiers)
+    const taxonomy = useAppSelector(state => state.interactions.search.taxonomy)
+    const options = useAppSelector(state => state.interactions.search.options)
     const query = useAppSelector(state2query)
 
     return (

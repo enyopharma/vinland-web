@@ -5,7 +5,7 @@ import { store } from 'app'
 import { Navbar, PageLoader } from 'pages/partials'
 
 const HomePage = React.lazy(() => import('pages/home').then(module => ({ default: module.HomePage })))
-const SearchPage = React.lazy(() => import('pages/search').then(module => ({ default: module.SearchPage })))
+const InteractionSearchPage = React.lazy(() => import('pages/interactions').then(module => ({ default: module.InteractionSearchPage })))
 
 export const App: React.FC = () => {
     return (
@@ -15,7 +15,7 @@ export const App: React.FC = () => {
                 <React.Suspense fallback={<PageLoader />}>
                     <Switch>
                         <Route exact path="/" component={HomePage} />
-                        <Route path="/interactions" component={SearchPage} />
+                        <Route path="/interactions" component={InteractionSearchPage} />
                     </Switch>
                 </React.Suspense>
             </BrowserRouter>

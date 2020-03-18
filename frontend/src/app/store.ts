@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { reducer as search } from 'pages/search'
+import { reducer as interactions } from 'pages/interactions'
 
 export const store = configureStore({
-    reducer: { search }
+    reducer: { interactions }
 })
