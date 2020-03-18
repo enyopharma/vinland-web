@@ -12,6 +12,11 @@ use Psr\Container\ContainerInterface;
  */
 return function (ContainerInterface $container): array {
     return [
+        'GET /proteins' => new App\Http\Handlers\Proteins\IndexHandler(
+            $container->get(App\Http\Responders\JsonResponder::class),
+            $container->get(Domain\ReadModel\ProteinViewInterface::class),
+        ),
+
         'GET /annotations' => new App\Http\Handlers\Annotations\IndexHandler(
             $container->get(App\Http\Responders\JsonResponder::class),
             $container->get(Domain\ReadModel\AnnotationViewInterface::class),
