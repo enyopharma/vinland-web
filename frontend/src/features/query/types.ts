@@ -2,6 +2,8 @@ import { SimulationNodeDatum, SimulationLinkDatum } from 'd3-force'
 import { network } from './network'
 import { cache } from './cache'
 
+export type QueryResultTab = 'interactions' | 'proteins' | 'network'
+
 export type Query = {
     key: string
     identifiers: string[]

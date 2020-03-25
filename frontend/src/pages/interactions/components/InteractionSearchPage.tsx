@@ -8,7 +8,7 @@ import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
 import { ToastContainer } from 'features/toast'
 import { IdentifierCard } from 'features/identifiers'
-import { QueryResultSection } from 'features/query'
+import { QueryResultSectionSuspense } from 'features/query'
 
 export const InteractionSearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.interactions.search.identifiers)
@@ -35,7 +35,7 @@ export const InteractionSearchPage: React.FC = () => {
             </form>
             <h2 id="result">Query result</h2>
             <ToastContainer target='result' />
-            <QueryResultSection query={query} />
+            <QueryResultSectionSuspense query={query} />
         </div>
     )
 }

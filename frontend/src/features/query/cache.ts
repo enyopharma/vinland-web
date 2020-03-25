@@ -10,28 +10,17 @@ export const cache = (result: SuccessfulQueryResult) => {
 }
 
 const getProteinCache = (interactions: Interaction[]) => {
-    let cache: { human: Protein[], viral: Protein[] } | null = null
+    let cache: Protein[] | null = null
 
     const filter = (interactions: Interaction[]) => {
-        const human: Record<string, Protein> = {}
-        const viral: Record<string, Protein> = {}
+        const proteins: Record<string, Protein> = {}
 
         interactions.forEach(i => {
-            i.protein1.type === 'h'
-                ? human[`${i.protein1.accession}:${i.protein1.name}`] = i.protein1
-                : viral[`${i.protein1.accession}:${i.protein1.name}`] = i.protein1
-
-            i.protein2.type === 'h'
-                ? human[`${i.protein2.accession}:${i.protein2.name}`] = i.protein2
-                : viral[`${i.protein2.accession}:${i.protein2.name}`] = i.protein2
+            proteins[`${i.protein1.accession}:${i.protein1.name}`] = i.protein1
+            proteins[`${i.protein2.accession}:${i.protein2.name}`] = i.protein2
         })
 
-        return {
-            human: Object.values(human),
-            viral: Object.values(viral).sort((a, b) => {
-                return a.name.localeCompare(b.name) || a.taxon.name.localeCompare(b.taxon.name)
-            }),
-        }
+        return Object.values(proteins)
     }
 
     return () => {

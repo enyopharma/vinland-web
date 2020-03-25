@@ -1,21 +1,15 @@
 import React from 'react'
 
-import { ComputationCache } from 'features/query'
+import { QueryResultTab as Tab, ComputationCache } from 'features/query'
 import { usePersistentState } from 'features/query'
 
-import { CardBodyFallback } from './CardBodyFallback'
-
-const NetworkCardBody = React.lazy(() => import('./NetworkCardBody').then(module => ({ default: module.NetworkCardBody })))
-const ProteinsCardBody = React.lazy(() => import('./ProteinsCardBody').then(module => ({ default: module.ProteinsCardBody })))
-const InteractionsCardBody = React.lazy(() => import('./InteractionsCardBody').then(module => ({ default: module.InteractionsCardBody })))
+import { QueryResultCardBodySuspense } from './QueryResultCardBodySuspense'
 
 type Props = {
     result: ComputationCache
 }
 
-type Tab = 'interactions' | 'proteins' | 'network'
-
-export const QueryResultCard: React.FC<Props> = (props) => {
+export const QueryResultCard: React.FC<Props> = ({ result }) => {
     const [tab, setTab] = usePersistentState<Tab>('tab', 'interactions')
 
     return (
@@ -39,24 +33,9 @@ export const QueryResultCard: React.FC<Props> = (props) => {
                     </li>
                 </ul>
             </div>
-            <React.Suspense fallback={<CardBodyFallback />}>
-                <CardBody tab={tab} {...props} />
-            </React.Suspense>
+            <QueryResultCardBodySuspense tab={tab} result={result} />
         </div>
     )
-}
-
-const CardBody: React.FC<{ tab: Tab, result: ComputationCache }> = ({ tab, result }) => {
-    switch (tab) {
-        case 'interactions':
-            return <InteractionsCardBody result={result} />
-        case 'proteins':
-            return <ProteinsCardBody result={result} />
-        case 'network':
-            return <NetworkCardBody result={result} />
-        default:
-            throw new Error()
-    }
 }
 
 const TabLink: React.FC<{ tab: Tab, current: Tab, update: (tab: Tab) => void }> = (props) => {

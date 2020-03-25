@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ComputationCache, Interaction } from 'features/query'
+import { Interaction } from 'features/query'
 import { usePersistentState } from 'features/query'
 import { config, interactions2csv } from 'features/query'
 
@@ -9,13 +9,11 @@ import { CsvDownloadButton } from './CsvDownloadButton'
 import { ProteinLink, InteractionLink } from 'pages/partials'
 
 type Props = {
-    result: ComputationCache
+    interactions: Interaction[]
 }
 
-export const InteractionsCardBody: React.FC<Props> = ({ result }) => {
-    const interactions = result.interactions
-
-    const [offset, setOffset] = usePersistentState<number>('interactions.offset', 0, [result])
+export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
+    const [offset, setOffset] = usePersistentState<number>('interactions.offset', 0, [interactions])
 
     const slice = interactions.slice(offset, offset + config.limit)
 

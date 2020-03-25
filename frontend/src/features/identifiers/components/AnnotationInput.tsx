@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Annotation } from 'features/identifiers'
 import { resources } from 'features/identifiers'
 
-import { Overlay, SearchResultList } from 'features/autocomplete'
+import { Overlay, SearchResultListSuspense } from 'features/autocomplete'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -64,7 +64,12 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                 />
             </div>
             <Overlay input={ref}>
-                <SearchResultList input={ref} query={query} search={search} select={selectAndReset} />
+                <SearchResultListSuspense
+                    input={ref}
+                    query={query}
+                    search={search}
+                    select={selectAndReset}
+                />
             </Overlay>
         </div>
     )

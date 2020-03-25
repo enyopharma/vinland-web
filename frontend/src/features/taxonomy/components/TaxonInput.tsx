@@ -1,17 +1,16 @@
 import React, { useRef, useState } from 'react'
 
-import { Taxon } from 'features/taxonomy'
-import { resources } from 'features/taxonomy'
+import { useActionCreator } from 'app'
 
-import { Overlay, SearchResultList } from 'features/autocomplete'
+import { actions, resources } from 'features/taxonomy'
 
-type Props = {
-    select: (taxon: Taxon) => void,
-}
+import { Overlay, SearchResultListSuspense } from 'features/autocomplete'
 
 const search = (query: string) => resources.taxa(query).read()
 
-export const TaxonInput: React.FC<Props> = ({ select }) => {
+export const TaxonInput: React.FC = () => {
+    const select = useActionCreator(actions.select)
+
     const ref = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
 
@@ -31,7 +30,12 @@ export const TaxonInput: React.FC<Props> = ({ select }) => {
                 />
             </div>
             <Overlay input={ref}>
-                <SearchResultList input={ref} query={query} search={search} select={select} />
+                <SearchResultListSuspense
+                    input={ref}
+                    query={query}
+                    search={search}
+                    select={select}
+                />
             </Overlay>
         </div>
     )

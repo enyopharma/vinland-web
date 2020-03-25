@@ -1,16 +1,15 @@
 import React from 'react'
 
-import { ComputationCache, Protein } from 'features/query'
+import { Protein } from 'features/query'
 import { usePersistentState } from 'features/query'
 import { config, proteins2csv } from 'features/query'
 
 import { Pagination } from './Pagination'
-import { CardBodyFallback } from './CardBodyFallback'
 import { CsvDownloadButton } from './CsvDownloadButton'
 import { ProteinLink } from 'pages/partials'
 
 type Props = {
-    result: ComputationCache
+    proteins: Protein[]
 }
 
 type Tab = 'a' | 'h' | 'v'
@@ -22,23 +21,27 @@ const style = {
     maxWidth: '10px',
 }
 
-export const ProteinsCardBody: React.FC<Props> = (props) => (
-    <React.Suspense fallback={<CardBodyFallback />}>
-        <CardBody {...props} />
-    </React.Suspense>
-)
+const filter = (type: Tab, proteins: Protein[]) => {
+    if (type === 'h') {
+        return proteins.filter(protein => protein.type === 'h')
+    }
 
-const CardBody: React.FC<Props> = ({ result }) => {
-    const { human, viral } = result.proteins()
+    if (type === 'v') {
+        return proteins.filter(protein => protein.type === 'v')
+    }
 
+    return proteins
+}
+
+export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
     const [tab, setTab] = usePersistentState<Tab>('proteins.tab', 'a')
-    const [offsets, setOffsets] = usePersistentState<Record<Tab, number>>('proteins.offsets', { a: 0, h: 0, v: 0 }, [result])
+    const [offsets, setOffsets] = usePersistentState<Record<Tab, number>>('proteins.offsets', { a: 0, h: 0, v: 0 }, [proteins])
 
-    const proteins = tab === 'h' ? human : tab === 'v' ? viral : [...human, ...viral]
+    const filtered = filter(tab, proteins)
     const offset = offsets[tab]
     const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })
 
-    const slice = proteins.slice(offset, offset + config.limit)
+    const slice = filtered.slice(offset, offset + config.limit)
 
     return (
         <React.Fragment>
@@ -57,7 +60,7 @@ const CardBody: React.FC<Props> = ({ result }) => {
                     </div>
                     <div className="col">
                         <p className="text-right">
-                            <CsvDownloadButton csv={() => proteins2csv(proteins)}>
+                            <CsvDownloadButton csv={() => proteins2csv(filtered)}>
                                 Download as csv
                             </CsvDownloadButton>
                         </p>

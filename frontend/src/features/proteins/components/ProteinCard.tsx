@@ -44,10 +44,16 @@ export const ProteinCard: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {query.trim().length === 0
-                ? <div className="card-body">Please enter a search term.</div>
-                : <ProteinCardTableSuspense type={type} query={query} />
+            {query.trim().length > 0
+                ? <ProteinCardTableSuspense type={type} query={query} />
+                : <Empty />
             }
         </div>
     )
 }
+
+const Empty: React.FC = () => (
+    <div className="card-body">
+        Please enter a search term.
+    </div>
+)

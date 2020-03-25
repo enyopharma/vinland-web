@@ -5,32 +5,11 @@ import { SearchResult } from 'features/autocomplete'
 type Props = {
     input: RefObject<HTMLInputElement>
     query: string,
+    results: SearchResult<any>[]
     select: (value: any) => void
-    search: (query: string) => SearchResult<any>[]
 }
 
-export const SearchResultList: React.FC<Props> = (props) => (
-    <React.Suspense fallback={<ListFallback />}>
-        <ListLoader {...props} />
-    </React.Suspense>
-)
-
-const ListFallback: React.FC = () => (
-    <ul className="list-group">
-        <li className="list-group-item">
-            <div className="progress">
-                <div
-                    className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                    style={{ width: '100%' }}
-                ></div>
-            </div>
-        </li>
-    </ul>
-)
-
-const ListLoader: React.FC<Props> = ({ input, search, query, select, children }) => {
-    const results = search(query)
-
+export const SearchResultList: React.FC<Props> = ({ input, query, results, select, children }) => {
     const [active, setActive] = useState<number>(0)
 
     const active1 = results.length === 0 ? 0 : active % results.length
