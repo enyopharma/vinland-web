@@ -1,10 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useHistory } from "react-router-dom";
 
-import { Protein } from 'features/proteins'
-import { resources } from 'features/proteins'
-
-import { SearchResultList } from 'features/autocomplete'
+import { ProteinCardTableSuspense } from './ProteinCardTableSuspense'
 
 const isTypeSelected = (type: string) => type.trim().length > 0
 
@@ -12,17 +8,12 @@ export const ProteinCard: React.FC = () => {
     const ref = useRef<HTMLInputElement>(null)
     const [type, setType] = useState<string>('')
     const [query, setQuery] = useState<string>('')
-    const history = useHistory()
 
     useEffect(() => {
         if (isTypeSelected(type)) {
             ref.current?.focus()
         }
     }, [type])
-
-    const search = (query: string) => resources.proteins(type, query).read()
-
-    const select = (protein: Protein) => history.push(`/proteins/${protein.id}`)
 
     return (
         <div className="card">
@@ -53,9 +44,10 @@ export const ProteinCard: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <SearchResultList input={ref} query={query} search={search} select={select} flushed>
-                Please enter a search term
-            </SearchResultList>
+            {query.trim().length === 0
+                ? <div className="card-body">Please enter a search term.</div>
+                : <ProteinCardTableSuspense type={type} query={query} />
+            }
         </div>
     )
 }

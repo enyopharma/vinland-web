@@ -18,22 +18,28 @@ my $vinland = DBI->connect(
 );
 
 my $select_human_proteins_sth = $drakkar->prepare('
-    SELECT type, taxon_id, accession, name, description
-    FROM proteins
-    WHERE type = \'h\'
+    SELECT p.type, p.taxon_id, p.accession, p.name, p.description, tn.name AS taxon
+    FROM proteins AS p, taxon AS t, taxon_name AS tn
+    WHERE p.taxon_id = t.ncbi_taxon_id
+    AND t.taxon_id = tn.taxon_id
+    AND p.type = \'h\'
+    AND tn.name_class = \'scientific name\'
     ORDER BY accession ASC
 ');
 
 my $select_viral_proteins_sth = $drakkar->prepare('
-    SELECT p.type, p.taxon_id, p.accession, i.name, p.description
-    FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p
-    WHERE a.id = d.association_id
+    SELECT p.type, p.taxon_id, p.accession, i.name, p.description, tn.name AS taxon
+    FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p, taxon AS t, taxon_name AS tn
+    WHERE p.taxon_id = t.ncbi_taxon_id
+      AND t.taxon_id = tn.taxon_id
+      AND a.id = d.association_id
       AND (i.id = d.interactor1_id OR i.id = d.interactor2_id)
       AND p.id = i.protein_id
       AND a.state = \'curated\'
       AND d.deleted_at IS NULL
       AND p.type=\'v\'
-    GROUP BY p.type, p.taxon_id, p.accession, i.name, p.description
+      AND tn.name_class = \'scientific name\'
+    GROUP BY p.type, p.taxon_id, p.accession, i.name, p.description, tn.name
     ORDER BY p.accession ASC
 ');
 
@@ -48,7 +54,12 @@ while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
         $protein->{'accession'},
         $protein->{'name'},
         $protein->{'description'},
-        join(' ', $protein->{'accession'}, $protein->{'name'}, $protein->{'description'}),
+        join(' ', (
+            $protein->{'accession'},
+            $protein->{'name'},
+            $protein->{'description'},
+            $protein->{'taxon'},
+        )),
     ]);
 }
 
@@ -63,14 +74,23 @@ while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
         $protein->{'accession'},
         $protein->{'name'},
         $protein->{'description'},
-        join(' ', $protein->{'accession'}, $protein->{'name'}, $protein->{'description'}),
+        join(' ', (
+            $protein->{'accession'},
+            $protein->{'name'},
+            $protein->{'description'},
+            $protein->{'taxon'},
+        )),
     ]);
 }
 
-$select_viral_proteins_sth->finish;
+foreach my $protein (@proteins) {
+    print join("\t", @{$protein}) . "\n"
+}
 
-$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description, search) FROM STDIN');
-
-$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
-
-$vinland->pg_putcopyend();
+#$select_viral_proteins_sth->finish;
+#
+#$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description, search) FROM STDIN');
+#
+#$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
+#
+#$vinland->pg_putcopyend();

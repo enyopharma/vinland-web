@@ -15,6 +15,13 @@ type Props = {
 
 type Tab = 'a' | 'h' | 'v'
 
+const style = {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+    maxWidth: '10px',
+}
+
 export const ProteinsCardBody: React.FC<Props> = (props) => (
     <React.Suspense fallback={<CardBodyFallback />}>
         <CardBody {...props} />
@@ -64,7 +71,8 @@ const CardBody: React.FC<Props> = ({ result }) => {
                         <th className="col-1 text-center">-</th>
                         <th className="col-2 text-center">Accession</th>
                         <th className="col-2 text-center">Name</th>
-                        <th className="col-8 text-center">Taxon</th>
+                        <th className="col-3 text-center">Taxon</th>
+                        <th className="col-4 text-center">Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -110,6 +118,7 @@ const SkeletonTr: React.FC = () => (
         <td className="text-center">-</td>
         <td className="text-center">-</td>
         <td className="text-center">-</td>
+        <td className="text-center">-</td>
     </tr>
 )
 
@@ -132,14 +141,14 @@ const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
         <td className="text-center">
             {protein.name}
         </td>
-        <td className="text-center" style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '10px',
-        }}>
+        <td className="text-center" style={style}>
             <span title={protein.taxon.name}>
                 {protein.taxon.name}
+            </span>
+        </td>
+        <td className="text-center" style={style}>
+            <span title={protein.description}>
+                {protein.description}
             </span>
         </td>
     </tr>

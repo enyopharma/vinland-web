@@ -33,9 +33,9 @@ export const InteractionsCardBody: React.FC<Props> = ({ result }) => {
                 <thead>
                     <tr>
                         <th className="col-1 text-center" colSpan={1}>-</th>
-                        <th className="col-2 text-center" colSpan={2}>Protein 1</th>
-                        <th className="col-2 text-center" colSpan={2}>Protein 2</th>
-                        <th className="col-8 text-center" colSpan={1}>Taxon</th>
+                        <th className="col-3 text-center" colSpan={2}>Protein 1</th>
+                        <th className="col-3 text-center" colSpan={2}>Protein 2</th>
+                        <th className="col-5 text-center" colSpan={1}>Taxon</th>
                     </tr>
                 </thead>
                 <tbody>

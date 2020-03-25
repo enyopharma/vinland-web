@@ -3,11 +3,10 @@ import fetch from 'cross-fetch'
 import { cache } from 'utils/cache'
 
 import { Protein } from './types'
-import { SearchResult } from 'features/autocomplete'
 
 const limit = 20
 
-const proteins = cache<SearchResult<Protein>[]>()
+const proteins = cache<Protein[]>()
 
 export const resources = {
     proteins: (type: string, query: string) => {
@@ -30,10 +29,7 @@ const fetchProteins = async (type: string, query: string) => {
             throw new Error(json)
         }
 
-        return json.data.map((protein: Protein) => ({
-            label: [protein.accession, protein.name, protein.description].join(' - '),
-            value: protein,
-        }))
+        return json.data
     }
 
     catch (error) {

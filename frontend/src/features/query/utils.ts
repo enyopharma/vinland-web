@@ -5,9 +5,9 @@ export function isSuccessfulQueryResult(result: QueryResult): result is Successf
 }
 
 export const proteins2csv = (proteins: Protein[], sep: string = "\t") => {
-    const headers = ['type', 'accession', 'name', 'taxon']
+    const headers = ['type', 'accession', 'name', 'taxon', 'description']
 
-    const fields = (p: Protein) => [p.type, p.accession, p.name, p.taxon.name]
+    const fields = (p: Protein) => [p.type, p.accession, p.name, p.taxon.name, p.description]
 
     return `#${headers.join(sep)}\n${proteins.map(p => fields(p).join(sep)).join("\n")}`
 }

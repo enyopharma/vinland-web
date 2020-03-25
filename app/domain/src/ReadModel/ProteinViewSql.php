@@ -11,10 +11,17 @@ final class ProteinViewSql implements ProteinViewInterface
 
     private \PDO $pdo;
 
-    const SELECT_PROTEINS_SQL = <<<SQL
-        SELECT id, type, ncbi_taxon_id, accession, name, description
+    const SELECT_HUMAN_PROTEINS_SQL = <<<SQL
+        SELECT id, type, ncbi_taxon_id, accession, name, description, 'Homo sapiens' AS taxon
         FROM proteins
-        WHERE type = ? AND %s
+        WHERE type = 'h' AND %s
+        LIMIT ?
+    SQL;
+
+    const SELECT_VIRAL_PROTEINS_SQL = <<<SQL
+        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, t.name AS taxon
+        FROM proteins AS p, taxa AS t
+        WHERE p.ncbi_taxon_id = t.ncbi_taxon_id AND type = 'v' AND %s
         LIMIT ?
     SQL;
 
@@ -42,9 +49,11 @@ final class ProteinViewSql implements ProteinViewInterface
 
         $where = implode(' AND ', array_pad([], count($qs), 'search ILIKE ?'));
 
-        $select_proteins_sth = $this->pdo->prepare(sprintf(self::SELECT_PROTEINS_SQL, $where));
+        $select_proteins_sth = $type == self::H
+            ? $this->pdo->prepare(sprintf(self::SELECT_HUMAN_PROTEINS_SQL, $where))
+            : $this->pdo->prepare(sprintf(self::SELECT_VIRAL_PROTEINS_SQL, $where));
 
-        $select_proteins_sth->execute([$type, ...$qs, $limit]);
+        $select_proteins_sth->execute([...$qs, $limit]);
 
         return Statement::from($this->generator($select_proteins_sth));
     }
