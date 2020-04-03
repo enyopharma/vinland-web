@@ -31,6 +31,7 @@ final class ProteinSql implements ProteinInterface
     ) {
         $this->pdo = $pdo;
         $this->id = $id;
+        $this->type = $type;
         $this->ncbi_taxon_id = $ncbi_taxon_id;
         $this->accession = $accession;
         $this->name = $name;
@@ -41,6 +42,7 @@ final class ProteinSql implements ProteinInterface
     {
         return [
             'id' => $this->id,
+            'type' => $this->type,
             'ncbi_taxon_id' => $this->ncbi_taxon_id,
             'accession' => $this->accession,
             'name' => $this->name,
