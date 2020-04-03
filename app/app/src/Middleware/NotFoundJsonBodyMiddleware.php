@@ -19,7 +19,7 @@ final class NotFoundJsonBodyMiddleware implements MiddlewareInterface
         $body = $response->getBody();
         $accept = $request->getHeaderLine('accept');
 
-        return $code == 404 && empty((string) $body) && strpos($accept, 'application/json') !== false
+        return $code == 404 && empty((string) $body)
             ? $this->notFoundResponse($response)
             : $response;
     }

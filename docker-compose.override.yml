@@ -4,6 +4,9 @@ services:
         user: ${UID}:${GID}
         volumes:
             - ./app:/var/www/html:rw
+        environment:
+            - APP_ENV=${APP_ENV}
+            - APP_DEBUG=${APP_DEBUG}
     backend:
         volumes:
             - ./backend/default.conf:/etc/nginx/conf.d/default.conf:ro

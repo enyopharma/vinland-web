@@ -27,7 +27,7 @@ return function (ContainerInterface $container): array {
             $container->get(Domain\ReadModel\TaxonViewInterface::class),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}/related' => new Quanta\Http\RequestHandler(
+        'GET /taxa/{ncbi_taxon_id:\d+}/related' => Quanta\Http\RequestHandler::queue(
             new App\Http\Handlers\Taxa\Related\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
             ),
@@ -37,7 +37,7 @@ return function (ContainerInterface $container): array {
             ),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}/names' => new Quanta\Http\RequestHandler(
+        'GET /taxa/{ncbi_taxon_id:\d+}/names' => Quanta\Http\RequestHandler::queue(
             new App\Http\Handlers\Taxa\Names\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
             ),
@@ -47,11 +47,12 @@ return function (ContainerInterface $container): array {
             ),
         ),
 
-        'POST /interactions' => new Quanta\Http\RequestHandler(
+        'POST /interactions' => Quanta\Http\RequestHandler::queue(
             new App\Http\Handlers\Interactions\IndexHandler(
                 $container->get(App\Http\Responders\JsonResponder::class),
                 $container->get(Domain\ReadModel\InteractionViewInterface::class),
             ),
+            new Middlewares\JsonPayload,
             new App\Http\Middleware\InputValidationMiddleware(
                 $container->get(App\Http\Responders\JsonResponder::class),
                 [Domain\Input\QueryInput::class, 'from'],

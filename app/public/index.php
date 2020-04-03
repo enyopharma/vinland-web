@@ -17,8 +17,8 @@ if (file_exists(__DIR__ . '/../.env')) {
 /**
  * Get the env and debug mod from the env var.
  */
-$env = $_ENV['APP_ENV'] ?? 'development';
-$debug = filter_var($_ENV['APP_DEBUG'] ?? true, FILTER_VALIDATE_BOOLEAN);
+$env = $_ENV['APP_ENV'] ?? 'production';
+$debug = filter_var($_ENV['APP_DEBUG'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
 /**
  * Get the container.

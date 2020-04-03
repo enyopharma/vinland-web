@@ -15,6 +15,11 @@ use Psr\Http\Message\ResponseFactoryInterface;
  */
 return function (ContainerInterface $container): RequestHandlerInterface {
     /**
+     * Get the app debug state.
+     */
+    $debug = $container->get('app.debug');
+
+    /**
      * Get the response factory from the container.
      */
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
@@ -31,9 +36,14 @@ return function (ContainerInterface $container): RequestHandlerInterface {
      */
     return Quanta\Http\Dispatcher::queue(
         /**
-         * Parse json body.
+         * Produce a response when an exception is thrown exception.
          */
-        new Middlewares\JsonPayload,
+        new App\Http\Middleware\ServerErrorMiddleware($factory, $debug),
+
+        /**
+         * Add a json body to a not found response.
+         */
+        new App\Http\Middleware\NotFoundJsonBodyMiddleware,
 
         /**
          * Router.
