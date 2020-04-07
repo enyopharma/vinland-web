@@ -17,7 +17,7 @@ final class TaxonViewSql implements TaxonViewInterface
     const SELECT_TAXA_SQL = <<<SQL
         SELECT taxon_id, ncbi_taxon_id, name, left_value, right_value, nb_interactions
         FROM taxa
-        WHERE %s
+        WHERE name ILIKE ALL(?)
         ORDER BY nb_interactions DESC
         LIMIT ?
     SQL;
@@ -44,11 +44,9 @@ final class TaxonViewSql implements TaxonViewInterface
             return Statement::from([]);
         }
 
-        $where = implode(' AND ', array_pad([], count($qs), 'name ILIKE ?'));
+        $select_taxa_sth = $this->pdo->prepare(self::SELECT_TAXA_SQL);
 
-        $select_taxa_sth = $this->pdo->prepare(sprintf(self::SELECT_TAXA_SQL, $where));
-
-        $select_taxa_sth->execute([...$qs, $limit]);
+        $select_taxa_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($this->generator($select_taxa_sth));
     }

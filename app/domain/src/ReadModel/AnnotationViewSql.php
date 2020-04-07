@@ -9,7 +9,10 @@ final class AnnotationViewSql implements AnnotationViewInterface
     private \PDO $pdo;
 
     const SELECT_ANNOTATIONS_SQL = <<<SQL
-        SELECT * FROM annotations WHERE %s AND source = ? LIMIT ?
+        SELECT *
+        FROM annotations
+        WHERE source = ? AND search ILIKE ALL(?)
+        LIMIT ?
     SQL;
 
     public function __construct(\PDO $pdo)
@@ -25,11 +28,9 @@ final class AnnotationViewSql implements AnnotationViewInterface
             return Statement::from([]);
         }
 
-        $where = implode(' AND ', array_pad([], count($qs), 'search ILIKE ?'));
-
         $select_annotations_sth = $this->pdo->prepare(sprintf(self::SELECT_ANNOTATIONS_SQL, $where));
 
-        $select_annotations_sth->execute([...$qs, $source, $limit]);
+        $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($this->generator($select_annotations_sth));
     }
