@@ -1,7 +1,7 @@
 version: '3'
 services:
-    app:
-        build: ./app
+    api:
+        build: ./api
         environment:
             - APP_HOST=${APP_HOST}
             - SSO_HOST=${SSO_HOST}
@@ -13,4 +13,4 @@ services:
     backend:
         build: ./backend
         depends_on:
-            - app
+            - api
