@@ -18,9 +18,8 @@ return function (string $env, bool $debug): ContainerInterface {
     ];
 
     $files = array_merge(
-        (array) glob(__DIR__ . '/../app/factories/*.php'),
-        (array) glob(__DIR__ . '/../domain/factories/*.php'),
-        (array) glob(__DIR__ . '/../infrastructure/factories/*.php'),
+        (array) glob(__DIR__ . '/factories/*.php'),
+        (array) glob(__DIR__ . '/factories/**/*.php'),
     );
 
     return new Quanta\Container(array_reduce($files, function ($factories, $file) {

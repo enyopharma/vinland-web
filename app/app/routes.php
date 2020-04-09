@@ -12,50 +12,50 @@ use Psr\Container\ContainerInterface;
  */
 return function (ContainerInterface $container): array {
     return [
-        'GET /proteins' => new App\Http\Handlers\Proteins\IndexHandler(
-            $container->get(App\Http\Responders\JsonResponder::class),
-            $container->get(Domain\ReadModel\ProteinViewInterface::class),
+        'GET /proteins' => new App\Handlers\Proteins\IndexHandler(
+            $container->get(App\Responders\JsonResponder::class),
+            $container->get(App\ReadModel\ProteinViewInterface::class),
         ),
 
-        'GET /annotations' => new App\Http\Handlers\Annotations\IndexHandler(
-            $container->get(App\Http\Responders\JsonResponder::class),
-            $container->get(Domain\ReadModel\AnnotationViewInterface::class),
+        'GET /annotations' => new App\Handlers\Annotations\IndexHandler(
+            $container->get(App\Responders\JsonResponder::class),
+            $container->get(App\ReadModel\AnnotationViewInterface::class),
         ),
 
-        'GET /taxa' => new App\Http\Handlers\Taxa\IndexHandler(
-            $container->get(App\Http\Responders\JsonResponder::class),
-            $container->get(Domain\ReadModel\TaxonViewInterface::class),
+        'GET /taxa' => new App\Handlers\Taxa\IndexHandler(
+            $container->get(App\Responders\JsonResponder::class),
+            $container->get(App\ReadModel\TaxonViewInterface::class),
         ),
 
         'GET /taxa/{ncbi_taxon_id:\d+}/related' => Quanta\Http\RequestHandler::queue(
-            new App\Http\Handlers\Taxa\Related\IndexHandler(
-                $container->get(App\Http\Responders\JsonResponder::class),
+            new App\Handlers\Taxa\Related\IndexHandler(
+                $container->get(App\Responders\JsonResponder::class),
             ),
-            new App\Http\Middleware\FetchTaxonMiddleware(
+            new App\Middleware\FetchTaxonMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+                $container->get(App\ReadModel\TaxonViewInterface::class),
             ),
         ),
 
         'GET /taxa/{ncbi_taxon_id:\d+}/names' => Quanta\Http\RequestHandler::queue(
-            new App\Http\Handlers\Taxa\Names\IndexHandler(
-                $container->get(App\Http\Responders\JsonResponder::class),
+            new App\Handlers\Taxa\Names\IndexHandler(
+                $container->get(App\Responders\JsonResponder::class),
             ),
-            new App\Http\Middleware\FetchTaxonMiddleware(
+            new App\Middleware\FetchTaxonMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                $container->get(Domain\ReadModel\TaxonViewInterface::class),
+                $container->get(App\ReadModel\TaxonViewInterface::class),
             ),
         ),
 
         'POST /interactions' => Quanta\Http\RequestHandler::queue(
-            new App\Http\Handlers\Interactions\IndexHandler(
-                $container->get(App\Http\Responders\JsonResponder::class),
-                $container->get(Domain\ReadModel\InteractionViewInterface::class),
+            new App\Handlers\Interactions\IndexHandler(
+                $container->get(App\Responders\JsonResponder::class),
+                $container->get(App\ReadModel\InteractionViewInterface::class),
             ),
             new Middlewares\JsonPayload,
-            new App\Http\Middleware\InputValidationMiddleware(
-                $container->get(App\Http\Responders\JsonResponder::class),
-                [Domain\Input\QueryInput::class, 'from'],
+            new App\Middleware\InputValidationMiddleware(
+                $container->get(App\Responders\JsonResponder::class),
+                [App\Request\QueryInput::class, 'from'],
             ),
         ),
     ];

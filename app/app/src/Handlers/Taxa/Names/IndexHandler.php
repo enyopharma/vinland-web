@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Taxa\Names;
+namespace App\Handlers\Taxa\Names;
 
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Domain\ReadModel\TaxonInterface;
+use App\ReadModel\TaxonInterface;
 
-use App\Http\Responders\JsonResponder;
+use App\Responders\JsonResponder;
 
 final class IndexHandler implements RequestHandlerInterface
 {

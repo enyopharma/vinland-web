@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\Validations\Query;
+namespace App\Validations\Query;
 
 use Quanta\Validation\Success;
 use Quanta\Validation\InputInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Domain\ReadModel;
+namespace App\ReadModel;
 
 interface TaxonViewInterface
 {

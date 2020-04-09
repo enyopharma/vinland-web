@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Domain\Input;
+namespace App\Request;
 
 use Quanta\Validation\Bound;
 use Quanta\Validation\Success;
 use Quanta\Validation\InputInterface;
 
-use Domain\Validations\IsQuery;
+use App\Validations\IsQuery;
 
 final class QueryInput
 {

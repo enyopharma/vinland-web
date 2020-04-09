@@ -27,7 +27,7 @@ return function (ContainerInterface $container): RequestHandlerInterface {
     /**
      * Get the fast route dispatcher and build a router.
      */
-    $router = new App\Http\FastRouteRouter(
+    $router = new App\FastRouteRouter(
         $container->get(FastRoute\Dispatcher::class)
     );
 
@@ -38,12 +38,12 @@ return function (ContainerInterface $container): RequestHandlerInterface {
         /**
          * Produce a response when an exception is thrown exception.
          */
-        new App\Http\Middleware\ServerErrorMiddleware($factory, $debug),
+        new App\Middleware\ServerErrorMiddleware($factory, $debug),
 
         /**
          * Add a json body to a not found response.
          */
-        new App\Http\Middleware\NotFoundJsonBodyMiddleware,
+        new App\Middleware\NotFoundJsonBodyMiddleware,
 
         /**
          * Router.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Middleware;
+namespace App\Middleware;
 
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use Quanta\Validation\ErrorInterface;
 
-use App\Http\Responders\JsonResponder;
+use App\Responders\JsonResponder;
 
 final class InputValidationMiddleware implements MiddlewareInterface
 {

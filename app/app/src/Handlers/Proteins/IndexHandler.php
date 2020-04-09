@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Proteins;
+namespace App\Handlers\Proteins;
 
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Domain\ReadModel\ProteinViewInterface;
+use App\ReadModel\ProteinViewInterface;
 
-use App\Http\Responders\JsonResponder;
+use App\Responders\JsonResponder;
 
 final class IndexHandler implements RequestHandlerInterface
 {

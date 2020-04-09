@@ -32,8 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\Http\\": "app/src",
-            "Domain\\": "domain/src"
+            "App\\": "app/src"
         }
     },
     "require-dev": {

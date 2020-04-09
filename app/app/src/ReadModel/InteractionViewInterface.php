@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Domain\ReadModel;
+namespace App\ReadModel;
 
-use Domain\Input\QueryInput;
+use App\Request\QueryInput;
 
 interface InteractionViewInterface
 {

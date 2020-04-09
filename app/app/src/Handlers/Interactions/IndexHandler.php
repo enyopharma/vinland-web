@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Handlers\Interactions;
+namespace App\Handlers\Interactions;
 
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -10,10 +10,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use Quanta\Validation\ErrorInterface;
 
-use Domain\Input\QueryInput;
-use Domain\ReadModel\InteractionViewInterface;
+use App\Request\QueryInput;
+use App\ReadModel\InteractionViewInterface;
 
-use App\Http\Responders\JsonResponder;
+use App\Responders\JsonResponder;
 
 final class IndexHandler implements RequestHandlerInterface
 {
@@ -32,11 +32,11 @@ final class IndexHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (is_null($input = $request->getAttribute(\Domain\Input\QueryInput::class))) {
+        if (is_null($input = $request->getAttribute(\App\Request\QueryInput::class))) {
             throw new \LogicException;
         }
 
-        if (! $input instanceof \Domain\Input\QueryInput) {
+        if (! $input instanceof \App\Request\QueryInput) {
             throw new \LogicException;
         }
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Middleware;
+namespace App\Middleware;
 
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -10,10 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use Domain\ReadModel\TaxonInterface;
-use Domain\ReadModel\TaxonViewInterface;
+use App\ReadModel\TaxonInterface;
+use App\ReadModel\TaxonViewInterface;
 
-use App\Http\Responders\JsonResponder;
+use App\Responders\JsonResponder;
 
 final class FetchTaxonMiddleware implements MiddlewareInterface
 {

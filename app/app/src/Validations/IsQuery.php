@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Domain\Validations;
+namespace App\Validations;
 
 use Quanta\Validation\Is;
 use Quanta\Validation\Field;

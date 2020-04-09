@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Domain\ReadModel;
+namespace App\ReadModel;
 
 /**
- * @implements \IteratorAggregate<\Domain\ReadModel\EntityInterface>
+ * @implements \IteratorAggregate<\App\ReadModel\EntityInterface>
  */
 final class Statement implements \IteratorAggregate
 {
@@ -15,13 +15,13 @@ final class Statement implements \IteratorAggregate
     private int $i;
 
     /**
-     * @var \Iterator<\Domain\ReadModel\EntityInterface>
+     * @var \Iterator<\App\ReadModel\EntityInterface>
      */
     private \Iterator $iterator;
 
     /**
-     * @param iterable<\Domain\ReadModel\EntityInterface> $iterable
-     * @return \Domain\ReadModel\Statement
+     * @param iterable<\App\ReadModel\EntityInterface> $iterable
+     * @return \App\ReadModel\Statement
      */
     public static function from(iterable $iterable): self
     {
@@ -41,7 +41,7 @@ final class Statement implements \IteratorAggregate
     }
 
     /**
-     * @param \Iterator<\Domain\ReadModel\EntityInterface> $iterator
+     * @param \Iterator<\App\ReadModel\EntityInterface> $iterator
      */
     private function __construct(\Iterator $iterator)
     {
@@ -50,7 +50,7 @@ final class Statement implements \IteratorAggregate
     }
 
     /**
-     * @return \Domain\ReadModel\EntityInterface|false
+     * @return \App\ReadModel\EntityInterface|false
      */
     public function fetch()
     {
