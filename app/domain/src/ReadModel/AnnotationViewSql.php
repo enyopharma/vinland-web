@@ -28,7 +28,7 @@ final class AnnotationViewSql implements AnnotationViewInterface
             return Statement::from([]);
         }
 
-        $select_annotations_sth = $this->pdo->prepare(sprintf(self::SELECT_ANNOTATIONS_SQL, $where));
+        $select_annotations_sth = $this->pdo->prepare(self::SELECT_ANNOTATIONS_SQL);
 
         $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
 
