@@ -6,5 +6,7 @@ namespace App\ReadModel;
 
 interface ProteinInterface extends EntityInterface
 {
-    //
+    public function isoforms(): IsoformViewInterface;
+
+    public function withIsoforms(): self;
 }

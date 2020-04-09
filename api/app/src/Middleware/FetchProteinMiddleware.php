@@ -10,32 +10,32 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use App\ReadModel\TaxonInterface;
-use App\ReadModel\TaxonViewInterface;
+use App\ReadModel\ProteinInterface;
+use App\ReadModel\ProteinViewInterface;
 
-final class FetchTaxonMiddleware implements MiddlewareInterface
+final class FetchProteinMiddleware implements MiddlewareInterface
 {
     private ResponseFactoryInterface $factory;
 
-    private TaxonViewInterface $taxa;
+    private ProteinViewInterface $proteins;
 
-    public function __construct(ResponseFactoryInterface $factory, TaxonViewInterface $taxa)
+    public function __construct(ResponseFactoryInterface $factory, ProteinViewInterface $proteins)
     {
         $this->factory = $factory;
-        $this->taxa = $taxa;
+        $this->proteins = $proteins;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $ncbi_taxon_id = (int) $request->getAttribute('ncbi_taxon_id');
+        $protein_id = (int) $request->getAttribute('protein_id');
 
-        $select_taxon_sth = $this->taxa->id($ncbi_taxon_id);
+        $select_protein_sth = $this->proteins->id($protein_id);
 
-        if (! $taxon = $select_taxon_sth->fetch()) {
+        if (! $protein = $select_protein_sth->fetch()) {
             return $this->factory->createResponse(404);
         }
 
-        $request = $request->withAttribute(TaxonInterface::class, $taxon);
+        $request = $request->withAttribute(ProteinInterface::class, $protein);
 
         return $handler->handle($request);
     }

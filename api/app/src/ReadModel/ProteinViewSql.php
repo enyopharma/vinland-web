@@ -11,6 +11,16 @@ final class ProteinViewSql implements ProteinViewInterface
 
     private \PDO $pdo;
 
+    const SELECT_PROTEIN_SQL = <<<SQL
+        SELECT id, type, ncbi_taxon_id, accession, name, description
+        FROM proteins
+        WHERE id = ?
+    SQL;
+
+    const SELECT_TAXON_SQL = <<<SQL
+        SELECT name FROM taxa WHERE ncbi_taxon_id = ?
+    SQL;
+
     const SELECT_HUMAN_PROTEINS_SQL = <<<SQL
         SELECT id, type, ncbi_taxon_id, accession, name, description, 'Homo sapiens' AS taxon
         FROM proteins
@@ -30,9 +40,29 @@ final class ProteinViewSql implements ProteinViewInterface
         $this->pdo = $pdo;
     }
 
-    public function id(int $ncbi_taxon_id): Statement
+    public function id(int $id): Statement
     {
-        return Statement::from([]);
+        $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
+
+        $select_protein_sth->execute([$id]);
+
+        if (! $protein = $select_protein_sth->fetch()) {
+            return Statement::from([]);
+        }
+
+        if ($protein['type'] == self::H) {
+            return Statement::from([$this->protein($protein + ['taxon' => 'Homo sapiens'])]);
+        }
+
+        $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
+
+        $select_taxon_sth->execute([$protein['ncbi_taxon_id']]);
+
+        if (! $taxon = $select_taxon_sth->fetch()) {
+            throw new \LogicException('missing taxon');
+        }
+
+        return Statement::from([$this->protein($protein + ['taxon' => $taxon['name']])]);
     }
 
     public function search(string $type, string $query, int $limit): Statement
@@ -59,15 +89,20 @@ final class ProteinViewSql implements ProteinViewInterface
     private function generator(\PDOStatement $sth): \Generator
     {
         while ($row = $sth->fetch()) {
-            yield new ProteinSql(
-                $this->pdo,
-                $row['id'],
-                $row['type'],
-                $row['ncbi_taxon_id'],
-                $row['accession'],
-                $row['name'],
-                $row,
-            );
+            yield $this->protein($row);
         }
+    }
+
+    private function protein(array $row): ProteinInterface
+    {
+        return new ProteinSql(
+            $this->pdo,
+            $row['id'],
+            $row['type'],
+            $row['ncbi_taxon_id'],
+            $row['accession'],
+            $row['name'],
+            $row,
+        );
     }
 }

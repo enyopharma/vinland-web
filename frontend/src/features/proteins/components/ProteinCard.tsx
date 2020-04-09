@@ -43,17 +43,15 @@ export const ProteinCard: React.FC = () => {
                         />
                     </div>
                 </div>
+                {query.trim().length === 0 && (
+                    <p>
+                        Please enter a search term.
+                    </p>
+                )}
             </div>
-            {query.trim().length > 0
-                ? <ProteinCardTableSuspense type={type} query={query} />
-                : <Empty />
-            }
+            {query.trim().length > 0 && (
+                <ProteinCardTableSuspense type={type} query={query} />
+            )}
         </div>
     )
 }
-
-const Empty: React.FC = () => (
-    <div className="card-body">
-        Please enter a search term.
-    </div>
-)

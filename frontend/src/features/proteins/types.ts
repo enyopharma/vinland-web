@@ -6,4 +6,12 @@ export type Protein = {
     name: string
     description: string
     taxon: string
+    isoforms: Isoform[]
+}
+
+export type Isoform = {
+    id: number
+    accession: string
+    sequence: string
+    is_canonical: boolean
 }

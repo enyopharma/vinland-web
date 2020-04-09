@@ -20,9 +20,9 @@ export const App: React.FC = () => {
                     <Switch>
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/proteins" component={ProteinSearchPage} />
-                        <Route path="/proteins/:id" component={ProteinPage} />
+                        <Route exact path="/proteins/:id" component={ProteinPage} />
                         <Route exact path="/interactions" component={InteractionSearchPage} />
-                        <Route path="/interactions/:id" component={InteractionPage} />
+                        <Route exact path="/interactions/:id" component={InteractionPage} />
                     </Switch>
                 </React.Suspense>
             </BrowserRouter>

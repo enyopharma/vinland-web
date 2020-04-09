@@ -30,7 +30,7 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
             {proteins.map((protein, i) => (
                 <tr key={i}>
                     <td className="text-center">
-                        <ProteinLink {...protein} target="_blank">
+                        <ProteinLink {...protein}>
                             <img
                                 src={`/img/${protein.type}.png`}
                                 alt={`${protein.type.toUpperCase()} protein`}
@@ -39,7 +39,7 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
                         </ProteinLink>
                     </td>
                     <td className="text-center">
-                        <ProteinLink {...protein} target="_blank">
+                        <ProteinLink {...protein}>
                             {protein.accession}
                         </ProteinLink>
                     </td>
