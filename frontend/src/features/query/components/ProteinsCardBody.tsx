@@ -4,9 +4,8 @@ import { Protein } from 'features/query'
 import { usePersistentState } from 'features/query'
 import { config, proteins2csv } from 'features/query'
 
-import { Pagination } from './Pagination'
 import { CsvDownloadButton } from './CsvDownloadButton'
-import { ProteinLink } from 'pages/partials'
+import { Pagination, ProteinLink } from 'pages/partials'
 
 type Props = {
     proteins: Protein[]
@@ -59,7 +58,12 @@ export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
                         </p>
                     </div>
                 </div>
-                <Pagination offset={offset} total={proteins.length} update={setOffset} />
+                <Pagination
+                    offset={offset}
+                    total={proteins.length}
+                    limit={config.limit}
+                    update={setOffset}
+                />
             </div>
             <table className="table card-table table-stripped table-hover">
                 <thead>
@@ -79,7 +83,12 @@ export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
                 </tbody>
             </table>
             <div className="card-body">
-                <Pagination offset={offset} total={proteins.length} update={setOffset} />
+                <Pagination
+                    offset={offset}
+                    total={proteins.length}
+                    limit={config.limit}
+                    update={setOffset}
+                />
             </div>
         </React.Fragment>
     )

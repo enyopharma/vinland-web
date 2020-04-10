@@ -1,18 +1,17 @@
 import React from 'react'
 
-import { config } from 'features/query'
-
 type Props = {
     offset: number
     total: number
+    limit: number
     update: (offset: number) => void
 }
 
-export const Pagination: React.FC<Props> = ({ offset, total, update }) => {
-    const cur = Math.floor(offset / config.limit) + 1
-    const max = Math.ceil(total / config.limit)
+export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) => {
+    const cur = Math.floor(offset / limit) + 1
+    const max = Math.ceil(total / limit)
 
-    const page = (page: number) => update((page - 1) * config.limit)
+    const page = (page: number) => update((page - 1) * limit)
 
     return (
         <nav>

@@ -4,9 +4,8 @@ import { Interaction } from 'features/query'
 import { usePersistentState } from 'features/query'
 import { config, interactions2csv } from 'features/query'
 
-import { Pagination } from './Pagination'
 import { CsvDownloadButton } from './CsvDownloadButton'
-import { ProteinLink, InteractionLink } from 'pages/partials'
+import { Pagination, ProteinLink, InteractionLink } from 'pages/partials'
 
 type Props = {
     interactions: Interaction[]
@@ -25,7 +24,12 @@ export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
                         Download as csv
                     </CsvDownloadButton>
                 </p>
-                <Pagination offset={offset} total={interactions.length} update={setOffset} />
+                <Pagination
+                    offset={offset}
+                    total={interactions.length}
+                    limit={config.limit}
+                    update={setOffset}
+                />
             </div>
             <table className="table card-table table-stripped table-hover">
                 <thead>
@@ -44,7 +48,12 @@ export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
                 </tbody>
             </table>
             <div className="card-body">
-                <Pagination offset={offset} total={interactions.length} update={setOffset} />
+                <Pagination
+                    offset={offset}
+                    total={interactions.length}
+                    limit={config.limit}
+                    update={setOffset}
+                />
             </div>
         </React.Fragment>
     )

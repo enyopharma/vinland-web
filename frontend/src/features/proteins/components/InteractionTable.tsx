@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Protein, Interaction, Mapping } from 'features/proteins'
-import { ProteinLink, InteractionLink } from 'pages/partials'
+import { Pagination, ProteinLink, InteractionLink } from 'pages/partials'
 
 type Props = {
     type: 'h' | 'v'
@@ -37,60 +37,106 @@ const rowspan = (interaction: Interaction) => {
 }
 
 export const InteractionTable: React.FC<Props> = ({ type, width, interactions }) => {
+    const [offset, setOffset] = useState<number>(0)
+
+    const slice = interactions.sort(sorti).slice(offset, offset + limit)
+
     return (
-        <table className="table">
-            <thead>
-                <tr>
-                    <th className="col-1 text-center">-</th>
-                    <th className="col-1 text-center">Accession</th>
-                    <th className="col-1 text-center">Name</th>
-                    <th className="col-2 text-center">Taxon</th>
-                    <th className="col-3 text-center">Description</th>
-                    <th className="col-4 text-center">Mapping</th>
+        <React.Fragment>
+            <div className="row">
+                <div className="col">
+                    <Pagination
+                        offset={offset}
+                        total={interactions.length}
+                        limit={limit}
+                        update={setOffset}
+                    />
+                </div>
+            </div>
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th className="col-1 text-center">-</th>
+                        <th className="col-1 text-center">Accession</th>
+                        <th className="col-1 text-center">Name</th>
+                        <th className="col-2 text-center">Taxon</th>
+                        <th className="col-3 text-center">Description</th>
+                        <th className="col-4 text-center">Mapping</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {[...Array(limit)].map((_, i) => slice[i]
+                        ? <InteractionTr key={i} type={type} width={width} interaction={slice[i]} />
+                        : <SkeletonTr key={i} />
+                    )}
+                </tbody>
+            </table>
+            <div className="row">
+                <div className="col">
+                    <Pagination
+                        offset={offset}
+                        total={interactions.length}
+                        limit={limit}
+                        update={setOffset}
+                    />
+                </div>
+            </div>
+        </React.Fragment>
+    )
+}
+
+const SkeletonTr: React.FC = () => (
+    <tr>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+    </tr>
+)
+
+const InteractionTr: React.FC<{ type: 'h' | 'v', width: number, interaction: Interaction }> = (props) => {
+    const { type, width, interaction } = props
+
+    return (
+        <React.Fragment>
+            <tr key={0}>
+                <td className="text-center" rowSpan={rowspan(interaction)}>
+                    <InteractionLinkImg interaction={interaction} />
+                    &nbsp;
+                    <ProteinLinkImg protein={interaction.protein} />
+                </td>
+                <td className="text-center" rowSpan={rowspan(interaction)}>
+                    <ProteinLinkAccession protein={interaction.protein} />
+                </td>
+                <td className="text-center" rowSpan={rowspan(interaction)}>
+                    <ProteinLinkName protein={interaction.protein} />
+                </td>
+                <td className="text-center ellipsis" rowSpan={rowspan(interaction)}>
+                    <span title={interaction.protein.taxon}>
+                        {interaction.protein.taxon}
+                    </span>
+                </td>
+                <td className="ellipsis" rowSpan={rowspan(interaction)}>
+                    <span title={interaction.protein.description}>
+                        {interaction.protein.description}
+                    </span>
+                </td>
+                <td className="text-center">
+                    {interaction.mappings.length > 0 && (
+                        <MappingImg type={type} width={width} mapping={interaction.mappings.sort(sortm)[0]} />
+                    )}
+                </td>
+            </tr>
+            {interaction.mappings.sort(sortm).slice(1).map((mapping, m) => (
+                <tr key={m + 1}>
+                    <td className="text-center">
+                        <MappingImg type={type} width={width} mapping={mapping} />
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {interactions.sort(sorti).slice(0, limit).map(interaction => (
-                    <React.Fragment>
-                        <tr key={0}>
-                            <td className="text-center" rowSpan={rowspan(interaction)}>
-                                <InteractionLinkImg interaction={interaction} />
-                                &nbsp;
-                                <ProteinLinkImg protein={interaction.protein} />
-                            </td>
-                            <td className="text-center" rowSpan={rowspan(interaction)}>
-                                <ProteinLinkAccession protein={interaction.protein} />
-                            </td>
-                            <td className="text-center" rowSpan={rowspan(interaction)}>
-                                <ProteinLinkName protein={interaction.protein} />
-                            </td>
-                            <td className="text-center ellipsis" rowSpan={rowspan(interaction)}>
-                                <span title={interaction.protein.taxon}>
-                                    {interaction.protein.taxon}
-                                </span>
-                            </td>
-                            <td className="ellipsis" rowSpan={rowspan(interaction)}>
-                                <span title={interaction.protein.description}>
-                                    {interaction.protein.description}
-                                </span>
-                            </td>
-                            <td className="text-center">
-                                {interaction.mappings.length > 0 && (
-                                    <MappingImg type={type} width={width} mapping={interaction.mappings.sort(sortm)[0]} />
-                                )}
-                            </td>
-                        </tr>
-                        {interaction.mappings.sort(sortm).slice(1).map((mapping, m) => (
-                            <tr key={m + 1}>
-                                <td className="text-center">
-                                    <MappingImg type={type} width={width} mapping={mapping} />
-                                </td>
-                            </tr>
-                        ))}
-                    </React.Fragment>
-                ))}
-            </tbody>
-        </table >
+            ))}
+        </React.Fragment>
     )
 }
 
