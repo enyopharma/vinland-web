@@ -30,6 +30,12 @@ const sortm = (a: Mapping, b: Mapping) => {
     return a.start - b.start || (a.stop - a.start) - (b.stop - a.stop)
 }
 
+const rowspan = (interaction: Interaction) => {
+    return interaction.mappings.length > 1
+        ? interaction.mappings.length
+        : undefined
+}
+
 export const InteractionTable: React.FC<Props> = ({ type, width, interactions }) => {
     return (
         <table className="table">
@@ -47,27 +53,27 @@ export const InteractionTable: React.FC<Props> = ({ type, width, interactions })
                 {interactions.sort(sorti).slice(0, limit).map(interaction => (
                     <React.Fragment>
                         <tr key={0}>
-                            <Cell interaction={interaction} className="text-center">
+                            <td className="text-center" rowSpan={rowspan(interaction)}>
                                 <InteractionLinkImg interaction={interaction} />
                                 &nbsp;
                                 <ProteinLinkImg protein={interaction.protein} />
-                            </Cell>
-                            <Cell interaction={interaction} className="text-center">
+                            </td>
+                            <td className="text-center" rowSpan={rowspan(interaction)}>
                                 <ProteinLinkAccession protein={interaction.protein} />
-                            </Cell>
-                            <Cell interaction={interaction} className="text-center">
+                            </td>
+                            <td className="text-center" rowSpan={rowspan(interaction)}>
                                 <ProteinLinkName protein={interaction.protein} />
-                            </Cell>
-                            <Cell interaction={interaction} className="text-center ellipsis">
+                            </td>
+                            <td className="text-center ellipsis" rowSpan={rowspan(interaction)}>
                                 <span title={interaction.protein.taxon}>
                                     {interaction.protein.taxon}
                                 </span>
-                            </Cell>
-                            <Cell interaction={interaction} className="ellipsis">
+                            </td>
+                            <td className="ellipsis" rowSpan={rowspan(interaction)}>
                                 <span title={interaction.protein.description}>
                                     {interaction.protein.description}
                                 </span>
-                            </Cell>
+                            </td>
                             <td className="text-center">
                                 {interaction.mappings.length > 0 && (
                                     <MappingImg type={type} width={width} mapping={interaction.mappings.sort(sortm)[0]} />
@@ -86,12 +92,6 @@ export const InteractionTable: React.FC<Props> = ({ type, width, interactions })
             </tbody>
         </table >
     )
-}
-
-const Cell: React.FC<{ interaction: Interaction, className?: string, style?: object }> = ({ interaction, className = '', style = {}, children }) => {
-    return interaction.mappings.length > 1
-        ? <td className={className} style={style} rowSpan={interaction.mappings.length}>{children}</td>
-        : <td className={className} style={style}>{children}</td>
 }
 
 const InteractionLinkImg: React.FC<{ interaction: Interaction }> = ({ interaction }) => {
