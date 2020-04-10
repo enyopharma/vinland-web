@@ -33,7 +33,7 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
     const [isoform_id, setIsoformId] = useState<number>(canonical.id)
 
     return (
-        <div className="container">
+        <React.Fragment>
             <h1>
                 Protein ID Card - {protein.accession} - {protein.name}
             </h1>
@@ -54,6 +54,6 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
                 </select>
             </div>
             <IsoformIdCardSuspense protein={protein} id={isoform_id} />
-        </div>
+        </React.Fragment>
     )
 }

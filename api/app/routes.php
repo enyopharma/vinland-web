@@ -16,6 +16,10 @@ return function (ContainerInterface $container): array {
         $container->get(App\ReadModel\ProteinViewInterface::class),
     );
 
+    $isoform = new App\Middleware\FetchIsoformMiddleware(
+        $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+    );
+
     $taxon = new App\Middleware\FetchTaxonMiddleware(
         $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
         $container->get(App\ReadModel\TaxonViewInterface::class),
@@ -34,11 +38,12 @@ return function (ContainerInterface $container): array {
             $protein,
         ),
 
-        'GET /proteins/{protein_id:\d+}/isoforms/{id:\d+}' => Quanta\Http\RequestHandler::queue(
+        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}' => Quanta\Http\RequestHandler::queue(
             new App\Handlers\Proteins\Isoforms\ShowHandler(
                 $container->get(App\Responders\JsonResponder::class),
             ),
             $protein,
+            $isoform,
         ),
 
         'GET /annotations' => new App\Handlers\Annotations\IndexHandler(

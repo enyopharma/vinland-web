@@ -8,7 +8,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use App\ReadModel\ProteinInterface;
+use App\ReadModel\IsoformInterface;
 
 use App\Responders\JsonResponder;
 
@@ -23,23 +23,13 @@ final class ShowHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $protein = $request->getAttribute(ProteinInterface::class);
+        $isoform = $request->getAttribute(IsoformInterface::class);
 
-        if (! $protein instanceof ProteinInterface) {
+        if (! $isoform instanceof IsoformInterface) {
             throw new \LogicException;
         }
 
-        $params = (array) $request->getAttributes();
-
-        $id = (int) ($params['id'] ?? 0);
-
-        $isoform = $protein->isoforms()->id($id)->fetch();
-
-        if (! $isoform) {
-            return $this->responder->notFound();
-        }
-
-        $data = $isoform->data();
+        $data = $isoform->withInteractions()->data();
 
         return $this->responder->success($data);
     }

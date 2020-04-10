@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Protein, Isoform } from 'features/proteins'
+import { InteractionTable } from './InteractionTable'
 
 type Props = {
     protein: Protein
@@ -9,20 +10,45 @@ type Props = {
 
 export const IsoformIdCard: React.FC<Props> = ({ protein, isoform }) => {
     return (
-        <div className="card">
-            <div className="card-header">
-                {isoform.accession}
+        <React.Fragment>
+            <div className="form-group">
+                <textarea
+                    className="form-control"
+                    value={isoform.sequence}
+                    rows={6}
+                    readOnly
+                />
             </div>
-            <div className="card-body">
-                <div className="form-group">
-                    <textarea
-                        className="form-control"
-                        value={isoform.sequence}
-                        rows={6}
-                        readOnly
+            <h2>VH interactions</h2>
+            {isoform.interactions.vh.length === 0
+                ? (
+                    <p>No interaction found</p>
+                )
+                : (
+                    <InteractionTable
+                        type={protein.type}
+                        width={isoform.sequence.length}
+                        interactions={isoform.interactions.vh}
                     />
-                </div>
-            </div>
-        </div>
+                )
+            }
+            {protein.type === 'h' && (
+                <React.Fragment>
+                    <h2>HH interactions</h2>
+                    {isoform.interactions.hh.length === 0
+                        ? (
+                            <p>No interaction found</p>
+                        )
+                        : (
+                            <InteractionTable
+                                type={protein.type}
+                                width={isoform.sequence.length}
+                                interactions={isoform.interactions.hh}
+                            />
+                        )
+                    }
+                </React.Fragment>
+            )}
+        </React.Fragment>
     )
 }

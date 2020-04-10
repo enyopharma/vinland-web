@@ -74,7 +74,9 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
         </td>
         <td className="text-center">
             <ProteinLink {...interaction.protein1} target="_blank">
-                {interaction.protein1.accession}
+                <span className={interaction.protein1.type === 'h' ? 'text-info' : 'text-danger'}>
+                    {interaction.protein1.accession}
+                </span>
             </ProteinLink>
         </td>
         <td className="text-center">
@@ -82,7 +84,9 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
         </td>
         <td className="text-center">
             <ProteinLink {...interaction.protein2} target="_blank">
-                {interaction.protein2.accession}
+                <span className={interaction.protein2.type === 'h' ? 'text-info' : 'text-danger'}>
+                    {interaction.protein2.accession}
+                </span>
             </ProteinLink>
         </td>
         <td className="text-center">

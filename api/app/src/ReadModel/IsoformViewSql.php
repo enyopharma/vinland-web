@@ -34,7 +34,15 @@ final class IsoformViewSql implements IsoformViewInterface
     private function generator(\PDOStatement $sth): \Generator
     {
         while ($row = $sth->fetch()) {
-            yield new Entity($row);
+            yield new IsoformSql(
+                $this->pdo,
+                $row['id'],
+                $this->protein_id,
+                $row['accession'],
+                $row['sequence'],
+                $row['is_canonical'],
+                $row,
+            );
         }
     }
 }

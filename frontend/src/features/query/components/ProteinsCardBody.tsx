@@ -138,7 +138,9 @@ const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
         </td>
         <td className="text-center">
             <ProteinLink {...protein} target="_blank">
-                {protein.accession}
+                <span className={protein.type === 'h' ? 'text-info' : 'text-danger'}>
+                    {protein.accession}
+                </span>
             </ProteinLink>
         </td>
         <td className="text-center">

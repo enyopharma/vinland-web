@@ -8,5 +8,9 @@ export const ProteinPage: React.FC = () => {
 
     if (!id) return null;
 
-    return <ProteinIdCardSuspense id={parseInt(id)} />
+    return (
+        <div className="container">
+            <ProteinIdCardSuspense id={parseInt(id)} />
+        </div>
+    )
 }
