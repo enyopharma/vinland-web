@@ -92,12 +92,7 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
         <td className="text-center">
             {interaction.protein2.name}
         </td>
-        <td className="text-center" style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '10px',
-        }}>
+        <td className="text-center ellipsis">
             <span title={interaction.protein2.taxon.name}>
                 {interaction.protein2.taxon.name}
             </span>

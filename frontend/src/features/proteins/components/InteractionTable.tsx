@@ -47,23 +47,23 @@ export const InteractionTable: React.FC<Props> = ({ type, width, interactions })
                 {interactions.sort(sorti).slice(0, limit).map(interaction => (
                     <React.Fragment>
                         <tr key={0}>
-                            <Cell interaction={interaction} classes="text-center">
+                            <Cell interaction={interaction} className="text-center">
                                 <InteractionLinkImg interaction={interaction} />
                                 &nbsp;
                                 <ProteinLinkImg protein={interaction.protein} />
                             </Cell>
-                            <Cell interaction={interaction} classes="text-center">
+                            <Cell interaction={interaction} className="text-center">
                                 <ProteinLinkAccession protein={interaction.protein} />
                             </Cell>
-                            <Cell interaction={interaction} classes="text-center">
+                            <Cell interaction={interaction} className="text-center">
                                 <ProteinLinkName protein={interaction.protein} />
                             </Cell>
-                            <Cell interaction={interaction} classes="text-center" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '10px' }}>
+                            <Cell interaction={interaction} className="text-center ellipsis">
                                 <span title={interaction.protein.taxon}>
                                     {interaction.protein.taxon}
                                 </span>
                             </Cell>
-                            <Cell interaction={interaction} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '10px' }}>
+                            <Cell interaction={interaction} className="ellipsis">
                                 <span title={interaction.protein.description}>
                                     {interaction.protein.description}
                                 </span>
@@ -88,10 +88,10 @@ export const InteractionTable: React.FC<Props> = ({ type, width, interactions })
     )
 }
 
-const Cell: React.FC<{ interaction: Interaction, classes?: string, style?: object }> = ({ interaction, classes = '', style = {}, children }) => {
+const Cell: React.FC<{ interaction: Interaction, className?: string, style?: object }> = ({ interaction, className = '', style = {}, children }) => {
     return interaction.mappings.length > 1
-        ? <td className={classes} style={style} rowSpan={interaction.mappings.length}>{children}</td>
-        : <td className={classes} style={style}>{children}</td>
+        ? <td className={className} style={style} rowSpan={interaction.mappings.length}>{children}</td>
+        : <td className={className} style={style}>{children}</td>
 }
 
 const InteractionLinkImg: React.FC<{ interaction: Interaction }> = ({ interaction }) => {

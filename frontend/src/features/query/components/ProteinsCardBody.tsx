@@ -14,13 +14,6 @@ type Props = {
 
 type Tab = 'a' | 'h' | 'v'
 
-const style = {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap' as const,
-    maxWidth: '10px',
-}
-
 const filter = (type: Tab, proteins: Protein[]) => {
     if (type === 'h') {
         return proteins.filter(protein => protein.type === 'h')
@@ -146,12 +139,12 @@ const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
         <td className="text-center">
             {protein.name}
         </td>
-        <td className="text-center" style={style}>
+        <td className="text-center ellipsis">
             <span title={protein.taxon.name}>
                 {protein.taxon.name}
             </span>
         </td>
-        <td className="text-center" style={style}>
+        <td className="text-center ellipsis">
             <span title={protein.description}>
                 {protein.description}
             </span>

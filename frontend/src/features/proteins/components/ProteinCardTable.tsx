@@ -8,13 +8,6 @@ type Props = {
     proteins: Protein[]
 }
 
-const style = {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap' as const,
-    maxWidth: '10px',
-}
-
 export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
     <table className="table card-table table-striped table-hover">
         <thead>
@@ -46,12 +39,12 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
                     <td className="text-center">
                         {protein.name}
                     </td>
-                    <td className="text-center" style={style}>
+                    <td className="text-center ellipsis">
                         <span title={protein.taxon}>
                             {protein.taxon}
                         </span>
                     </td>
-                    <td className="text-center" style={style}>
+                    <td className="text-center ellipsis">
                         <span title={protein.description}>
                             {protein.description}
                         </span>
