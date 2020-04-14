@@ -33,7 +33,9 @@ export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
                     </td>
                     <td className="text-center">
                         <ProteinLink {...protein}>
-                            {protein.accession}
+                            <span className={protein.type === 'h' ? 'text-info' : 'text-danger'}>
+                                {protein.accession}
+                            </span>
                         </ProteinLink>
                     </td>
                     <td className="text-center">
