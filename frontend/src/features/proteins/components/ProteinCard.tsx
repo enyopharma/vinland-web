@@ -50,7 +50,7 @@ export const ProteinCard: React.FC = () => {
                 )}
             </div>
             {query.trim().length > 0 && (
-                <ProteinCardTableSuspense type={type} query={query} />
+                <ProteinCardTableSuspense input={ref} type={type} query={query} />
             )}
         </div>
     )
