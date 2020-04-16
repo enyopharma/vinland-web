@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { resources } from 'features/proteins'
+import { ProgressBar } from 'pages/partials'
 
 const ProteinCardTable = React.lazy(() => import('./ProteinCardTable').then(module => ({ default: module.ProteinCardTable })))
 
@@ -31,11 +32,6 @@ const Empty: React.FC = () => (
 
 const Fallback: React.FC = () => (
     <div className="card-body">
-        <div className="progress">
-            <div
-                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                style={{ width: '100%' }}
-            ></div>
-        </div>
+        <ProgressBar />
     </div>
 )
