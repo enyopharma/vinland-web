@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Protein, Isoform } from 'features/proteins'
 import { IsoformIdCardSuspense } from './IsoformIdCardSuspense'
@@ -33,6 +33,8 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
     const canonical = getCanonical(protein)
 
     const [isoform_id, setIsoformId] = useState<number>(canonical.id)
+
+    useEffect(() => { setIsoformId(canonical.id) }, [canonical])
 
     return (
         <React.Fragment>
