@@ -83,14 +83,10 @@ while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
     ]);
 }
 
-foreach my $protein (@proteins) {
-    print join("\t", @{$protein}) . "\n"
-}
+$select_viral_proteins_sth->finish;
 
-#$select_viral_proteins_sth->finish;
-#
-#$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description, search) FROM STDIN');
-#
-#$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
-#
-#$vinland->pg_putcopyend();
+$vinland->do('COPY proteins(type, ncbi_taxon_id, accession, name, description, search) FROM STDIN');
+
+$vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@proteins);
+
+$vinland->pg_putcopyend();

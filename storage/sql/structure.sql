@@ -296,6 +296,7 @@ CREATE TABLE public.sequences (
     protein_id integer NOT NULL,
     accession character varying(14) NOT NULL,
     is_canonical boolean NOT NULL,
+    is_mature boolean NOT NULL,
     sequence text NOT NULL,
     start integer NOT NULL,
     stop integer NOT NULL
@@ -466,6 +467,8 @@ ALTER TABLE ONLY public.proteins
 ALTER TABLE ONLY public.proteins
     ADD CONSTRAINT proteins_pkey PRIMARY KEY (id);
 
+ALTER TABLE public.proteins CLUSTER ON proteins_pkey;
+
 
 --
 -- Name: proteins_xrefs proteins_xrefs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -481,14 +484,6 @@ ALTER TABLE ONLY public.proteins_xrefs
 
 ALTER TABLE ONLY public.publications
     ADD CONSTRAINT publications_pkey PRIMARY KEY (pmid);
-
-
---
--- Name: sequences sequences_accession_start_stop_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.sequences
-    ADD CONSTRAINT sequences_accession_start_stop_key UNIQUE (accession, start, stop);
 
 
 --
@@ -591,13 +586,6 @@ CREATE INDEX proteins_xrefs_ref_key ON public.proteins_xrefs USING btree (ref);
 --
 
 CREATE INDEX proteins_xrefs_source_ref_key ON public.proteins_xrefs USING btree (source, ref);
-
-
---
--- Name: sequences_protein_id_key; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX sequences_protein_id_key ON public.sequences USING btree (protein_id);
 
 
 --

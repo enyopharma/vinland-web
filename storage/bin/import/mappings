@@ -29,13 +29,15 @@ my $select_descriptions_sth = $drakkar->prepare('
         associations AS a,
         descriptions AS d,
         interactors AS i1, proteins AS p1,
-        interactors AS i2, proteins AS p2
+        interactors AS i2, proteins AS p2,
+        taxon AS t
     WHERE a.id = d.association_id
       AND m.id = d.method_id
       AND i1.id = d.interactor1_id
       AND i2.id = d.interactor2_id
       AND p1.id = i1.protein_id
       AND p2.id = i2.protein_id
+      AND p2.taxon_id = t.ncbi_taxon_id
       AND a.state = \'curated\'
       AND d.deleted_at IS NULL
 ');

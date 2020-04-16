@@ -26,10 +26,11 @@ my $select_human_proteins_sth = $drakkar->prepare('
 
 my $select_viral_proteins_sth = $drakkar->prepare('
     SELECT p.type, p.taxon_id, p.accession, i.name, i.start, i.stop, p.description
-    FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p
+    FROM associations AS a, descriptions AS d, interactors AS i, proteins AS p, taxon AS t
     WHERE a.id = d.association_id
     AND (i.id = d.interactor1_id OR i.id = d.interactor2_id)
     AND p.id = i.protein_id
+    AND p.taxon_id = t.ncbi_taxon_id
     AND a.state = \'curated\'
     AND d.deleted_at IS NULL
     AND p.type=\'v\'
@@ -64,7 +65,7 @@ while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
     my($protein_id) = $select_protein_sth->fetchrow_array;
     $select_protein_sth->finish;
 
-    die(sprintf('protein not found %s - %s', $protein->{'accession'}, $protein->{'name'})) if (! $protein);
+    die(sprintf('protein not found %s - %s', $protein->{'accession'}, $protein->{'name'})) if (! $protein_id);
 
     $select_canonical_sth->execute($protein->{'accession'});
     my($canonical) = $select_canonical_sth->fetchrow_hashref;
@@ -74,6 +75,7 @@ while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
         $protein_id,
         $canonical->{'accession'},
         1,
+        0,
         $canonical->{'sequence'},
         1,
         length($canonical->{'sequence'}),
@@ -85,6 +87,7 @@ while (my $protein = $select_human_proteins_sth->fetchrow_hashref) {
         push(@sequences, [
             $protein_id,
             $isoform->{'accession'},
+            0,
             0,
             $isoform->{'sequence'},
             1,
@@ -104,28 +107,32 @@ while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
     my($protein_id) = $select_protein_sth->fetchrow_array;
     $select_protein_sth->finish;
 
-    die(sprintf('protein not found %s - %s', $protein->{'accession'}, $protein->{'name'})) if (! $protein);
+    die(sprintf('protein not found %s - %s', $protein->{'accession'}, $protein->{'name'})) if (! $protein_id);
 
     $select_canonical_sth->execute($protein->{'accession'});
     my($canonical) = $select_canonical_sth->fetchrow_hashref;
     $select_canonical_sth->finish;
 
+    my $subsequence = substr($canonical->{'sequence'}, $protein->{'start'} - 1, $protein->{'stop'} - $protein->{'start'} + 1);
+
     push(@sequences, [
         $protein_id,
         $canonical->{'accession'},
         1,
-        substr($canonical->{'sequence'}, $protein->{'start'} - 1, $protein->{'stop'} - $protein->{'start'} + 1),
+        length($canonical->{'sequence'}) == length($subsequence) ? 0 : 1,
+        $subsequence,
         $protein->{'start'},
         $protein->{'stop'},
     ]);
 
-    if ($protein->{'start'} == 1 && $protein->{'stop'} == length($canonical->{'sequence'})) {
+    if (length($canonical->{'sequence'}) == length($subsequence)) {
         $select_isoforms_sth->execute($protein->{'accession'});
 
         while (my $isoform = $select_isoforms_sth->fetchrow_hashref) {
             push(@sequences, [
                 $protein_id,
                 $isoform->{'accession'},
+                0,
                 0,
                 $isoform->{'sequence'},
                 1,
@@ -139,7 +146,7 @@ while (my $protein = $select_viral_proteins_sth->fetchrow_hashref) {
 
 $select_viral_proteins_sth->finish;
 
-$vinland->do('COPY sequences(protein_id, accession, is_canonical, sequence, start, stop) FROM STDIN');
+$vinland->do('COPY sequences(protein_id, accession, is_canonical, is_mature, sequence, start, stop) FROM STDIN');
 
 $vinland->pg_putcopydata(join("\t", @{$_}) . "\n") foreach (@sequences);
 
