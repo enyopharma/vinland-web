@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Protein } from 'features/proteins'
 import { resources } from 'features/proteins'
+import { ProgressBar } from 'pages/partials'
 import { IsoformIdCard } from './IsoformIdCard'
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 
 export const IsoformIdCardSuspense: React.FC<Props> = (props) => {
     return (
-        <React.Suspense fallback={<Fallback />}>
+        <React.Suspense fallback={<ProgressBar />}>
             <IdCard {...props} />
         </React.Suspense>
     )
@@ -21,17 +22,4 @@ const IdCard: React.FC<Props> = ({ protein, id }) => {
     const isoform = resources.isoform(protein.id, id).read()
 
     return <IsoformIdCard protein={protein} isoform={isoform} />
-}
-
-const Fallback: React.FC = () => {
-    return (
-        <div className="container">
-            <div className="progress">
-                <div
-                    className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                    style={{ width: '100%' }}
-                ></div>
-            </div>
-        </div>
-    )
 }

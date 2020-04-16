@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { QueryResultTab as Tab, ComputationCache } from 'features/query'
+import { ProgressBar } from 'pages/partials'
 
 const NetworkCardBody = React.lazy(() => import('./NetworkCardBody').then(module => ({ default: module.NetworkCardBody })))
 const ProteinsCardBody = React.lazy(() => import('./ProteinsCardBody').then(module => ({ default: module.ProteinsCardBody })))
@@ -36,11 +37,6 @@ const Fetcher: React.FC<Props> = ({ tab, result }) => {
 
 const Fallback: React.FC = () => (
     <div className="card-body">
-        <div className="progress">
-            <div
-                className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                style={{ width: '100%' }}
-            ></div>
-        </div>
+        <ProgressBar />
     </div>
 )

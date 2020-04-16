@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Name } from 'features/taxonomy'
 import { resources } from 'features/taxonomy'
+import { ProgressBar } from 'pages/partials'
 
 const NameList = React.lazy(() => import('./NameList').then(module => ({ default: module.NameList })))
 const RelatedFormRow = React.lazy(() => import('./RelatedFormRow').then(module => ({ default: module.RelatedFormRow })))
@@ -12,7 +13,7 @@ type Props = {
 }
 
 export const TaxonomyCardInfoSuspense: React.FC<Props> = (props) => (
-    <React.Suspense fallback={<Fallback />}>
+    <React.Suspense fallback={<ProgressBar type="danger" />}>
         <Fetcher {...props} />
     </React.Suspense>
 )
@@ -30,12 +31,3 @@ const Fetcher: React.FC<Props> = ({ ncbi_taxon_id, selected }) => {
         </React.Fragment>
     )
 }
-
-const Fallback: React.FC = () => (
-    <div className="progress">
-        <div
-            className="progress-bar progress-bar-striped progress-bar-animated bg-danger"
-            style={{ width: '100%' }}
-        ></div>
-    </div>
-)

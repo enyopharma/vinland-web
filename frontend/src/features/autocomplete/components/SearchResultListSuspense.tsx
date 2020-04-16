@@ -1,6 +1,7 @@
 import React, { RefObject } from 'react'
 
 import { SearchResult } from 'features/autocomplete'
+import { ProgressBar } from 'pages/partials'
 
 const SearchResultList = React.lazy(() => import('./SearchResultList').then(module => ({ default: module.SearchResultList })))
 
@@ -26,12 +27,7 @@ const Fetcher: React.FC<Props> = ({ query, search, ...props }) => {
 const Fallback: React.FC = () => (
     <ul className="list-group">
         <li className="list-group-item">
-            <div className="progress">
-                <div
-                    className="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                    style={{ width: '100%' }}
-                ></div>
-            </div>
+            <ProgressBar />
         </li>
     </ul>
 )

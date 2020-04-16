@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
 import { store } from 'app'
-import { Navbar, PageLoader } from 'pages/partials'
+import { Navbar, ProgressBar } from 'pages/partials'
 
 const HomePage = React.lazy(() => import('pages/home').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('pages/proteins').then(module => ({ default: module.ProteinPage })))
@@ -16,7 +16,7 @@ export const App: React.FC = () => {
             <BrowserRouter basename="/">
                 <ScrollToTop />
                 <Navbar />
-                <React.Suspense fallback={<PageLoader />}>
+                <React.Suspense fallback={<Fallback />}>
                     <Switch>
                         <Route exact path="/" component={HomePage} />
                         <Route exact path="/proteins" component={ProteinSearchPage} />
@@ -29,6 +29,12 @@ export const App: React.FC = () => {
         </Provider>
     );
 }
+
+const Fallback: React.FC = () => (
+    <div className="container">
+        <ProgressBar />
+    </div>
+)
 
 const ScrollToTop: React.FC = () => {
     const { pathname } = useLocation()
