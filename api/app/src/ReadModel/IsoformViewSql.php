@@ -11,7 +11,7 @@ final class IsoformViewSql implements IsoformViewInterface
     private int $protein_id;
 
     const SELECT_ISOFORM_SQL = <<<SQL
-        SELECT id, accession, sequence, is_canonical
+        SELECT id, accession, is_canonical, is_mature, sequence, start, stop
         FROM sequences
         WHERE protein_id = ? AND id = ?
     SQL;
@@ -39,8 +39,11 @@ final class IsoformViewSql implements IsoformViewInterface
                 $row['id'],
                 $this->protein_id,
                 $row['accession'],
-                $row['sequence'],
                 $row['is_canonical'],
+                $row['is_mature'],
+                $row['sequence'],
+                $row['start'],
+                $row['stop'],
                 $row,
             );
         }

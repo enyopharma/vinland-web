@@ -14,9 +14,15 @@ class IsoformSql implements IsoformInterface
 
     private string $accession;
 
+    private bool $is_canonical;
+
+    private bool $is_mature;
+
     private string $sequence;
 
-    private bool $is_canonical;
+    private int $start;
+
+    private int $stop;
 
     private array $data;
 
@@ -50,16 +56,22 @@ class IsoformSql implements IsoformInterface
         int $id,
         int $protein_id,
         string $accession,
-        string $sequence,
         bool $is_canonical,
+        bool $is_mature,
+        string $sequence,
+        int $start,
+        int $stop,
         array $data
     ) {
         $this->pdo = $pdo;
         $this->id = $id;
         $this->protein_id = $protein_id;
         $this->accession = $accession;
-        $this->sequence = $sequence;
         $this->is_canonical = $is_canonical;
+        $this->is_mature = $is_mature;
+        $this->sequence = $sequence;
+        $this->start = $start;
+        $this->stop = $stop;
         $this->data = $data;
     }
 
@@ -68,8 +80,11 @@ class IsoformSql implements IsoformInterface
         return [
             'id' => $this->id,
             'accession' => $this->accession,
-            'sequence' => $this->sequence,
             'is_canonical' => $this->is_canonical,
+            'is_mature' => $this->is_mature,
+            'sequence' => $this->sequence,
+            'start' => $this->start,
+            'stop' => $this->stop,
         ] + $this->data;
     }
 
@@ -83,8 +98,11 @@ class IsoformSql implements IsoformInterface
             $this->id,
             $this->protein_id,
             $this->accession,
-            $this->sequence,
             $this->is_canonical,
+            $this->is_mature,
+            $this->sequence,
+            $this->start,
+            $this->stop,
             $this->data + ['interactions' => ['hh' => $hh, 'vh' => $vh]],
         );
     }

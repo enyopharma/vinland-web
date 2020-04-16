@@ -18,13 +18,15 @@ const getCanonical = (protein: Protein) => {
 }
 
 const getIsoformLabel = (isoform: Isoform) => {
-    const parts = [isoform.accession]
+    const { accession, is_canonical, is_mature, start, stop } = isoform
 
-    if (isoform.is_canonical) {
-        parts.push('(canonical)')
+    if (!is_canonical) {
+        return accession
     }
 
-    return parts.join(' ')
+    return !is_mature
+        ? `${accession} (canonical)`
+        : `Mature protein from ${accession} [${start}, ${stop}]`
 }
 
 export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
@@ -35,7 +37,7 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
     return (
         <React.Fragment>
             <h1>
-                Protein ID Card - {protein.accession} - {protein.name}
+                Protein ID Card - {protein.accession}/{protein.name}
             </h1>
             <p>
                 {protein.taxon} - {protein.description}

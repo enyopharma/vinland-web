@@ -11,8 +11,11 @@ export type Protein = {
 export type Isoform = {
     id: number
     accession: string
-    sequence: string
     is_canonical: boolean
+    is_mature: boolean
+    sequence: string
+    start: number
+    stop: number
     interactions: {
         hh: Interaction[]
         vh: Interaction[]

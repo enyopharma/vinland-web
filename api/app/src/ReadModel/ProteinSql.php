@@ -21,7 +21,7 @@ final class ProteinSql implements ProteinInterface
     private array $data;
 
     const SELECT_ISOFORMS_SQL = <<<SQL
-        SELECT id, accession, sequence, is_canonical
+        SELECT id, accession, is_canonical, is_mature, start, stop
         FROM sequences
         WHERE protein_id = ?
         ORDER BY id ASC
