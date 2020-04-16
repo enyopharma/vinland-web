@@ -47,6 +47,7 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
                     className="form-control"
                     value={isoform_id}
                     onChange={e => setIsoformId(parseInt(e.target.value))}
+                    disabled={protein.isoforms.length === 1}
                 >
                     {protein.isoforms.map((isoform, i) => (
                         <option key={i} value={isoform.id}>
