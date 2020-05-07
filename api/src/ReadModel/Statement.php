@@ -29,19 +29,11 @@ final class Statement implements \IteratorAggregate
             return new self(new \ArrayIterator($iterable));
         }
 
-        if ($iterable instanceof \IteratorAggregate) {
-            return new self(new \IteratorIterator($iterable));
-        }
-
-        if ($iterable instanceof \Traversable) {
-            return new self(new \IteratorIterator($iterable));
-        }
-
         if ($iterable instanceof \Iterator) {
             return new self($iterable);
         }
 
-        throw new \LogicException;
+        return new self(new \IteratorIterator($iterable));
     }
 
     /**

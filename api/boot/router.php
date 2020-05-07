@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
 return function (ContainerInterface $container) {
     $collector = $container->get(FastRoute\RouteCollector::class);
 
-    $routes = (require __DIR__ . '/../routes.php')($container);
+    $routes = (require __DIR__ . '/../src/routes.php')($container);
 
     foreach ($routes as $endpoint => $handler) {
         $parts = (array) preg_split('/\s+/', $endpoint);
