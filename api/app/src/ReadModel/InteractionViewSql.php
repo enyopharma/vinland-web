@@ -8,9 +8,6 @@ use App\Request\QueryInput;
 
 final class InteractionViewSql implements InteractionViewInterface
 {
-    private const HH  = 'hh';
-    private const VH  = 'vh';
-
     private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
@@ -52,7 +49,7 @@ final class InteractionViewSql implements InteractionViewInterface
             ->where('i.id = e.interaction_id')
             ->where('p1.id = i.protein1_id')
             ->where('p2.id = i.protein2_id')
-            ->where(sprintf('i.type = \'%s\'', self::HH))
+            ->where('i.type = \'hh\'')
             ->where('i.nb_publications >= ?')
             ->where('i.nb_methods >= ?')
             ->in('e.source_id', $nb);
@@ -73,7 +70,7 @@ final class InteractionViewSql implements InteractionViewInterface
             ->where('p2.id = i.protein2_id')
             ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
             ->where('s.ncbi_taxon_id = t.ncbi_species_id')
-            ->where(sprintf('i.type = \'%s\'', self::VH))
+            ->where('i.type = \'vh\'')
             ->where('i.nb_publications >= ?')
             ->where('i.nb_methods >= ?');
 
@@ -190,10 +187,10 @@ final class InteractionViewSql implements InteractionViewInterface
         }
     }
 
-    private function generator(\PDOStatement $sth): \Generator
+    private function generator(iterable $rows): \Generator
     {
-        while ($row = $sth->fetch()) {
-            yield new Entity([
+        foreach ($rows as $row) {
+            yield [
                 'id' => $row['id'],
                 'type' => $row['type'],
                 'protein1' => [
@@ -232,7 +229,7 @@ final class InteractionViewSql implements InteractionViewInterface
                 'methods' => [
                     'nb' => $row['nb_methods'],
                 ],
-            ]);
+            ];
         }
     }
 }

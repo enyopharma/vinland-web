@@ -8,29 +8,30 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use App\ReadModel\IsoformInterface;
-
 use App\Responders\JsonResponder;
+use App\ReadModel\IsoformViewInterface;
 
 final class ShowHandler implements RequestHandlerInterface
 {
     private JsonResponder $responder;
 
-    public function __construct(JsonResponder $responder)
+    private IsoformViewInterface $isoforms;
+
+    public function __construct(JsonResponder $responder, IsoformViewInterface $isoforms)
     {
         $this->responder = $responder;
+        $this->isoforms = $isoforms;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $isoform = $request->getAttribute(IsoformInterface::class);
+        $protein_id = (int) $request->getAttribute('protein_id');
+        $isoform_id = (int) $request->getAttribute('isoform_id');
 
-        if (! $isoform instanceof IsoformInterface) {
-            throw new \LogicException;
-        }
+        $sth = $this->isoforms->id($protein_id, $isoform_id, ['interactions']);
 
-        $data = $isoform->withInteractions()->data();
-
-        return $this->responder->success($data);
+        return ($isoform = $sth->fetch())
+            ? $this->responder->success($isoform)
+            : $this->responder->notFound();
     }
 }

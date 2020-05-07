@@ -8,9 +8,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use App\ReadModel\ProteinViewInterface;
-
 use App\Responders\JsonResponder;
+use App\ReadModel\ProteinViewInterface;
 
 final class IndexHandler implements RequestHandlerInterface
 {

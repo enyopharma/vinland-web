@@ -11,9 +11,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Quanta\Validation\ErrorInterface;
 
 use App\Request\QueryInput;
-use App\ReadModel\InteractionViewInterface;
-
 use App\Responders\JsonResponder;
+use App\ReadModel\InteractionViewInterface;
 
 final class IndexHandler implements RequestHandlerInterface
 {
@@ -32,9 +31,7 @@ final class IndexHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (is_null($input = $request->getAttribute(\App\Request\QueryInput::class))) {
-            throw new \LogicException;
-        }
+        $input = $request->getAttribute(\App\Request\QueryInput::class);
 
         if (! $input instanceof \App\Request\QueryInput) {
             throw new \LogicException;

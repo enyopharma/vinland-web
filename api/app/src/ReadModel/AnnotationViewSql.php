@@ -32,18 +32,20 @@ final class AnnotationViewSql implements AnnotationViewInterface
 
         $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
 
-        return Statement::from($this->generator($select_annotations_sth));
+        $generator = $this->generator($select_annotations_sth);
+
+        return Statement::from($generator);
     }
 
-    private function generator(\PDOStatement $sth): \Generator
+    private function generator(iterable $rows): \Generator
     {
-        foreach ($sth as $annotation) {
-            yield new Entity([
-                'source' => $annotation['source'],
-                'ref' => $annotation['ref'],
-                'name' => $annotation['name'],
-                'accessions' => explode(',', trim($annotation['accessions'], '{}')),
-            ]);
+        foreach ($rows as $row) {
+            yield [
+                'source' => $row['source'],
+                'ref' => $row['ref'],
+                'name' => $row['name'],
+                'accessions' => explode(',', trim($row['accessions'], '{}')),
+            ];
         }
     }
 }

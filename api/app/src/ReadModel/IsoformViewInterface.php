@@ -6,5 +6,5 @@ namespace App\ReadModel;
 
 interface IsoformViewInterface
 {
-    public function id(int $id): Statement;
+    public function id(int $protein_id, int $id, array $with = []): Statement;
 }

@@ -6,9 +6,6 @@ namespace App\ReadModel;
 
 final class ProteinViewSql implements ProteinViewInterface
 {
-    const H = 'h';
-    const V = 'v';
-
     private \PDO $pdo;
 
     const SELECT_PROTEIN_SQL = <<<SQL
@@ -26,23 +23,40 @@ final class ProteinViewSql implements ProteinViewInterface
         LIMIT ?
     SQL;
 
+    const SELECT_ISOFORMS_SQL = <<<SQL
+        SELECT *
+        FROM sequences
+        WHERE protein_id = ?
+        ORDER BY id ASC
+    SQL;
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    public function id(int $id): Statement
+    public function id(int $id, array $with = []): Statement
     {
         $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
 
         $select_protein_sth->execute([$id]);
 
-        return Statement::from($this->generator($select_protein_sth));
+        if (! $protein = $select_protein_sth->fetch()) {
+            return Statement::from([]);
+        }
+
+        if (in_array('isoforms', $with)) {
+            $protein['isoforms'] = $this->isoforms($id);
+        }
+
+        $generator = $this->generator([$protein]);
+
+        return Statement::from($generator);
     }
 
     public function search(string $type, string $query, int $limit): Statement
     {
-        if (! in_array($type, [self::H, self::V])) {
+        if (! in_array($type, ['h', 'v'])) {
             return Statement::from([]);
         }
 
@@ -56,23 +70,32 @@ final class ProteinViewSql implements ProteinViewInterface
 
         $select_proteins_sth->execute([$type, '{' . implode(',', $qs) . '}', $limit]);
 
-        return Statement::from($this->generator($select_proteins_sth));
+        $generator = $this->generator($select_proteins_sth);
+
+        return Statement::from($generator);
     }
 
-    private function generator(\PDOStatement $sth): \Generator
+    private function isoforms(int $protein_id): array
     {
-        while ($row = $sth->fetch()) {
+        $select_isoforms_sth = $this->pdo->prepare(self::SELECT_ISOFORMS_SQL);
+
+        $select_isoforms_sth->execute([$protein_id]);
+
+        $isoforms = $select_isoforms_sth->fetchAll();
+
+        if ($isoforms === false) {
+            throw new \LogicException;
+        }
+
+        return $isoforms;
+    }
+
+    private function generator(iterable $rows): \Generator
+    {
+        foreach ($rows as $row) {
             $row['taxon'] = $row['taxon'] ?? 'Homo sapiens';
 
-            yield new ProteinSql(
-                $this->pdo,
-                $row['id'],
-                $row['type'],
-                $row['ncbi_taxon_id'],
-                $row['accession'],
-                $row['name'],
-                $row,
-            );
+            yield $row;
         }
     }
 }

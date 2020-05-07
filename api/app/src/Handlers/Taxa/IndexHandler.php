@@ -8,9 +8,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use App\ReadModel\TaxonViewInterface;
-
 use App\Responders\JsonResponder;
+use App\ReadModel\TaxonViewInterface;
 
 final class IndexHandler implements RequestHandlerInterface
 {

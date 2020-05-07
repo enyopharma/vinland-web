@@ -8,44 +8,97 @@ final class IsoformViewSql implements IsoformViewInterface
 {
     private \PDO $pdo;
 
-    private int $protein_id;
-
     const SELECT_ISOFORM_SQL = <<<SQL
-        SELECT id, accession, is_canonical, is_mature, sequence, start, stop
+        SELECT *
         FROM sequences
         WHERE protein_id = ? AND id = ?
     SQL;
 
-    public function __construct(\PDO $pdo, int $protein_id)
+    const SELECT_INTERACTIONS_SQL = <<<SQL
+        SELECT
+            i.id, i.type,
+            p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
+            taxa.name AS taxon
+        FROM interactions AS i, edges AS e, proteins AS p
+        LEFT JOIN taxa ON p.ncbi_taxon_id = taxa.ncbi_taxon_id
+        WHERE i.type = ?
+        AND i.id = e.interaction_id
+        AND p.id = e.target_id
+        AND e.source_id = ?
+    SQL;
+
+    const SELECT_MAPPINGS_SQL = <<<SQL
+        SELECT i.id AS interaction_id, m.start, m.stop, m.identity, m.sequence
+        FROM interactions AS i, edges AS e, descriptions AS d, mappings AS m
+        WHERE i.type = ?
+        AND i.id = d.interaction_id
+        AND i.id = e.interaction_id
+        AND e.id = m.edge_id
+        AND d.id = m.description_id
+        AND e.source_id = ?
+        AND m.sequence_id = ?
+    SQL;
+
+    public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->protein_id = $protein_id;
     }
 
-    public function id(int $id): Statement
+    public function id(int $protein_id, int $id, array $with = []): Statement
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_ISOFORM_SQL);
 
-        $select_isoform_sth->execute([$this->protein_id, $id]);
+        $select_isoform_sth->execute([$protein_id, $id]);
 
-        return Statement::from($this->generator($select_isoform_sth));
+        if (! $isoform = $select_isoform_sth->fetch()) {
+            return Statement::from([]);
+        }
+
+        if (in_array('interactions', $with)) {
+            $isoform['interactions'] = [
+                'hh' => $this->interactions('hh', $protein_id, $id),
+                'vh' => $this->interactions('vh', $protein_id, $id),
+            ];
+        }
+
+        return Statement::from([$isoform]);
     }
 
-    private function generator(\PDOStatement $sth): \Generator
+    private function interactions(string $type, int $protein_id, int $isoform_id): array
     {
-        while ($row = $sth->fetch()) {
-            yield new IsoformSql(
-                $this->pdo,
-                $row['id'],
-                $this->protein_id,
-                $row['accession'],
-                $row['is_canonical'],
-                $row['is_mature'],
-                $row['sequence'],
-                $row['start'],
-                $row['stop'],
-                $row,
-            );
+        $select_interactions_sth = $this->pdo->prepare(self::SELECT_INTERACTIONS_SQL);
+        $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
+
+        $select_interactions_sth->execute([$type, $protein_id]);
+        $select_mappings_sth->execute([$type, $protein_id, $isoform_id]);
+
+        $mappings = $select_mappings_sth->fetchAll();
+
+        if ($mappings === false) {
+            throw new \LogicException;
+        }
+
+        return iterator_to_array($this->merge($select_interactions_sth, $mappings));
+    }
+
+    private function merge(iterable $rows, array $mappings): \Generator
+    {
+        foreach ($rows as $row) {
+            yield [
+                'id' => $row['id'],
+                'type' => $row['type'],
+                'protein' => [
+                    'id' => $row['protein_id'],
+                    'type' => $row['protein_type'],
+                    'accession' => $row['accession'],
+                    'name' => $row['name'],
+                    'description' => $row['description'],
+                    'taxon' => $row['taxon'] ?? 'Homo sapiens',
+                ],
+                'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
+                    return $row['id'] == $mapping['interaction_id'];
+                })),
+            ];
         }
     }
 }

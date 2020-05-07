@@ -8,28 +8,29 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use App\ReadModel\ProteinInterface;
 use App\Responders\JsonResponder;
+use App\ReadModel\ProteinViewInterface;
 
 final class ShowHandler implements RequestHandlerInterface
 {
     private JsonResponder $responder;
 
-    public function __construct(JsonResponder $responder)
+    private ProteinViewInterface $proteins;
+
+    public function __construct(JsonResponder $responder, ProteinViewInterface $proteins)
     {
         $this->responder = $responder;
+        $this->proteins = $proteins;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $protein = $request->getAttribute(ProteinInterface::class);
+        $protein_id = (int) $request->getAttribute('protein_id');
 
-        if (! $protein instanceof ProteinInterface) {
-            throw new \LogicException;
-        }
+        $sth = $this->proteins->id($protein_id, ['isoforms']);
 
-        $data = $protein->withIsoforms()->data();
-
-        return $this->responder->success($data);
+        return ($protein = $sth->fetch())
+            ? $this->responder->success($protein)
+            : $this->responder->notFound();
     }
 }
