@@ -14,14 +14,14 @@ return function (ContainerInterface $container) {
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
     $collector = $container->get(FastRoute\RouteCollector::class);
 
-    $responder = new App\Handlers\Responder($factory);
+    $responder = new Quanta\Http\Responder($factory);
 
     $parse = function ($endpoint) use ($responder): \Psr\Http\Server\RequestHandlerInterface {
         [$endpoint, $middleware] = is_array($endpoint)
             ? [array_pop($endpoint), $endpoint]
             : [$endpoint, []];
 
-        $handler = new App\Handlers\Endpoint($responder, $endpoint, 'data', [
+        $handler = new Quanta\Http\Endpoint($responder, $endpoint, 'data', [
             'code' => 200,
             'success' => true,
         ]);
