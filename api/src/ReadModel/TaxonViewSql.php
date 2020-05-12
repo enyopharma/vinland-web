@@ -47,7 +47,7 @@ final class TaxonViewSql implements TaxonViewInterface
         $this->pdo = $pdo;
     }
 
-    public function id(int $ncbi_taxon_id, array $with = []): Statement
+    public function id(int $ncbi_taxon_id, string ...$with): Statement
     {
         $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
 

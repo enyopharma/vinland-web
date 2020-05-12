@@ -32,11 +32,7 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\TaxonViewInterface::class),
         ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}/related' => new App\Endpoints\Taxa\Related\IndexEndpoint(
-            $container->get(App\ReadModel\TaxonViewInterface::class),
-        ),
-
-        'GET /taxa/{ncbi_taxon_id:\d+}/names' => new App\Endpoints\Taxa\Names\IndexEndpoint(
+        'GET /taxa/{ncbi_taxon_id:\d+}[/{option:related|names}]' => new App\Endpoints\Taxa\ShowEndpoint(
             $container->get(App\ReadModel\TaxonViewInterface::class),
         ),
 

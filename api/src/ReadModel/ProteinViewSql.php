@@ -35,7 +35,7 @@ final class ProteinViewSql implements ProteinViewInterface
         $this->pdo = $pdo;
     }
 
-    public function id(int $id, array $with = []): Statement
+    public function id(int $id, string ...$with): Statement
     {
         $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
 

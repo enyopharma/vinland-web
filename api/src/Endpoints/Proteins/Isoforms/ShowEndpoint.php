@@ -25,6 +25,6 @@ final class ShowEndpoint
         $protein_id = (int) $request->getAttribute('protein_id');
         $isoform_id = (int) $request->getAttribute('isoform_id');
 
-        return $this->isoforms->id($protein_id, $isoform_id, ['interactions'])->fetch();
+        return $this->isoforms->id($protein_id, $isoform_id, 'interactions')->fetch();
     }
 }

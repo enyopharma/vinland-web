@@ -44,7 +44,7 @@ final class IsoformViewSql implements IsoformViewInterface
         $this->pdo = $pdo;
     }
 
-    public function id(int $protein_id, int $id, array $with = []): Statement
+    public function id(int $protein_id, int $id, string ...$with): Statement
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_ISOFORM_SQL);
 
