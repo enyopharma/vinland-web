@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\ReadModel;
 
-use App\Request\QueryInput;
+use App\Input\InteractionQueryInput;
 
 final class InteractionViewSql implements InteractionViewInterface
 {
@@ -85,7 +85,7 @@ final class InteractionViewSql implements InteractionViewInterface
         return $query;
     }
 
-    public function all(QueryInput $input): Statement
+    public function all(InteractionQueryInput $input): Statement
     {
         $hh = $input->hh();
         $vh = $input->vh();

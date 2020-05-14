@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\ReadModel;
 
-use App\Request\QueryInput;
+use App\Input\InteractionQueryInput;
 
 interface InteractionViewInterface
 {
-    public function all(QueryInput $query): Statement;
+    public function all(InteractionQueryInput $query): Statement;
 }

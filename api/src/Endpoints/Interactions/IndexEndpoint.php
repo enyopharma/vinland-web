@@ -6,8 +6,7 @@ namespace App\Endpoints\Interactions;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-use Quanta\Validation\ErrorInterface;
-
+use App\Input\InteractionQueryInput;
 use App\ReadModel\InteractionViewInterface;
 
 final class IndexEndpoint
@@ -27,9 +26,9 @@ final class IndexEndpoint
      */
     public function __invoke(ServerRequestInterface $request, callable $responder)
     {
-        $input = $request->getAttribute(\App\Request\QueryInput::class);
+        $input = $request->getAttribute('input');
 
-        if (! $input instanceof \App\Request\QueryInput) {
+        if (! $input instanceof InteractionQueryInput) {
             throw new \LogicException;
         }
 

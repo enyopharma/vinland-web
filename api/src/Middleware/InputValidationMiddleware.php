@@ -10,46 +10,48 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-use Quanta\Validation\ErrorInterface;
+use Quanta\Validation\Error;
+use Quanta\Validation\InvalidDataException;
 
 final class InputValidationMiddleware implements MiddlewareInterface
 {
     private ResponseFactoryInterface $factory;
 
     /**
-     * @var callable(array $data): \Quanta\Validation\InputInterface
+     * @var callable(array $data): mixed
      */
     private $validation;
 
-    public function __construct(ResponseFactoryInterface $factory, callable $validation)
-    {
+    private string $attribute;
+
+    public function __construct(
+        ResponseFactoryInterface $factory,
+        callable $validation,
+        string $attribute = 'input'
+    ) {
         $this->factory = $factory;
         $this->validation = $validation;
+        $this->attribute = $attribute;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $input = (array) $request->getParsedBody();
 
-        return ($this->validation)($input)->extract(
-            fn ($input) => $this->success($request, $handler, $input),
-            fn (...$xs) => $this->failure(...$xs),
-        );
-    }
+        try {
+            $value = ($this->validation)($input);
+        }
 
-    /**
-     * @param mixed $input
-     */
-    private function success(ServerRequestInterface $request, RequestHandlerInterface $handler, $input): ResponseInterface
-    {
-        $name = $this->inputAttributeName($input);
+        catch (InvalidDataException $e) {
+            return $this->failure(...$e->errors());
+        }
 
-        $request = $request->withAttribute($name, $input);
+        $request = $request->withAttribute($this->attribute, $value);
 
         return $handler->handle($request);
     }
 
-    private function failure(ErrorInterface ...$errors): ResponseInterface
+    private function failure(Error ...$errors): ResponseInterface
     {
         $data = [
             'code' => 422,
@@ -69,26 +71,14 @@ final class InputValidationMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    /**
-     * @param mixed $input
-     */
-    private function inputAttributeName($input): string
+    private function message(Error $error): string
     {
-        if (! is_object($input)) {
-            return 'input';
-        }
+        $keys = array_map(fn ($key) => '[' . $key . ']', $error->keys());
 
-        $class = get_class($input);
+        $name = implode('', $keys);
 
-        return strpos($class, '@anonymous') === false ? $class : 'input';
-    }
-
-    private function message(ErrorInterface $error): string
-    {
-        $name = $error->name();
-
-        return $name == ''
+        return count($keys) == 0
             ? $error->message()
-            : sprintf('%s => %s', $error->name(), $error->message());
+            : sprintf('%s => %s', $name, $error->message());
     }
 }
