@@ -40,7 +40,7 @@ return function (ContainerInterface $container): array {
             new Middlewares\JsonPayload,
             new App\Middleware\InputValidationMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                [App\Input\InteractionQueryInput::class, 'from'],
+                App\Input\InteractionQueryInput::factory(),
             ),
             new App\Endpoints\Interactions\IndexEndpoint(
                 $container->get(App\ReadModel\InteractionViewInterface::class),

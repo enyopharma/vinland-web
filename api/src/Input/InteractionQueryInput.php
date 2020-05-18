@@ -2,11 +2,10 @@
 
 namespace App\Input;
 
+use Quanta\Validation;
+use Quanta\Validation\Map;
+use Quanta\Validation\Guard;
 use Quanta\Validation\Field;
-use Quanta\Validation\Bound;
-use Quanta\Validation\Merged;
-use Quanta\Validation\Traversed;
-use Quanta\Validation\InvalidDataException;
 use Quanta\Validation\Rules\OfType;
 use Quanta\Validation\Rules\Matching;
 use Quanta\Validation\Rules\LessThanEqual;
@@ -28,32 +27,21 @@ final class InteractionQueryInput
     private int $publications;
     private int $methods;
 
-    public static function from(array $data): self
+    public static function factory(): callable
     {
-        $validation = self::validation();
+        $isarr = new Guard(new OfType('array'));
+        $isstr = new Guard(new OfType('string'));
+        $isint = new Guard(new OfType('integer'));
+        $isbool = new Guard(new OfType('boolean'));
+        $isgte0 = new Guard(new GreaterThanEqual(0));
+        $isgte1 = new Guard(new GreaterThanEqual(1));
+        $iskey = new Guard(new Matching(self::KEY_PATTERN));
+        $isltemax = new Guard(new LessThanEqual(self::MAX_ID_THRESHOLD));
+        $isstrlist = Map::merged($isstr);
 
-        $errors = $validation($data);
+        $factory = fn (array ...$xs) => new self(array_merge(...$xs));
 
-        if (count($errors) == 0) {
-            return new self($data);
-        }
-
-        throw new InvalidDataException(...$errors);
-    }
-
-    private static function validation(): callable
-    {
-        $isarr = new OfType('array');
-        $isstr = new OfType('string');
-        $isint = new OfType('integer');
-        $isbool = new OfType('boolean');
-        $isgte0 = new GreaterThanEqual(0);
-        $isgte1 = new GreaterThanEqual(1);
-        $iskey = new Matching(self::KEY_PATTERN);
-        $isstrlist = Traversed::merged($isstr);
-        $isltemax = new LessThanEqual(self::MAX_ID_THRESHOLD);
-
-        return new Merged(
+        return new Validation($factory,
             Field::required('key', $isstr, $iskey),
             Field::required('identifiers', $isarr, $isstrlist, $isltemax),
             Field::required('ncbi_taxon_id', $isint, $isgte0),

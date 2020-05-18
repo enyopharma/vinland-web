@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "df516cd254562a069e3f38f4135b67c5",
+    "content-hash": "a2ffcf9c4c3ddbd2459cada08f7a528d",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -874,16 +874,16 @@
         },
         {
             "name": "quanta/validation",
-            "version": "0.5.0",
+            "version": "0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/validation.git",
-                "reference": "22ff23f197daeac6a27cf53279234f3ab5086136"
+                "reference": "6cfc095dbdfc2503b800ae342c026e52bae97e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/validation/zipball/22ff23f197daeac6a27cf53279234f3ab5086136",
-                "reference": "22ff23f197daeac6a27cf53279234f3ab5086136",
+                "url": "https://api.github.com/repos/quantaphp/validation/zipball/6cfc095dbdfc2503b800ae342c026e52bae97e48",
+                "reference": "6cfc095dbdfc2503b800ae342c026e52bae97e48",
                 "shasum": ""
             },
             "require": {
@@ -897,7 +897,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Quanta\\Validation\\": "src"
+                    "Quanta\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -916,7 +916,7 @@
                 "input",
                 "validation"
             ],
-            "time": "2020-05-14T13:45:19+00:00"
+            "time": "2020-05-15T16:48:44+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
