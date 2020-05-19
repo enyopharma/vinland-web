@@ -23,16 +23,20 @@ const Fetcher: React.FC<Props> = ({ input, type, query }) => {
     const proteins = resources.proteins(type, query).read()
 
     useEffect(() => {
-        const keydown = (e: KeyboardEvent) => {
-            if (e.keyCode === 13 && proteins.length === 1) {
-                history.push(`/proteins/${proteins[0].id}`)
+        if (input.current) {
+            const target = input.current
+
+            const keydown = (e: KeyboardEvent) => {
+                if (e.keyCode === 13 && proteins.length === 1) {
+                    history.push(`/proteins/${proteins[0].id}`)
+                }
             }
-        }
 
-        input.current?.addEventListener('keydown', keydown)
+            target.addEventListener('keydown', keydown)
 
-        return () => {
-            input.current?.removeEventListener('keydown', keydown)
+            return () => {
+                target.removeEventListener('keydown', keydown)
+            }
         }
     })
 
