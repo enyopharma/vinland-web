@@ -32,14 +32,18 @@ final class IndexEndpoint
             throw new \LogicException;
         }
 
-        if ($input->isComplete()) {
-            return $this->interactions->all($input);
-        }
+        $complete = $input->isComplete();
 
-        return $responder(200, [
+        $body = [
             'code' => 200,
             'success' => true,
-            'status' => self::INCOMPLETE,
-        ]);
+            'status' => $complete ? self::SUCCESS : self:: INCOMPLETE,
+        ];
+
+        if ($complete) {
+            $body['data'] = $this->interactions->all($input)->fetchAll();
+        }
+
+        return $responder(200, $body);
     }
 }

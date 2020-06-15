@@ -1,21 +1,12 @@
 version: '3'
 services:
+    backend:
+        ports:
+            - '8000:80'
+        volumes:
+            - ./backend/default.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./api:/var/www/html:ro
     api:
         user: ${UID}:${GID}
         volumes:
             - ./api:/var/www/html:rw
-        environment:
-            - APP_ENV=${APP_ENV}
-            - APP_DEBUG=${APP_DEBUG}
-    backend:
-        volumes:
-            - ./backend/default.conf:/etc/nginx/conf.d/default.conf:ro
-            - ./api:/var/www/html:ro
-        networks:
-            - default
-            - proxy
-        labels:
-            - traefik.http.routers.drakkar.rule=Host(`${APP_HOST}`)
-networks:
-    proxy:
-        external: true

@@ -1,16 +1,16 @@
 version: '3'
 services:
+    backend:
+        build: ./backend
+        depends_on:
+            - api
     api:
         build: ./api
         environment:
-            - APP_HOST=${APP_HOST}
-            - SSO_HOST=${SSO_HOST}
+            - APP_ENV=development
+            - APP_DEBUG=true
             - DB_HOSTNAME=${DB_HOSTNAME}
             - DB_DATABASE=${DB_DATABASE}
             - DB_USERNAME=${DB_USERNAME}
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_PORT=${DB_PORT}
-    backend:
-        build: ./backend
-        depends_on:
-            - api
