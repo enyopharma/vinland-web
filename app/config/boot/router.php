@@ -10,30 +10,12 @@ use Psr\Container\ContainerInterface;
  * @param Psr\Container\ContainerInterface $container
  * @return void
  */
-return function (ContainerInterface $container) {
-    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
+return function (ContainerInterface $container): void {
     $collector = $container->get(FastRoute\RouteCollector::class);
-
-    $responder = new Quanta\Http\Responder($factory);
-
-    $parse = function ($endpoint) use ($responder): \Psr\Http\Server\RequestHandlerInterface {
-        [$endpoint, $middleware] = is_array($endpoint)
-            ? [array_pop($endpoint), $endpoint]
-            : [$endpoint, []];
-
-        $handler = new Quanta\Http\Endpoint($responder, $endpoint, 'data', [
-            'code' => 200,
-            'success' => true,
-        ]);
-
-        return count($middleware) > 0
-            ? Quanta\Http\RequestHandler::Queue($handler, ...$middleware)
-            : $handler;
-    };
 
     $routes = (require __DIR__ . '/../routes.php')($container);
 
-    foreach ($routes as $route => $endpoint) {
+    foreach ($routes as $route => $handler) {
         $parts = (array) preg_split('/\s+/', $route);
 
         if (count($parts) != 2) {
@@ -44,7 +26,6 @@ return function (ContainerInterface $container) {
 
         $method = (string) array_shift($parts);
         $path = (string) array_shift($parts);
-        $handler = $parse($endpoint);
 
         $collector->addRoute($method, $path, $handler);
     }
