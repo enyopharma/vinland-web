@@ -3,9 +3,9 @@ services:
     backend:
         build: ./backend
         depends_on:
-            - api
-    api:
-        build: ./api
+            - app
+    app:
+        build: ./app
         environment:
             - APP_ENV=development
             - APP_DEBUG=true

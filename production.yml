@@ -11,12 +11,12 @@ services:
             - backend
     backend:
         volumes:
-            - api:/var/www/html:ro
-    api:
+            - app:/var/www/html:ro
+    app:
         volumes:
-            - api:/var/www/html:rw
+            - app:/var/www/html:rw
 volumes:
-    api:
+    app:
 networks:
     proxy:
         external: true

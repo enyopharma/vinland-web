@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2ffcf9c4c3ddbd2459cada08f7a528d",
+    "content-hash": "bfa08c722763a39a2285608e5b6cdb4d",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -582,70 +582,27 @@
             "time": "2018-10-30T17:12:04+00:00"
         },
         {
-            "name": "quanta/array-type-check",
-            "version": "0.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/quantaphp/array-type-check.git",
-                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/array-type-check/zipball/17a233857d6d77c4143677a5a523eaa4ea7c89cc",
-                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "require-dev": {
-                "eloquent/phony-kahlan": "^2.0",
-                "kahlan/kahlan": "^4.0",
-                "phpstan/phpstan": "^0.11.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Quanta\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "pmall",
-                    "email": "pierre.mallinjoud@gmail.com"
-                }
-            ],
-            "description": "PHP associative array type check",
-            "homepage": "https://github.com/quantaphp/array-type-check",
-            "time": "2019-07-16T10:56:56+00:00"
-        },
-        {
             "name": "quanta/container",
-            "version": "0.3.2",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/container.git",
-                "reference": "6b4158bc57e20e41860875908211507cfa113cd5"
+                "reference": "82ef56b2c2c3b7238054bc5adc2b98b13c494064"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/container/zipball/6b4158bc57e20e41860875908211507cfa113cd5",
-                "reference": "6b4158bc57e20e41860875908211507cfa113cd5",
+                "url": "https://api.github.com/repos/quantaphp/container/zipball/82ef56b2c2c3b7238054bc5adc2b98b13c494064",
+                "reference": "82ef56b2c2c3b7238054bc5adc2b98b13c494064",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0",
-                "psr/container": "^1.0",
-                "quanta/array-type-check": "^0.3"
+                "php": "^7.0",
+                "psr/container": "^1.0"
             },
             "require-dev": {
-                "eloquent/phony-kahlan": "^2.0",
-                "kahlan/kahlan": "^4.0",
-                "phpstan/phpstan": "^0.10.8"
+                "eloquent/phony-kahlan": "^3.0",
+                "kahlan/kahlan": "^4.7",
+                "phpstan/phpstan": "^0.12.27"
             },
             "type": "library",
             "autoload": {
@@ -670,7 +627,7 @@
                 "container",
                 "dependency-injection"
             ],
-            "time": "2019-07-16T11:22:30+00:00"
+            "time": "2020-06-09T15:54:37+00:00"
         },
         {
             "name": "quanta/http-dispatcher",
@@ -959,29 +916,76 @@
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
-            "name": "symfony/dotenv",
-            "version": "v4.4.8",
+            "name": "symfony/deprecation-contracts",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/dotenv.git",
-                "reference": "a78e698cfb8aca8ef6814639eb5ffc17180a4326"
+                "url": "https://github.com/symfony/deprecation-contracts.git",
+                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dotenv/zipball/a78e698cfb8aca8ef6814639eb5ffc17180a4326",
-                "reference": "a78e698cfb8aca8ef6814639eb5ffc17180a4326",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
+                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1.3"
-            },
-            "require-dev": {
-                "symfony/process": "^3.4.2|^4.0|^5.0"
+                "php": ">=7.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "function.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A generic function and convention to trigger deprecation notices",
+            "homepage": "https://symfony.com",
+            "time": "2020-05-27T08:34:37+00:00"
+        },
+        {
+            "name": "symfony/dotenv",
+            "version": "v5.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dotenv.git",
+                "reference": "42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05",
+                "reference": "42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/deprecation-contracts": "^2.1"
+            },
+            "require-dev": {
+                "symfony/process": "^4.4|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.1-dev"
                 }
             },
             "autoload": {
@@ -1013,22 +1017,22 @@
                 "env",
                 "environment"
             ],
-            "time": "2020-03-27T16:54:36+00:00"
+            "time": "2020-05-28T08:20:44+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.25",
+            "version": "0.12.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "9619551d68b2d4c0d681a8df73f3c847c798ee64"
+                "reference": "776c8056b401e1b67f277b9e9fb334d1a274671d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9619551d68b2d4c0d681a8df73f3c847c798ee64",
-                "reference": "9619551d68b2d4c0d681a8df73f3c847c798ee64",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/776c8056b401e1b67f277b9e9fb334d1a274671d",
+                "reference": "776c8056b401e1b67f277b9e9fb334d1a274671d",
                 "shasum": ""
             },
             "require": {
@@ -1057,7 +1061,49 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2020-05-10T20:36:16+00:00"
+            "time": "2020-06-24T20:55:29+00:00"
+        },
+        {
+            "name": "quanta/array-type-check",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quantaphp/array-type-check.git",
+                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quantaphp/array-type-check/zipball/17a233857d6d77c4143677a5a523eaa4ea7c89cc",
+                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "eloquent/phony-kahlan": "^2.0",
+                "kahlan/kahlan": "^4.0",
+                "phpstan/phpstan": "^0.11.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Quanta\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "pmall",
+                    "email": "pierre.mallinjoud@gmail.com"
+                }
+            ],
+            "description": "PHP associative array type check",
+            "homepage": "https://github.com/quantaphp/array-type-check",
+            "time": "2019-07-16T10:56:56+00:00"
         }
     ],
     "aliases": [],

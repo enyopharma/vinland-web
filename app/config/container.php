@@ -17,12 +17,9 @@ return function (string $env, bool $debug): ContainerInterface {
         'app.debug' => fn () => $debug,
     ];
 
-    $files = array_merge(
-        (array) glob(__DIR__ . '/../factories/*.php'),
-        (array) glob(__DIR__ . '/../factories/**/*.php'),
-    );
+    $files = (array) glob(__DIR__ . '/factories/*.php');
 
-    return new Quanta\Container(array_reduce($files, function ($factories, $file) {
+    return Quanta\Container::from(array_reduce($files, function ($factories, $file) {
         return array_merge($factories, require $file);
     }, $defaults));
 };

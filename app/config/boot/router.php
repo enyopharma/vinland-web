@@ -31,7 +31,7 @@ return function (ContainerInterface $container) {
             : $handler;
     };
 
-    $routes = (require __DIR__ . '/../src/routes.php')($container);
+    $routes = (require __DIR__ . '/../routes.php')($container);
 
     foreach ($routes as $route => $endpoint) {
         $parts = (array) preg_split('/\s+/', $route);
