@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfa08c722763a39a2285608e5b6cdb4d",
+    "content-hash": "416e41cdc4ab392f4c376df1e302644f",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -583,16 +583,16 @@
         },
         {
             "name": "quanta/container",
-            "version": "0.4.0",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/container.git",
-                "reference": "82ef56b2c2c3b7238054bc5adc2b98b13c494064"
+                "reference": "7f05cee063b9dcffe8ec5f777bdf07b36f517210"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/container/zipball/82ef56b2c2c3b7238054bc5adc2b98b13c494064",
-                "reference": "82ef56b2c2c3b7238054bc5adc2b98b13c494064",
+                "url": "https://api.github.com/repos/quantaphp/container/zipball/7f05cee063b9dcffe8ec5f777bdf07b36f517210",
+                "reference": "7f05cee063b9dcffe8ec5f777bdf07b36f517210",
                 "shasum": ""
             },
             "require": {
@@ -627,20 +627,20 @@
                 "container",
                 "dependency-injection"
             ],
-            "time": "2020-06-09T15:54:37+00:00"
+            "time": "2020-06-29T11:45:27+00:00"
         },
         {
             "name": "quanta/http-dispatcher",
-            "version": "0.4.2",
+            "version": "0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-dispatcher.git",
-                "reference": "51d146618b1a37979156969976ad6f2d19d2c8fc"
+                "reference": "126006c9e2b620885da31f00950a327a46cfeea7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/51d146618b1a37979156969976ad6f2d19d2c8fc",
-                "reference": "51d146618b1a37979156969976ad6f2d19d2c8fc",
+                "url": "https://api.github.com/repos/quantaphp/http-dispatcher/zipball/126006c9e2b620885da31f00950a327a46cfeea7",
+                "reference": "126006c9e2b620885da31f00950a327a46cfeea7",
                 "shasum": ""
             },
             "require": {
@@ -650,9 +650,9 @@
                 "psr/http-server-middleware": "^1.0"
             },
             "require-dev": {
-                "eloquent/phony-kahlan": "^2.0",
-                "kahlan/kahlan": "^4.5",
-                "phpstan/phpstan": "^0.12.3"
+                "eloquent/phony-kahlan": "^3.0",
+                "kahlan/kahlan": "^4.7",
+                "phpstan/phpstan": "^0.12.28"
             },
             "type": "library",
             "autoload": {
@@ -678,7 +678,7 @@
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2020-01-14T15:24:04+00:00"
+            "time": "2020-06-12T15:37:14+00:00"
         },
         {
             "name": "quanta/http-endpoint",
@@ -831,16 +831,16 @@
         },
         {
             "name": "quanta/validation",
-            "version": "0.6.0",
+            "version": "0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/validation.git",
-                "reference": "6cfc095dbdfc2503b800ae342c026e52bae97e48"
+                "reference": "6d230e0bb923c7b4383342d6b7d063c5ea516a45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/validation/zipball/6cfc095dbdfc2503b800ae342c026e52bae97e48",
-                "reference": "6cfc095dbdfc2503b800ae342c026e52bae97e48",
+                "url": "https://api.github.com/repos/quantaphp/validation/zipball/6d230e0bb923c7b4383342d6b7d063c5ea516a45",
+                "reference": "6d230e0bb923c7b4383342d6b7d063c5ea516a45",
                 "shasum": ""
             },
             "require": {
@@ -873,7 +873,7 @@
                 "input",
                 "validation"
             ],
-            "time": "2020-05-15T16:48:44+00:00"
+            "time": "2020-06-04T12:47:53+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -1062,48 +1062,6 @@
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
             "time": "2020-06-24T20:55:29+00:00"
-        },
-        {
-            "name": "quanta/array-type-check",
-            "version": "0.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/quantaphp/array-type-check.git",
-                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/array-type-check/zipball/17a233857d6d77c4143677a5a523eaa4ea7c89cc",
-                "reference": "17a233857d6d77c4143677a5a523eaa4ea7c89cc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0"
-            },
-            "require-dev": {
-                "eloquent/phony-kahlan": "^2.0",
-                "kahlan/kahlan": "^4.0",
-                "phpstan/phpstan": "^0.11.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Quanta\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "pmall",
-                    "email": "pierre.mallinjoud@gmail.com"
-                }
-            ],
-            "description": "PHP associative array type check",
-            "homepage": "https://github.com/quantaphp/array-type-check",
-            "time": "2019-07-16T10:56:56+00:00"
         }
     ],
     "aliases": [],
