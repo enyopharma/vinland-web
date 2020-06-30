@@ -13,9 +13,7 @@ use Psr\Container\ContainerInterface;
 return function (ContainerInterface $container): array {
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
 
-    $responder = new Quanta\Http\Responder($factory);
-
-    $endpoint = fn (callable $f) => new Quanta\Http\Endpoint($responder, $f, 'data', [
+    $endpoint = Quanta\Http\EndpointFactory::default($factory, 'data', [
         'code' => 200,
         'success' => true,
     ]);
