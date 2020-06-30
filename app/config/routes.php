@@ -13,10 +13,7 @@ use Psr\Container\ContainerInterface;
 return function (ContainerInterface $container): array {
     $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
 
-    $endpoint = Quanta\Http\EndpointFactory::default($factory, 'data', [
-        'code' => 200,
-        'success' => true,
-    ]);
+    $endpoint = Quanta\Http\EndpointFactory::default($factory);
 
     return [
         'GET /proteins' => $endpoint(new App\Endpoints\Proteins\IndexEndpoint(

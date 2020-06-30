@@ -682,16 +682,16 @@
         },
         {
             "name": "quanta/http-endpoint",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-endpoint.git",
-                "reference": "9cfb8a9b981120f8f254c93802a716d43f884e56"
+                "reference": "828d9f7db9550182ae9ab5655d98385c6869144b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-endpoint/zipball/9cfb8a9b981120f8f254c93802a716d43f884e56",
-                "reference": "9cfb8a9b981120f8f254c93802a716d43f884e56",
+                "url": "https://api.github.com/repos/quantaphp/http-endpoint/zipball/828d9f7db9550182ae9ab5655d98385c6869144b",
+                "reference": "828d9f7db9550182ae9ab5655d98385c6869144b",
                 "shasum": ""
             },
             "require": {
@@ -729,7 +729,7 @@
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2020-06-30T13:13:33+00:00"
+            "time": "2020-06-30T13:52:14+00:00"
         },
         {
             "name": "quanta/http-routing",
