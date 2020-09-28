@@ -9,25 +9,20 @@ final class ProteinViewSql implements ProteinViewInterface
     private \PDO $pdo;
 
     const SELECT_PROTEIN_SQL = <<<SQL
-        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, taxa.name AS taxon
-        FROM proteins AS p
-        LEFT JOIN taxa ON taxa.ncbi_taxon_id = p.ncbi_taxon_id
-        WHERE id = ?
+        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
+        FROM proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+        WHERE p.id = ?
     SQL;
 
     const SELECT_PROTEINS_SQL = <<<SQL
-        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, taxa.name AS taxon
-        FROM proteins AS p
-        LEFT JOIN taxa ON taxa.ncbi_taxon_id = p.ncbi_taxon_id
-        WHERE type = ? AND search ILIKE ALL(?)
+        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
+        FROM proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+        WHERE p.type = ? AND %s
         LIMIT ?
     SQL;
 
     const SELECT_ISOFORMS_SQL = <<<SQL
-        SELECT *
-        FROM sequences
-        WHERE protein_id = ?
-        ORDER BY id ASC
+        SELECT * FROM sequences WHERE protein_id = ? ORDER BY id ASC
     SQL;
 
     public function __construct(\PDO $pdo)
@@ -41,7 +36,7 @@ final class ProteinViewSql implements ProteinViewInterface
 
         $select_protein_sth->execute([$id]);
 
-        if (! $protein = $select_protein_sth->fetch()) {
+        if (!$protein = $select_protein_sth->fetch()) {
             return Statement::from([]);
         }
 
@@ -49,30 +44,31 @@ final class ProteinViewSql implements ProteinViewInterface
             $protein['isoforms'] = $this->isoforms($id);
         }
 
-        $generator = $this->generator([$protein]);
-
-        return Statement::from($generator);
+        return Statement::from([$protein]);
     }
 
     public function search(string $type, string $query, int $limit): Statement
     {
-        if (! in_array($type, ['h', 'v'])) {
+        if (!in_array($type, ['h', 'v'])) {
             return Statement::from([]);
         }
 
-        $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
+        $qs = explode('+', $query);
+        $qs = array_map('trim', $qs);
+        $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
+        $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
         if (count($qs) == 0) {
             return Statement::from([]);
         }
 
-        $select_proteins_sth = $this->pdo->prepare(self::SELECT_PROTEINS_SQL);
+        $where = implode(' AND ', array_pad([], count($qs), 'p.search ILIKE ?'));
 
-        $select_proteins_sth->execute([$type, '{' . implode(',', $qs) . '}', $limit]);
+        $select_proteins_sth = $this->pdo->prepare(sprintf(self::SELECT_PROTEINS_SQL, $where));
 
-        $generator = $this->generator($select_proteins_sth);
+        $select_proteins_sth->execute([$type, ...$qs, $limit]);
 
-        return Statement::from($generator);
+        return Statement::from($select_proteins_sth);
     }
 
     private function isoforms(int $protein_id): array
@@ -88,14 +84,5 @@ final class ProteinViewSql implements ProteinViewInterface
         }
 
         return $isoforms;
-    }
-
-    private function generator(iterable $rows): \Generator
-    {
-        foreach ($rows as $row) {
-            $row['taxon'] = $row['taxon'] ?? 'Homo sapiens';
-
-            yield $row;
-        }
     }
 }

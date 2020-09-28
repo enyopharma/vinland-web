@@ -9,10 +9,7 @@ final class AnnotationViewSql implements AnnotationViewInterface
     private \PDO $pdo;
 
     const SELECT_ANNOTATIONS_SQL = <<<SQL
-        SELECT *
-        FROM annotations
-        WHERE source = ? AND search ILIKE ALL(?)
-        LIMIT ?
+        SELECT * FROM annotations WHERE source = ? AND %s LIMIT ?
     SQL;
 
     public function __construct(\PDO $pdo)
@@ -22,19 +19,22 @@ final class AnnotationViewSql implements AnnotationViewInterface
 
     public function all(string $source, string $query, int $limit): Statement
     {
-        $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
+        $qs = explode('+', $query);
+        $qs = array_map('trim', $qs);
+        $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
+        $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
         if (count($qs) == 0) {
             return Statement::from([]);
         }
 
-        $select_annotations_sth = $this->pdo->prepare(self::SELECT_ANNOTATIONS_SQL);
+        $where = implode(' AND ', array_pad([], count($qs), 'search ILIKE ?'));
 
-        $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
+        $select_annotations_sth = $this->pdo->prepare(sprintf(self::SELECT_ANNOTATIONS_SQL, $where));
 
-        $generator = $this->generator($select_annotations_sth);
+        $select_annotations_sth->execute([$source, ...$qs, $limit]);
 
-        return Statement::from($generator);
+        return Statement::from($this->generator($select_annotations_sth));
     }
 
     private function generator(iterable $rows): \Generator

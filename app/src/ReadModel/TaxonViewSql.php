@@ -13,11 +13,7 @@ final class TaxonViewSql implements TaxonViewInterface
     SQL;
 
     const SELECT_TAXA_SQL = <<<SQL
-        SELECT *
-        FROM taxa
-        WHERE name ILIKE ALL(?)
-        ORDER BY nb_interactions DESC
-        LIMIT ?
+        SELECT * FROM taxa WHERE %s ORDER BY nb_interactions DESC LIMIT ?
     SQL;
 
     const SELECT_PARENT_SQL = <<< SQL
@@ -53,7 +49,7 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
-        if (! $taxon = $select_taxon_sth->fetch()) {
+        if (!$taxon = $select_taxon_sth->fetch()) {
             return Statement::from([]);
         }
 
@@ -71,15 +67,20 @@ final class TaxonViewSql implements TaxonViewInterface
 
     public function search(string $query, int $limit): Statement
     {
-        $qs = array_map(fn ($q) => '%' . trim($q) . '%', array_filter(explode('+', $query)));
+        $qs = explode('+', $query);
+        $qs = array_map('trim', $qs);
+        $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
+        $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
         if (count($qs) == 0) {
             return Statement::from([]);
         }
 
-        $select_taxa_sth = $this->pdo->prepare(self::SELECT_TAXA_SQL);
+        $where = implode(' AND ', array_pad([], count($qs), 'name ILIKE ?'));
 
-        $select_taxa_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
+        $select_taxa_sth = $this->pdo->prepare(sprintf(self::SELECT_TAXA_SQL, $where));
+
+        $select_taxa_sth->execute([...$qs, $limit]);
 
         return Statement::from($select_taxa_sth);
     }

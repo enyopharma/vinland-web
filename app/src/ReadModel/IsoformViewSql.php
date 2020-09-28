@@ -18,9 +18,8 @@ final class IsoformViewSql implements IsoformViewInterface
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            taxa.name AS taxon
-        FROM interactions AS i, edges AS e, proteins AS p
-        LEFT JOIN taxa ON p.ncbi_taxon_id = taxa.ncbi_taxon_id
+            COALESCE(t.name, 'Homo sapiens') AS taxon
+        FROM interactions AS i, edges AS e, proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
         WHERE i.type = ?
         AND i.id = e.interaction_id
         AND p.id = e.target_id
@@ -50,7 +49,7 @@ final class IsoformViewSql implements IsoformViewInterface
 
         $select_isoform_sth->execute([$protein_id, $id]);
 
-        if (! $isoform = $select_isoform_sth->fetch()) {
+        if (!$isoform = $select_isoform_sth->fetch()) {
             return Statement::from([]);
         }
 
@@ -93,7 +92,7 @@ final class IsoformViewSql implements IsoformViewInterface
                     'accession' => $row['accession'],
                     'name' => $row['name'],
                     'description' => $row['description'],
-                    'taxon' => $row['taxon'] ?? 'Homo sapiens',
+                    'taxon' => $row['taxon'],
                 ],
                 'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
                     return $row['id'] == $mapping['interaction_id'];
