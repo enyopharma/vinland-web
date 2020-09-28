@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fab037d0be3ee8eeeecf5715cc5ced0",
+    "content-hash": "17b111fcb9620255a4a38f9823378240",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -682,16 +682,16 @@
         },
         {
             "name": "quanta/http-endpoint",
-            "version": "0.3.1",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/http-endpoint.git",
-                "reference": "828d9f7db9550182ae9ab5655d98385c6869144b"
+                "reference": "4dc1c3f6d324b566dbfbd547572b28b2715e8d18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/http-endpoint/zipball/828d9f7db9550182ae9ab5655d98385c6869144b",
-                "reference": "828d9f7db9550182ae9ab5655d98385c6869144b",
+                "url": "https://api.github.com/repos/quantaphp/http-endpoint/zipball/4dc1c3f6d324b566dbfbd547572b28b2715e8d18",
+                "reference": "4dc1c3f6d324b566dbfbd547572b28b2715e8d18",
                 "shasum": ""
             },
             "require": {
@@ -703,7 +703,6 @@
             "require-dev": {
                 "eloquent/phony-kahlan": "^3.0",
                 "kahlan/kahlan": "^4.7",
-                "laminas/laminas-diactoros": "^2.3",
                 "phpstan/phpstan": "^0.12.25"
             },
             "type": "library",
@@ -729,7 +728,55 @@
                 "psr-15",
                 "request-handler"
             ],
-            "time": "2020-06-30T13:52:14+00:00"
+            "time": "2020-09-09T13:56:00+00:00"
+        },
+        {
+            "name": "quanta/http-responder",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quantaphp/http-responder.git",
+                "reference": "bb56a5ab8e74d5b80110fb05ab1cf0f29c802ca6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quantaphp/http-responder/zipball/bb56a5ab8e74d5b80110fb05ab1cf0f29c802ca6",
+                "reference": "bb56a5ab8e74d5b80110fb05ab1cf0f29c802ca6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "kahlan/kahlan": "^4.7",
+                "laminas/laminas-diactoros": "^2.3",
+                "phpstan/phpstan": "^0.12.25"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Quanta\\Http\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "pmall",
+                    "email": "pierre.mallinjoud@gmail.com"
+                }
+            ],
+            "description": "Minimalist library to create Psr-7 responses",
+            "homepage": "https://github.com/quantaphp/http-responder",
+            "keywords": [
+                "psr-7",
+                "response"
+            ],
+            "time": "2020-09-09T10:34:33+00:00"
         },
         {
             "name": "quanta/http-routing",
@@ -871,16 +918,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.1.2",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337"
+                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
-                "reference": "dd99cb3a0aff6cadd2a8d7d7ed72c2161e218337",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5fa56b4074d1ae755beb55617ddafe6f5d78f665",
+                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665",
                 "shasum": ""
             },
             "require": {
@@ -889,7 +936,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1-dev"
+                    "dev-master": "2.2-dev"
+                },
+                "thanks": {
+                    "name": "symfony/contracts",
+                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -913,20 +964,20 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
-            "time": "2020-05-27T08:34:37+00:00"
+            "time": "2020-09-07T11:33:47+00:00"
         },
         {
             "name": "symfony/dotenv",
-            "version": "v5.1.2",
+            "version": "v5.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dotenv.git",
-                "reference": "42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05"
+                "reference": "f406eaad1231415bf753fbef5aef267a787af4e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dotenv/zipball/42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05",
-                "reference": "42d2a18597f4c7cafc0e25b1ad6a1cbb4f2caf05",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/f406eaad1231415bf753fbef5aef267a787af4e5",
+                "reference": "f406eaad1231415bf753fbef5aef267a787af4e5",
                 "shasum": ""
             },
             "require": {
@@ -971,26 +1022,26 @@
                 "env",
                 "environment"
             ],
-            "time": "2020-05-28T08:20:44+00:00"
+            "time": "2020-09-02T16:23:27+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.31",
+            "version": "0.12.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "776c8056b401e1b67f277b9e9fb334d1a274671d"
+                "reference": "9419738e20f0c49757be05d22969c1c44c1dff3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/776c8056b401e1b67f277b9e9fb334d1a274671d",
-                "reference": "776c8056b401e1b67f277b9e9fb334d1a274671d",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9419738e20f0c49757be05d22969c1c44c1dff3b",
+                "reference": "9419738e20f0c49757be05d22969c1c44c1dff3b",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1"
+                "php": "^7.1|^8.0"
             },
             "conflict": {
                 "phpstan/phpstan-shim": "*"
@@ -1015,7 +1066,7 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
-            "time": "2020-06-24T20:55:29+00:00"
+            "time": "2020-09-28T09:48:55+00:00"
         }
     ],
     "aliases": [],

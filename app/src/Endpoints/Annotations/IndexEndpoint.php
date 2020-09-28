@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Endpoints\Annotations;
 
-use Psr\Http\Message\ServerRequestInterface;
-
 use App\ReadModel\AnnotationViewInterface;
 
 final class IndexEndpoint
@@ -20,13 +18,11 @@ final class IndexEndpoint
     /**
      * @return iterable
      */
-    public function __invoke(ServerRequestInterface $request)
+    public function __invoke(callable $input)
     {
-        $params = (array) $request->getQueryParams();
-
-        $source = (string) ($params['source'] ?? '');
-        $query = (string) ($params['query'] ?? '');
-        $limit = (int) ($params['limit'] ?? 5);
+        $source = $input('source', '');
+        $query = $input('query', '');
+        $limit = (int) $input('limit', 5);
 
         return $this->annotations->all($source, $query, $limit);
     }

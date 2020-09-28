@@ -11,9 +11,11 @@ use Psr\Container\ContainerInterface;
  * @return \Psr\Http\Server\RequestHandlerInterface[]
  */
 return function (ContainerInterface $container): array {
-    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
+    $responder = new Quanta\Http\Responder(
+        $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
+    );
 
-    $endpoint = Quanta\Http\EndpointFactory::default($factory);
+    $endpoint = fn (callable $f) => new Quanta\Http\Endpoint($responder, $f);
 
     return [
         'GET /proteins' => $endpoint(new App\Endpoints\Proteins\IndexEndpoint(

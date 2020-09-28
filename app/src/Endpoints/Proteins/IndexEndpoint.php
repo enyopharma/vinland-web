@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Endpoints\Proteins;
 
-use Psr\Http\Message\ServerRequestInterface;
-
 use App\ReadModel\ProteinViewInterface;
 
 final class IndexEndpoint
@@ -20,13 +18,11 @@ final class IndexEndpoint
     /**
      * @return iterable
      */
-    public function __invoke(ServerRequestInterface $request)
+    public function __invoke(callable $input)
     {
-        $params = (array) $request->getQueryParams();
-
-        $type = (string) ($params['type'] ?? '');
-        $query = (string) ($params['query'] ?? '');
-        $limit = (int) ($params['limit'] ?? 20);
+        $type = $input('type', '');
+        $query = $input('query', '');
+        $limit = (int) $input('limit', 20);
 
         return $this->proteins->search($type, $query, $limit);
     }

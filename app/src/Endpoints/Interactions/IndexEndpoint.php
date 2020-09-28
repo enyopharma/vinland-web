@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Endpoints\Interactions;
 
-use Psr\Http\Message\ServerRequestInterface;
-
 use App\Input\InteractionQueryInput;
 use App\ReadModel\InteractionViewInterface;
 
@@ -24,15 +22,15 @@ final class IndexEndpoint
     /**
      * @return iterable|\Psr\Http\Message\ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request, callable $responder)
+    public function __invoke(callable $input, callable $responder)
     {
-        $input = $request->getAttribute('input');
+        $query = $input('input');
 
-        if (! $input instanceof InteractionQueryInput) {
+        if (!$query instanceof InteractionQueryInput) {
             throw new \LogicException;
         }
 
-        $complete = $input->isComplete();
+        $complete = $query->isComplete();
 
         $body = [
             'code' => 200,
@@ -41,7 +39,7 @@ final class IndexEndpoint
         ];
 
         if ($complete) {
-            $body['data'] = $this->interactions->all($input)->fetchAll();
+            $body['data'] = $this->interactions->all($query)->fetchAll();
         }
 
         return $responder(200, $body);
