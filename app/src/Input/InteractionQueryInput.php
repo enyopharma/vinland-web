@@ -27,7 +27,11 @@ final class InteractionQueryInput
 
     public static function factory(): callable
     {
-        return new Validation(fn (...$xs) => self::from(...$xs),
+        return ArrayValidation::rules([self::class, 'from'], [
+            'key' => 'string',
+        ]);
+
+        return new Validation([self::class, 'from'],
             Field::required('key', new Guard(new OfType('string')))->focus(),
             Field::required('identifiers', new Guard(new OfType('array')))->focus(),
             Field::required('ncbi_taxon_id', new Guard(new OfType('integer')))->focus(),
