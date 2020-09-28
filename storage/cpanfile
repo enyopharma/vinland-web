@@ -1,6 +1,0 @@
-requires 'DBI';
-requires 'DBD::Pg';
-requires 'JSON';
-requires 'Dotenv';
-requires 'List::Util';
-requires 'Data::Dumper';
