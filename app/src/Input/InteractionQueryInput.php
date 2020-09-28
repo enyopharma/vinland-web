@@ -3,19 +3,17 @@
 namespace App\Input;
 
 use Quanta\Validation;
-use Quanta\Validation\Map;
+use Quanta\Validation\Error;
 use Quanta\Validation\Guard;
 use Quanta\Validation\Field;
+use Quanta\Validation\InvalidDataException;
 use Quanta\Validation\Rules\OfType;
-use Quanta\Validation\Rules\Matching;
-use Quanta\Validation\Rules\LessThanEqual;
-use Quanta\Validation\Rules\GreaterThanEqual;
 
 final class InteractionQueryInput
 {
-    private const MAX_ID_THRESHOLD = 500;
-
     private const KEY_PATTERN = '/^[a-z0-9]{32}$/i';
+
+    private const MAX_ID_THRESHOLD = 500;
 
     private string $key;
     private array $identifiers;
@@ -29,42 +27,64 @@ final class InteractionQueryInput
 
     public static function factory(): callable
     {
-        $isarr = new Guard(new OfType('array'));
-        $isstr = new Guard(new OfType('string'));
-        $isint = new Guard(new OfType('integer'));
-        $isbool = new Guard(new OfType('boolean'));
-        $isgte0 = new Guard(new GreaterThanEqual(0));
-        $isgte1 = new Guard(new GreaterThanEqual(1));
-        $iskey = new Guard(new Matching(self::KEY_PATTERN));
-        $isltemax = new Guard(new LessThanEqual(self::MAX_ID_THRESHOLD));
-        $isstrlist = Map::merged($isstr);
-
-        $factory = fn (array ...$xs) => new self(array_merge(...$xs));
-
-        return new Validation($factory,
-            Field::required('key', $isstr, $iskey),
-            Field::required('identifiers', $isarr, $isstrlist, $isltemax),
-            Field::required('ncbi_taxon_id', $isint, $isgte0),
-            Field::required('names', $isarr, $isstrlist),
-            Field::required('neighbors', $isbool),
-            Field::required('hh', $isbool),
-            Field::required('vh', $isbool),
-            Field::required('publications', $isint, $isgte1),
-            Field::required('methods', $isint, $isgte1),
+        return new Validation(fn (...$xs) => self::from(...$xs),
+            Field::required('key', new Guard(new OfType('string')))->focus(),
+            Field::required('identifiers', new Guard(new OfType('array')))->focus(),
+            Field::required('ncbi_taxon_id', new Guard(new OfType('integer')))->focus(),
+            Field::required('names', new Guard(new OfType('array')))->focus(),
+            Field::required('hh', new Guard(new OfType('boolean')))->focus(),
+            Field::required('vh', new Guard(new OfType('boolean')))->focus(),
+            Field::required('neighbors', new Guard(new OfType('boolean')))->focus(),
+            Field::required('publications', new Guard(new OfType('integer')))->focus(),
+            Field::required('methods', new Guard(new OfType('integer')))->focus(),
         );
     }
 
-    private function __construct(array $data)
-    {
-        $this->key = $data['key'];
-        $this->identifiers = $data['identifiers'];
-        $this->ncbi_taxon_id = $data['ncbi_taxon_id'];
-        $this->names = $data['names'];
-        $this->hh = $data['hh'];
-        $this->vh = $data['vh'];
-        $this->neighbors = $data['neighbors'];
-        $this->publications = $data['publications'];
-        $this->methods = $data['methods'];
+    public function from(
+        string $key,
+        array $identifiers,
+        int $ncbi_taxon_id,
+        array $names,
+        bool $hh,
+        bool $vh,
+        bool $neighbors,
+        int $publications,
+        int $methods
+    ): self {
+        $sanitized_ids = array_unique(array_map('strtoupper', array_filter($identifiers, 'is_string')));
+        $sanitized_names = array_unique(array_filter($names, 'is_string'));
+
+        $input = new self($key, $sanitized_ids, $ncbi_taxon_id, $sanitized_names, $hh, $vh, $neighbors, $publications, $methods);
+
+        $errors = $input->validate($identifiers, $names);
+
+        if (count($errors) == 0) {
+            return $input;
+        }
+
+        throw new InvalidDataException(...$errors);
+    }
+
+    private function __construct(
+        string $key,
+        array $identifiers,
+        int $ncbi_taxon_id,
+        array $names,
+        bool $hh,
+        bool $vh,
+        bool $neighbors,
+        int $publications,
+        int $methods
+    ) {
+        $this->key = $key;
+        $this->identifiers = $identifiers;
+        $this->ncbi_taxon_id = $ncbi_taxon_id;
+        $this->names = $names;
+        $this->hh = $hh;
+        $this->vh = $vh;
+        $this->neighbors = $neighbors;
+        $this->publications = $publications;
+        $this->methods = $methods;
     }
 
     public function key(): string
@@ -79,9 +99,6 @@ final class InteractionQueryInput
 
     public function human(): array
     {
-        $identifiers = array_map('strtoupper', $this->identifiers);
-        $identifiers = array_unique($identifiers);
-
         return [$this->identifiers];
     }
 
@@ -108,5 +125,38 @@ final class InteractionQueryInput
     public function filters(): array
     {
         return [$this->publications, $this->methods];
+    }
+
+    private function validate(array $raw_identifiers, array $raw_names): array
+    {
+        $errors = [];
+
+        if (preg_match(self::KEY_PATTERN, $this->key) === 0) {
+            $errors[] = (new Error(sprintf('must match %s', self::KEY_PATTERN)))->nest('key');
+        }
+
+        if (count($raw_identifiers) > count(array_filter($raw_identifiers, 'is_string'))) {
+            $errors[] = (new Error('must be strings'))->nest('identifiers');
+        } elseif (count($this->identifiers) > self::MAX_ID_THRESHOLD) {
+            $errors[] = (new Error(sprintf('must be %s unique max', self::MAX_ID_THRESHOLD)))->nest('identifiers');
+        }
+
+        if ($this->ncbi_taxon_id < 0) {
+            $errors[] = (new Error('must be positive'))->nest('ncbi_taxon_id');
+        }
+
+        if (count($raw_names) > count(array_filter($raw_names, 'is_string'))) {
+            $errors[] = (new Error('must be strings'))->nest('names');
+        }
+
+        if ($this->publications < 1) {
+            $errors[] = (new Error('must be greater than 0'))->nest('publications');
+        }
+
+        if ($this->methods < 1) {
+            $errors[] = (new Error('must be greater than 0'))->nest('methods');
+        }
+
+        return $errors;
     }
 }
