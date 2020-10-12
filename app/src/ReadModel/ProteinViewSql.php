@@ -10,14 +10,14 @@ final class ProteinViewSql implements ProteinViewInterface
 
     const SELECT_PROTEIN_SQL = <<<SQL
         SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
-        FROM proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+        FROM proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
         WHERE p.id = ?
     SQL;
 
     const SELECT_PROTEINS_SQL = <<<SQL
         SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
-        FROM proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
-        WHERE p.type = ? AND %s
+        FROM proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+        WHERE p.type = ? AND p.search ILIKE ALL (?::text[])
         LIMIT ?
     SQL;
 
@@ -58,15 +58,9 @@ final class ProteinViewSql implements ProteinViewInterface
         $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
         $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
-        if (count($qs) == 0) {
-            return Statement::from([]);
-        }
+        $select_proteins_sth = $this->pdo->prepare(self::SELECT_PROTEINS_SQL);
 
-        $where = implode(' AND ', array_pad([], count($qs), 'p.search ILIKE ?'));
-
-        $select_proteins_sth = $this->pdo->prepare(sprintf(self::SELECT_PROTEINS_SQL, $where));
-
-        $select_proteins_sth->execute([$type, ...$qs, $limit]);
+        $select_proteins_sth->execute([$type, '{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_proteins_sth);
     }

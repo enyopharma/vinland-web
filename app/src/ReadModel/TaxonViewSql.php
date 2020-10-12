@@ -9,22 +9,22 @@ final class TaxonViewSql implements TaxonViewInterface
     private \PDO $pdo;
 
     const SELECT_TAXON_SQL = <<<SQL
-        SELECT * FROM taxa WHERE ncbi_taxon_id = ?
+        SELECT * FROM taxonomy WHERE ncbi_taxon_id = ?
     SQL;
 
     const SELECT_TAXA_SQL = <<<SQL
-        SELECT * FROM taxa WHERE %s ORDER BY nb_interactions DESC LIMIT ?
+        SELECT * FROM taxonomy WHERE name ILIKE ALL(?::text[]) ORDER BY nb_interactions DESC LIMIT ?
     SQL;
 
     const SELECT_PARENT_SQL = <<< SQL
         SELECT ncbi_taxon_id, name, nb_interactions
-        FROM taxa
+        FROM taxonomy
         WHERE taxon_id = ?
     SQL;
 
     const SELECT_CHILDREN_SQL = <<<SQL
         SELECT ncbi_taxon_id, name, nb_interactions
-        FROM taxa
+        FROM taxonomy
         WHERE nb_interactions > 0
         AND parent_taxon_id = ?
         ORDER BY nb_interactions DESC
@@ -32,8 +32,8 @@ final class TaxonViewSql implements TaxonViewInterface
 
     const SELECT_NAMES_SQL = <<<SQL
         SELECT DISTINCT p.name
-        FROM taxa AS t, proteins AS p
-        WHERE t.ncbi_taxon_id = p.ncbi_taxon_id
+        FROM proteins AS p, taxonomy AS t
+        WHERE p.ncbi_taxon_id = t.ncbi_taxon_id
         AND t.left_value >= ?
         AND t.right_value <= ?
     SQL;
@@ -72,15 +72,9 @@ final class TaxonViewSql implements TaxonViewInterface
         $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
         $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
-        if (count($qs) == 0) {
-            return Statement::from([]);
-        }
+        $select_taxa_sth = $this->pdo->prepare(self::SELECT_TAXA_SQL);
 
-        $where = implode(' AND ', array_pad([], count($qs), 'name ILIKE ?'));
-
-        $select_taxa_sth = $this->pdo->prepare(sprintf(self::SELECT_TAXA_SQL, $where));
-
-        $select_taxa_sth->execute([...$qs, $limit]);
+        $select_taxa_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_taxa_sth);
     }

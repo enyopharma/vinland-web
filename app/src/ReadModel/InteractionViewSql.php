@@ -8,81 +8,64 @@ use App\Input\InteractionQueryInput;
 
 final class InteractionViewSql implements InteractionViewInterface
 {
+    const SELECT_TAXON_SQL = <<<SQL
+        SELECT * FROM taxonomy WHERE ncbi_taxon_id = ?
+    SQL;
+
+    const SELECT_HUMAN_PROTEINS_SQL = <<<SQL
+        SELECT p.id
+        FROM proteins AS p, proteins_xrefs AS x
+        WHERE p.id = x.protein_id AND x.ref = ANY (?::text[])
+    SQL;
+
+    const SELECT_VIRAL_PROTEINS_SQL = <<<SQL
+        SELECT p.id
+        FROM proteins AS p, taxonomy AS t
+        WHERE p.ncbi_taxon_id = t.ncbi_taxon_id
+        AND t.left_value >= ?
+        AND t.right_value <= ?
+        AND (? OR p.name = ANY (?::text[]))
+    SQL;
+
+    const SELECT_HH_INTERACTIONS_SQL = <<<SQL
+        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods,
+            p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1,
+            p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2
+        FROM edges AS e, interactions AS i, proteins AS p1, proteins AS p2
+        WHERE i.id = e.interaction_id
+        AND p1.id = i.protein1_id
+        AND p2.id = i.protein2_id
+        AND i.type = 'hh'
+        AND i.nb_publications >= ?
+        AND i.nb_methods >= ?
+        AND e.source_id = ANY (?::int[]) AND (? OR e.target_id = ANY (?::int[]))
+        ORDER BY i.id ASC
+    SQL;
+
+    const SELECT_VH_INTERACTIONS_SQL = <<<SQL
+        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods,
+            p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1,
+            p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2,
+            t.ncbi_taxon_id, t.name AS taxon_name,
+            s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name
+        FROM interactions AS i, proteins AS p1, proteins AS p2, taxonomy AS t, taxonomy AS s
+        WHERE i.type = 'vh'
+        AND p1.id = i.protein1_id
+        AND p2.id = i.protein2_id
+        AND t.ncbi_taxon_id = p2.ncbi_taxon_id
+        AND s.ncbi_taxon_id = t.ncbi_species_id
+        AND i.nb_publications >= ?
+        AND i.nb_methods >= ?
+        AND (? OR p1.id = ANY (?::int[]))
+        AND (? OR p2.id = ANY (?::int[]))
+        ORDER BY i.id ASC
+    SQL;
+
     private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
-    }
-
-    private function selectHumanProteinIdsQuery(string ...$identifiers): Query
-    {
-        return Query::instance($this->pdo)
-            ->select('p.id')
-            ->from('proteins AS p, proteins_xrefs AS x')
-            ->where('p.id = x.protein_id')
-            ->in('x.ref', count($identifiers));
-    }
-
-    private function selectViralProteinIdsQuery(string ...$names): Query
-    {
-        $query = Query::instance($this->pdo)
-            ->select('p.id')
-            ->from('proteins AS p, taxa AS t1, taxa AS t2')
-            ->where('p.ncbi_taxon_id = t1.ncbi_taxon_id')
-            ->where('t1.left_value >= t2.left_value')
-            ->where('t1.right_value <= t2.right_value')
-            ->where('t2.ncbi_taxon_id = ?');
-
-        return count($names) > 0
-            ? $query->in('p.name', count($names))
-            : $query;
-    }
-
-    private function selectHHInteractionsQuery(int $nb, bool $neighbors): Query
-    {
-        $query = Query::instance($this->pdo)
-            ->select('DISTINCT i.id, i.type, i.nb_publications, i.nb_methods')
-            ->select('p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
-            ->from('edges AS e, interactions AS i, proteins AS p1, proteins AS p2')
-            ->where('i.id = e.interaction_id')
-            ->where('p1.id = i.protein1_id')
-            ->where('p2.id = i.protein2_id')
-            ->where('i.type = \'hh\'')
-            ->where('i.nb_publications >= ?')
-            ->where('i.nb_methods >= ?')
-            ->in('e.source_id', $nb);
-
-        return $neighbors ? $query : $query->in('e.target_id', $nb);
-    }
-
-    private function selectVHInteractionsQuery(int $nbh, int $nbv): Query
-    {
-        $query = Query::instance($this->pdo)
-            ->select('DISTINCT i.id, i.type, i.nb_publications, i.nb_methods')
-            ->select('p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1')
-            ->select('p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2')
-            ->select('t.ncbi_taxon_id, t.name AS taxon_name')
-            ->select('s.ncbi_taxon_id AS ncbi_species_id, s.name AS species_name')
-            ->from('interactions AS i, proteins AS p1, proteins AS p2, taxa AS t, taxa AS s')
-            ->where('p1.id = i.protein1_id')
-            ->where('p2.id = i.protein2_id')
-            ->where('t.ncbi_taxon_id = p2.ncbi_taxon_id')
-            ->where('s.ncbi_taxon_id = t.ncbi_species_id')
-            ->where('i.type = \'vh\'')
-            ->where('i.nb_publications >= ?')
-            ->where('i.nb_methods >= ?');
-
-        if ($nbh > 0) {
-            $query = $query->in('p1.id', $nbh);
-        }
-
-        if ($nbv > 0) {
-            $query = $query->in('p2.id', $nbv);
-        }
-
-        return $query;
     }
 
     public function all(InteractionQueryInput $input): Statement
@@ -114,11 +97,11 @@ final class InteractionViewSql implements InteractionViewInterface
             return [];
         }
 
-        $select_ids_sth = $this->selectHumanProteinIdsQuery(...$identifiers)->prepare();
+        $select_proteins_sth = $this->pdo->prepare(self::SELECT_HUMAN_PROTEINS_SQL);
 
-        $select_ids_sth->execute($identifiers);
+        $select_proteins_sth->execute(['{' . implode(',', $identifiers) . '}']);
 
-        $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN);
+        $ids = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
 
         if ($ids === false) {
             throw new \LogicException;
@@ -133,11 +116,26 @@ final class InteractionViewSql implements InteractionViewInterface
             return [];
         }
 
-        $select_ids_sth = $this->selectViralProteinIdsQuery(...$names)->prepare();
+        $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
 
-        $select_ids_sth->execute([$ncbi_taxon_id, ...$names]);
+        $select_taxon_sth->execute([$ncbi_taxon_id]);
 
-        $ids = $select_ids_sth->fetchAll(\PDO::FETCH_COLUMN);
+        $taxon = $select_taxon_sth->fetch();
+
+        if (!$taxon) {
+            return [];
+        }
+
+        $select_proteins_sth = $this->pdo->prepare(self::SELECT_VIRAL_PROTEINS_SQL);
+
+        $select_proteins_sth->execute([
+            $taxon['left_value'],
+            $taxon['right_value'],
+            (int) count($names) == 0,
+            '{' . implode(',', ($names)) . '}',
+        ]);
+
+        $ids = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
 
         if ($ids === false) {
             throw new \LogicException;
@@ -152,13 +150,15 @@ final class InteractionViewSql implements InteractionViewInterface
             return [];
         }
 
-        $params = $neighbors
-            ? [$nb_publications, $nb_methods, ...$ids]
-            : [$nb_publications, $nb_methods, ...$ids, ...$ids];
+        $select_interactions_sth = $this->pdo->prepare(self::SELECT_HH_INTERACTIONS_SQL);
 
-        $select_interactions_sth = $this->selectHHInteractionsQuery(count($ids), $neighbors)->prepare();
-
-        $select_interactions_sth->execute($params);
+        $select_interactions_sth->execute([
+            $nb_publications,
+            $nb_methods,
+            '{' . implode(',', $ids) . '}',
+            (int) $neighbors,
+            '{' . implode(',', $ids) . '}',
+        ]);
 
         return $this->generator($select_interactions_sth);
     }
@@ -169,11 +169,16 @@ final class InteractionViewSql implements InteractionViewInterface
             return [];
         }
 
-        $params = [$nb_publications, $nb_methods, ...$idhs, ...$idvs];
+        $select_interactions_sth = $this->pdo->prepare(self::SELECT_VH_INTERACTIONS_SQL);
 
-        $select_interactions_sth = $this->selectVHInteractionsQuery(count($idhs), count($idvs))->prepare();
-
-        $select_interactions_sth->execute($params);
+        $select_interactions_sth->execute([
+            $nb_publications,
+            $nb_methods,
+            (int) count($idhs) == 0,
+            '{' . implode(',', $idhs) . '}',
+            (int) count($idvs) == 0,
+            '{' . implode(',', $idvs) . '}',
+        ]);
 
         return $this->generator($select_interactions_sth);
     }
