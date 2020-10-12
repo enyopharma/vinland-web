@@ -2,12 +2,11 @@
 
 namespace App\Input;
 
-use Quanta\Validation;
 use Quanta\Validation\Error;
-use Quanta\Validation\Guard;
 use Quanta\Validation\Field;
+use Quanta\Validation\OfType;
+use Quanta\Validation\ArrayFactory;
 use Quanta\Validation\InvalidDataException;
-use Quanta\Validation\Rules\OfType;
 
 final class InteractionQueryInput
 {
@@ -27,20 +26,21 @@ final class InteractionQueryInput
 
     public static function factory(): callable
     {
-        return ArrayValidation::rules([self::class, 'from'], [
-            'key' => 'string',
-        ]);
+        $is_bln = OfType::guard('boolean');
+        $is_int = OfType::guard('integer');
+        $is_str = OfType::guard('string');
+        $is_arr = OfType::guard('array');
 
-        return new Validation([self::class, 'from'],
-            Field::required('key', new Guard(new OfType('string')))->focus(),
-            Field::required('identifiers', new Guard(new OfType('array')))->focus(),
-            Field::required('ncbi_taxon_id', new Guard(new OfType('integer')))->focus(),
-            Field::required('names', new Guard(new OfType('array')))->focus(),
-            Field::required('hh', new Guard(new OfType('boolean')))->focus(),
-            Field::required('vh', new Guard(new OfType('boolean')))->focus(),
-            Field::required('neighbors', new Guard(new OfType('boolean')))->focus(),
-            Field::required('publications', new Guard(new OfType('integer')))->focus(),
-            Field::required('methods', new Guard(new OfType('integer')))->focus(),
+        return new ArrayFactory([self::class, 'from'],
+            Field::required('key', $is_str)->focus(),
+            Field::required('identifiers', $is_arr)->focus(),
+            Field::required('ncbi_taxon_id', $is_int)->focus(),
+            Field::required('names', $is_arr)->focus(),
+            Field::required('hh', $is_bln)->focus(),
+            Field::required('vh', $is_bln)->focus(),
+            Field::required('neighbors', $is_bln)->focus(),
+            Field::required('publications', $is_int)->focus(),
+            Field::required('methods', $is_int)->focus(),
         );
     }
 
@@ -136,29 +136,29 @@ final class InteractionQueryInput
         $errors = [];
 
         if (preg_match(self::KEY_PATTERN, $this->key) === 0) {
-            $errors[] = (new Error(sprintf('must match %s', self::KEY_PATTERN)))->nest('key');
+            $errors[] = Error::nested('key', sprintf('must match %s', self::KEY_PATTERN));
         }
 
         if (count($raw_identifiers) > count(array_filter($raw_identifiers, 'is_string'))) {
-            $errors[] = (new Error('must be strings'))->nest('identifiers');
+            $errors[] = Error::nested('identifiers', 'must be strings');
         } elseif (count($this->identifiers) > self::MAX_ID_THRESHOLD) {
-            $errors[] = (new Error(sprintf('must be %s unique max', self::MAX_ID_THRESHOLD)))->nest('identifiers');
+            $errors[] = Error::nested('identifiers', sprintf('must be %s unique max', self::MAX_ID_THRESHOLD));
         }
 
         if ($this->ncbi_taxon_id < 0) {
-            $errors[] = (new Error('must be positive'))->nest('ncbi_taxon_id');
+            $errors[] = Error::nested('ncbi_taxon_id', 'must be positive');
         }
 
         if (count($raw_names) > count(array_filter($raw_names, 'is_string'))) {
-            $errors[] = (new Error('must be strings'))->nest('names');
+            $errors[] = Error::nested('names', 'must be strings');
         }
 
         if ($this->publications < 1) {
-            $errors[] = (new Error('must be greater than 0'))->nest('publications');
+            $errors[] = Error::nested('publications', 'must be greater than 0');
         }
 
         if ($this->methods < 1) {
-            $errors[] = (new Error('must be greater than 0'))->nest('methods');
+            $errors[] = Error::nested('methods', 'must be greater than 0');
         }
 
         return $errors;
