@@ -27,7 +27,7 @@ final class IsoformViewSql implements IsoformViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT i.id AS interaction_id, m.start, m.stop, m.identity, m.sequence
+        SELECT DISTINCT i.id AS interaction_id, m.start, m.stop, m.identity, m.sequence
         FROM interactions AS i, edges AS e, descriptions AS d, mappings AS m
         WHERE i.type = ?
         AND i.id = d.interaction_id
