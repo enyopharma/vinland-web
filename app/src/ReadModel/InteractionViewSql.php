@@ -131,7 +131,7 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_proteins_sth->execute([
             $taxon['left_value'],
             $taxon['right_value'],
-            (int) count($names) == 0,
+            (int) (count($names) == 0),
             '{' . implode(',', ($names)) . '}',
         ]);
 
@@ -174,9 +174,9 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_interactions_sth->execute([
             $nb_publications,
             $nb_methods,
-            (int) count($idhs) == 0,
+            (int) (count($idhs) == 0),
             '{' . implode(',', $idhs) . '}',
-            (int) count($idvs) == 0,
+            (int) (count($idvs) == 0),
             '{' . implode(',', $idvs) . '}',
         ]);
 
