@@ -19,7 +19,7 @@ final class IsoformViewSql implements IsoformViewInterface
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
             COALESCE(t.name, 'Homo sapiens') AS taxon
-        FROM interactions AS i, edges AS e, proteins AS p LEFT JOIN taxa AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+        FROM interactions AS i, edges AS e, proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
         WHERE i.type = ?
         AND i.id = e.interaction_id
         AND p.id = e.target_id
