@@ -14,10 +14,24 @@ final class ProteinViewSql implements ProteinViewInterface
         WHERE p.id = ?
     SQL;
 
-    const SELECT_PROTEINS_SQL = <<<SQL
-        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
-        FROM proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
-        WHERE p.type = ? AND p.search ILIKE ALL (?::text[])
+    const SELECT_HUMAN_PROTEINS_SQL = <<<SQL
+        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, 'Homo sapiens' AS taxon
+        FROM proteins AS p LEFT JOIN edges AS e ON p.id = e.source_id
+        WHERE p.type = 'h' AND p.search ILIKE ALL (?::text[])
+        GROUP BY p.id
+        ORDER BY COUNT(e.id) DESC
+        LIMIT ?
+    SQL;
+
+    const SELECT_VIRAL_PROTEINS_SQL = <<<SQL
+        SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, t.name AS taxon
+        FROM proteins AS p, edges AS e, taxonomy AS t
+        WHERE p.type = 'v'
+        AND p.id = e.source_id
+        AND p.ncbi_taxon_id = t.ncbi_taxon_id
+        AND p.search ILIKE ALL (?::text[])
+        GROUP BY p.id, t.taxon_id
+        ORDER BY COUNT(e.id) DESC
         LIMIT ?
     SQL;
 
@@ -58,9 +72,11 @@ final class ProteinViewSql implements ProteinViewInterface
         $qs = array_filter($qs, fn ($q) => strlen($q) > 2);
         $qs = array_map(fn ($q) => '%' . $q . '%', $qs);
 
-        $select_proteins_sth = $this->pdo->prepare(self::SELECT_PROTEINS_SQL);
+        $select_proteins_sth = $type == 'h'
+            ? $this->pdo->prepare(self::SELECT_HUMAN_PROTEINS_SQL)
+            : $this->pdo->prepare(self::SELECT_VIRAL_PROTEINS_SQL);
 
-        $select_proteins_sth->execute([$type, '{' . implode(',', $qs) . '}', $limit]);
+        $select_proteins_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_proteins_sth);
     }
