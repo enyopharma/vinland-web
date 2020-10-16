@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch'
-import { cache } from 'utils/cache'
+import { cache } from 'app/cache'
 
 import { Query, QueryResult, QueryResultStatuses } from './types'
 
