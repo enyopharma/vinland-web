@@ -1,7 +1,6 @@
 import React, { RefObject } from 'react'
 
-import { SearchResult } from 'features/autocomplete'
-import { ProgressBar } from 'partials'
+import { SearchResult, ProgressBar } from 'partials'
 
 const SearchResultList = React.lazy(() => import('./SearchResultList').then(module => ({ default: module.SearchResultList })))
 

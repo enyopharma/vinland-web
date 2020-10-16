@@ -4,7 +4,7 @@ import { useActionCreator } from 'app'
 
 import { actions, resources } from 'features/taxonomy'
 
-import { Overlay, SearchResultListSuspense } from 'features/autocomplete'
+import { Overlay, SearchResultListSuspense } from 'partials'
 
 const search = (query: string) => resources.taxa(query).read()
 

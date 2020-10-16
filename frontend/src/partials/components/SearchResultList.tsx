@@ -1,6 +1,6 @@
 import React, { RefObject, useState, useEffect } from 'react'
 
-import { SearchResult } from 'features/autocomplete'
+import { SearchResult } from 'partials'
 
 type Props = {
     input: RefObject<HTMLInputElement>

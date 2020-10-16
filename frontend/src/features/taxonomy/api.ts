@@ -4,7 +4,7 @@ import { cache } from 'app/cache'
 
 import { Taxon, RelatedTaxa, Name } from './types'
 
-import { SearchResult } from 'features/autocomplete'
+import { SearchResult } from 'partials'
 
 const limit = 5
 

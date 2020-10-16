@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { Annotation } from 'features/identifiers'
 import { resources } from 'features/identifiers'
 
-import { Overlay, SearchResultListSuspense } from 'features/autocomplete'
+import { Overlay, SearchResultListSuspense } from 'partials'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },

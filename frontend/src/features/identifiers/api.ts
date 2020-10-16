@@ -3,7 +3,7 @@ import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
 import { Annotation } from './types'
-import { SearchResult } from 'features/autocomplete'
+import { SearchResult } from 'partials'
 
 const limit = 5
 
