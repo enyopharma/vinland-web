@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Query } from 'features/query'
 import { resources } from 'features/query'
-import { ProgressBar } from 'pages/partials'
+import { ProgressBar } from 'partials'
 
 const QueryResultSection = React.lazy(() => import('./QueryResultSection').then(module => ({ default: module.QueryResultSection })))
 

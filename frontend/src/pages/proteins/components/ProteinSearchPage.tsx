@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom'
 
 import { resources } from 'pages/proteins/api'
 import { Protein } from 'pages/proteins/types'
-import { ProgressBar } from 'pages/partials'
+import { ProgressBar } from 'partials'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 

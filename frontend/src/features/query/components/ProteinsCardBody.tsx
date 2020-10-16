@@ -5,7 +5,7 @@ import { usePersistentState } from 'features/query'
 import { config, proteins2csv } from 'features/query'
 
 import { CsvDownloadButton } from './CsvDownloadButton'
-import { Pagination, ProteinLink } from 'pages/partials'
+import { Pagination, ProteinLink } from 'partials'
 
 type Props = {
     proteins: Protein[]

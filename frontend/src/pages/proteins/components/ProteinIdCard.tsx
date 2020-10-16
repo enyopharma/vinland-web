@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { resources } from 'pages/proteins/api'
 import { Protein, Isoform } from 'pages/proteins/types'
-import { ProgressBar } from 'pages/partials'
+import { ProgressBar } from 'partials'
 
 const InteractionTable = React.lazy(() => import('./InteractionTable').then(module => ({ default: module.InteractionTable })))
 

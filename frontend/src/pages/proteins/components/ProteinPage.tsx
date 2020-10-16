@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import { resources } from 'pages/proteins/api'
 import { ProteinIdCard } from './ProteinIdCard'
-import { ProgressBar } from 'pages/partials'
+import { ProgressBar } from 'partials'
 
 export const ProteinPage: React.FC = () => {
     const { id } = useParams<{ id: string }>()

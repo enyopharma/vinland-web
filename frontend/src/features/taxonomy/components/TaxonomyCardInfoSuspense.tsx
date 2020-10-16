@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Name } from 'features/taxonomy'
 import { resources } from 'features/taxonomy'
-import { ProgressBar } from 'pages/partials'
+import { ProgressBar } from 'partials'
 
 const NameList = React.lazy(() => import('./NameList').then(module => ({ default: module.NameList })))
 const RelatedFormRow = React.lazy(() => import('./RelatedFormRow').then(module => ({ default: module.RelatedFormRow })))

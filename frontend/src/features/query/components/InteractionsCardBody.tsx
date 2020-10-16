@@ -5,7 +5,7 @@ import { usePersistentState } from 'features/query'
 import { config, interactions2csv } from 'features/query'
 
 import { CsvDownloadButton } from './CsvDownloadButton'
-import { Pagination, ProteinLink, InteractionLink } from 'pages/partials'
+import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
 type Props = {
     interactions: Interaction[]
