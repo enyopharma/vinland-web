@@ -15,42 +15,54 @@ return function (ContainerInterface $container): array {
         $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
     );
 
-    $endpoint = fn (callable $f) => new Quanta\Http\Endpoint($responder, $f);
+    $handler = function ($xs) use ($responder) {
+        [$f, $middleware] = is_array($xs) ? [array_shift($xs), $xs] : [$xs, []];
 
-    return [
-        'GET /proteins' => $endpoint(new App\Endpoints\Proteins\IndexEndpoint(
+        if (!is_callable($f)) {
+            throw new \LogicException('invalid endpoint');
+        }
+
+        $endpoint = new Quanta\Http\Endpoint($responder, $f);
+
+        return count($middleware) > 0
+            ? Quanta\Http\RequestHandler::queue($endpoint, ...$middleware)
+            : $endpoint;
+    };
+
+    return array_map($handler, [
+        'GET /proteins' => new App\Endpoints\Proteins\IndexEndpoint(
             $container->get(App\ReadModel\ProteinViewInterface::class),
-        )),
+        ),
 
-        'GET /proteins/{protein_id:\d+}' => $endpoint(new App\Endpoints\Proteins\ShowEndpoint(
+        'GET /proteins/{protein_id:\d+}' => new App\Endpoints\Proteins\ShowEndpoint(
             $container->get(App\ReadModel\ProteinViewInterface::class),
-        )),
+        ),
 
-        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}' => $endpoint(new App\Endpoints\Proteins\Isoforms\ShowEndpoint(
+        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}' => new App\Endpoints\Proteins\Isoforms\ShowEndpoint(
             $container->get(App\ReadModel\IsoformViewInterface::class),
-        )),
+        ),
 
-        'GET /annotations' => $endpoint(new App\Endpoints\Annotations\IndexEndpoint(
+        'GET /annotations' => new App\Endpoints\Annotations\IndexEndpoint(
             $container->get(App\ReadModel\AnnotationViewInterface::class),
-        )),
+        ),
 
-        'GET /taxa' => $endpoint(new App\Endpoints\Taxa\IndexEndpoint(
+        'GET /taxa' => new App\Endpoints\Taxa\IndexEndpoint(
             $container->get(App\ReadModel\TaxonViewInterface::class),
-        )),
+        ),
 
-        'GET /taxa/{ncbi_taxon_id:\d+}[/{option:related|names}]' => $endpoint(new App\Endpoints\Taxa\ShowEndpoint(
+        'GET /taxa/{ncbi_taxon_id:\d+}[/{option:related|names}]' => new App\Endpoints\Taxa\ShowEndpoint(
             $container->get(App\ReadModel\TaxonViewInterface::class),
-        )),
+        ),
 
-        'POST /interactions' => Quanta\Http\RequestHandler::queue(
-            $endpoint(new App\Endpoints\Interactions\IndexEndpoint(
+        'POST /interactions' => [
+            new App\Endpoints\Interactions\IndexEndpoint(
                 $container->get(App\ReadModel\InteractionViewInterface::class),
-            )),
+            ),
             new Middlewares\JsonPayload,
             new App\Middleware\InputValidationMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
                 App\Input\InteractionQueryInput::factory(),
             ),
-        ),
-    ];
+        ],
+    ]);
 };
