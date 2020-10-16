@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Protein, Interaction, Mapping } from 'features/proteins'
+import { Protein, Interaction, Mapping } from 'pages/proteins/types'
 import { Pagination, ProteinLink, InteractionLink } from 'pages/partials'
 
 type Props = {

@@ -1,16 +1,28 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ProteinIdCardSuspense } from 'features/proteins'
+import { resources } from 'pages/proteins/api'
+import { ProteinIdCard } from './ProteinIdCard'
+import { ProgressBar } from 'pages/partials'
 
 export const ProteinPage: React.FC = () => {
-    const { id } = useParams()
-
-    if (!id) return null;
+    const { id } = useParams<{ id: string }>()
 
     return (
         <div className="container">
-            <ProteinIdCardSuspense id={parseInt(id)} />
+            <React.Suspense fallback={<ProgressBar />}>
+                <Fetcher id={parseInt(id)} />
+            </React.Suspense>
         </div>
     )
+}
+
+type FetcherProps = {
+    id: number
+}
+
+const Fetcher: React.FC<FetcherProps> = ({ id }) => {
+    const protein = resources.protein(id).read()
+
+    return <ProteinIdCard protein={protein} />
 }

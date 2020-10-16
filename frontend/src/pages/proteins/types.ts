@@ -16,10 +16,6 @@ export type Isoform = {
     sequence: string
     start: number
     stop: number
-    interactions: {
-        hh: Interaction[]
-        vh: Interaction[]
-    }
 }
 
 export type Interaction = {

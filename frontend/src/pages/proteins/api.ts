@@ -2,13 +2,14 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'utils/cache'
 
-import { Protein, Isoform } from './types'
+import { Protein, Isoform, Interaction } from './types'
 
 const limit = 20
 
 const protein = cache<Protein>()
 const isoform = cache<Isoform>()
 const proteins = cache<Protein[]>()
+const interactions = cache<Interaction[]>()
 
 export const resources = {
     protein: (id: number) => {
@@ -24,7 +25,11 @@ export const resources = {
         if (query.trim().length === 0) return { read: () => [] }
 
         return proteins.resource(`${type}:${query}`, () => fetchProteins(type, query), 300)
-    }
+    },
+
+    interactions: (type: 'hh' | 'vh', protein_id: number, isoform_id: number) => {
+        return interactions.resource(`${type}:${protein_id}:${isoform_id}`, () => fetchInteractions(type, protein_id, isoform_id), 300)
+    },
 }
 
 const fetchProtein = async (id: number) => {
@@ -85,4 +90,23 @@ const fetchProteins = async (type: string, query: string) => {
     }
 
     return []
+}
+
+const fetchInteractions = async (type: 'hh' | 'vh', protein_id: number, isoform_id: number) => {
+    const params = { headers: { accept: 'application/json' } }
+
+    try {
+        const response = await fetch(`/api/proteins/${protein_id}/isoforms/${isoform_id}/interactions/${type}`, params)
+        const json = await response.json()
+
+        if (!json.success) {
+            throw new Error(json)
+        }
+
+        return json.data
+    }
+
+    catch (error) {
+        console.log(error)
+    }
 }

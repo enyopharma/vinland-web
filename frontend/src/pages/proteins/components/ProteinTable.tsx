@@ -1,14 +1,13 @@
 import React from 'react'
 
-import { Protein } from 'features/proteins'
-
+import { Protein } from 'pages/proteins/types'
 import { ProteinLink } from 'pages/partials'
 
 type Props = {
     proteins: Protein[]
 }
 
-export const ProteinCardTable: React.FC<Props> = ({ proteins }) => (
+export const ProteinTable: React.FC<Props> = ({ proteins }) => (
     <table className="table card-table table-striped table-hover">
         <thead>
             <tr>

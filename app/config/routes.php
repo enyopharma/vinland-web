@@ -42,6 +42,10 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\IsoformViewInterface::class),
         ),
 
+        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}/interactions/{type:hh|vh}' => new App\Endpoints\Proteins\Isoforms\Interactions\IndexEndpoint(
+            $container->get(App\ReadModel\EdgeViewInterface::class),
+        ),
+
         'GET /annotations' => new App\Endpoints\Annotations\IndexEndpoint(
             $container->get(App\ReadModel\AnnotationViewInterface::class),
         ),
