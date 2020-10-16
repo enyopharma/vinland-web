@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\ReadModel\EdgeViewInterface;
+use App\ReadModel\Isoforms;
 use App\ReadModel\TaxonViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
@@ -22,7 +22,7 @@ return [
         $c->get(PDO::class),
     ),
 
-    EdgeViewInterface::class => fn ($c) => new App\ReadModel\EdgeViewSql(
+    Isoforms\InteractionViewInterface::class => fn ($c) => new App\ReadModel\Isoforms\InteractionViewSql(
         $c->get(PDO::class),
     ),
 

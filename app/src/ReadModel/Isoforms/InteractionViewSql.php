@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\ReadModel;
+namespace App\ReadModel\Isoforms;
 
-final class EdgeViewSql implements EdgeViewInterface
+use App\ReadModel\Statement;
+
+final class InteractionViewSql implements InteractionViewInterface
 {
     private \PDO $pdo;
 
@@ -24,12 +26,11 @@ final class EdgeViewSql implements EdgeViewInterface
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            t.name AS taxon
-        FROM interactions AS i, edges AS e, proteins AS p, taxonomy AS t
+            COALESCE(t.name, 'Homo sapiens') AS taxon
+        FROM interactions AS i, edges AS e, proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
         WHERE i.type = 'vh'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
-        AND p.ncbi_taxon_id = t.ncbi_taxon_id
         AND e.source_id = ?
     SQL;
 
@@ -50,7 +51,7 @@ final class EdgeViewSql implements EdgeViewInterface
         $this->pdo = $pdo;
     }
 
-    public function protein(string $type, int $protein_id, int $isoform_id): Statement
+    public function isoform(string $type, int $protein_id, int $isoform_id): Statement
     {
         $select_interactions_sth = $type == 'hh'
             ? $this->pdo->prepare(self::SELECT_HH_INTERACTIONS_SQL)

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Endpoints\Proteins\Isoforms\Interactions;
 
-use App\ReadModel\EdgeViewInterface;
+use App\ReadModel\Isoforms\InteractionViewInterface;
 
 final class IndexEndpoint
 {
-    private EdgeViewInterface $edges;
+    private InteractionViewInterface $interactions;
 
-    public function __construct(EdgeViewInterface $edges)
+    public function __construct(InteractionViewInterface $interactions)
     {
-        $this->edges = $edges;
+        $this->interactions = $interactions;
     }
 
     /**
@@ -25,7 +25,7 @@ final class IndexEndpoint
         $type = $input('type');
 
         if ($type == 'hh' || $type == 'vh') {
-            return $this->edges->protein($type, $protein_id, $isoform_id);
+            return $this->interactions->isoform($type, $protein_id, $isoform_id);
         }
 
         return false;
