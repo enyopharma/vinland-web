@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { resources } from 'pages/proteins/api'
 import { Protein, Isoform } from 'pages/proteins/types'
@@ -22,6 +22,8 @@ type Props = {
 
 export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
     const [isoform_id, setIsoformId] = useState<number>(canonicalId(protein))
+
+    useEffect(() => setIsoformId(canonicalId(protein)), [protein])
 
     return (
         <section>
