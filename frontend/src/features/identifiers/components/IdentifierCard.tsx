@@ -3,8 +3,9 @@ import { animated, useSpring } from 'react-spring'
 
 import { useActionCreator } from 'app'
 
-import { IdentifierList } from 'features/identifiers'
-import { actions, parse } from 'features/identifiers'
+import { parse } from '../utils'
+import { actions } from '../reducer'
+import { IdentifierList } from '../types'
 
 import { AnnotationInput } from './AnnotationInput'
 import { IdentifierListFormGroup } from './IdentifierListFormGroup'

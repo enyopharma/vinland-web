@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import { QueryResultStatuses, QueryResult } from 'features/query'
-import { toast } from 'features/toast'
+import { toast } from 'partials'
 
 type Props = {
     result: QueryResult

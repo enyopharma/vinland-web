@@ -2,8 +2,8 @@ import React from 'react'
 
 import { useActionCreator } from 'app'
 
-import { Taxon } from 'features/taxonomy'
-import { actions } from 'features/taxonomy'
+import { Taxon } from '../types'
+import { actions } from '../reducer'
 
 type Props = {
     parent: Taxon | null

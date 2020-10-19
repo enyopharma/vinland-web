@@ -1,17 +1,17 @@
 import React, { useRef, useState } from 'react'
 
 import { useActionCreator } from 'app'
+import { Overlay, SearchResultList } from 'partials'
 
-import { actions, resources } from 'features/taxonomy'
-
-import { Overlay, SearchResultListSuspense } from 'partials'
+import { resources } from '../api'
+import { actions } from '../reducer'
 
 const search = (query: string) => resources.taxa(query).read()
 
 export const TaxonInput: React.FC = () => {
     const select = useActionCreator(actions.select)
 
-    const ref = useRef<HTMLInputElement>(null)
+    const input = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
 
     return (
@@ -21,7 +21,7 @@ export const TaxonInput: React.FC = () => {
                     <span className="input-group-text">@</span>
                 </div>
                 <input
-                    ref={ref}
+                    ref={input}
                     type="text"
                     className="form-control form-control-lg"
                     placeholder="Search for a viral species"
@@ -29,13 +29,8 @@ export const TaxonInput: React.FC = () => {
                     onChange={e => setQuery(e.target.value)}
                 />
             </div>
-            <Overlay input={ref}>
-                <SearchResultListSuspense
-                    input={ref}
-                    query={query}
-                    search={search}
-                    select={select}
-                />
+            <Overlay input={input}>
+                <SearchResultList input={input} query={query} search={search} select={select} />
             </Overlay>
         </div>
     )

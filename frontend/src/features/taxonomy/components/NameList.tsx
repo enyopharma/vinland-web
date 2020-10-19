@@ -2,8 +2,8 @@ import React from 'react'
 
 import { useActionCreator } from 'app'
 
-import { Name } from 'features/taxonomy'
-import { actions } from 'features/taxonomy'
+import { Name } from '../types'
+import { actions } from '../reducer'
 
 type Props = {
     names: Name[]
@@ -13,27 +13,31 @@ type Props = {
 export const NameList: React.FC<Props> = ({ names, selected }) => {
     const update = useActionCreator(actions.update)
 
-    const classes = (name: Name) => selected.includes(name)
+    const buttons = names.length === 0
+        ? 'no interactor associated to this taxon'
+        : names.map((name, i) => <Button key={i} name={name} selected={selected} update={update} />)
+
+    return <p>{buttons}</p>
+}
+
+type ButtonProps = {
+    name: Name
+    selected: Name[]
+    update: (names: Name[]) => void
+}
+
+const Button: React.FC<ButtonProps> = ({ name, selected, update }) => {
+    const classes = selected.includes(name)
         ? 'm-1 btn btn-sm btn-danger'
         : 'm-1 btn btn-sm btn-outline-danger'
 
-    const toggle = (name: Name) => {
-        const names = selected.includes(name)
-            ? selected.filter(n => n !== name)
-            : [...selected, name]
-
-        return update(names)
-    }
+    const names = selected.includes(name)
+        ? selected.filter(n => n !== name)
+        : [...selected, name]
 
     return (
-        <p>
-            {names.length === 0
-                ? 'no interactor associated to this taxon'
-                : names.map((name, i) => (
-                    <button key={i} className={classes(name)} onClick={e => toggle(name)}>
-                        {name}
-                    </button>
-                ))}
-        </p>
+        <button className={classes} onClick={e => update(names)}>
+            {name}
+        </button>
     )
 }

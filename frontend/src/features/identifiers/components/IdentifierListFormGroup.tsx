@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IdentifierList } from 'features/identifiers'
+import { IdentifierList } from '../types'
 
 type Props = {
     list: IdentifierList

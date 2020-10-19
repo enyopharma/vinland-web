@@ -16,35 +16,46 @@ export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) =>
     return (
         <nav>
             <ul className="pagination justify-content-center">
-                <ItemLi state={cur === 1 ? 'disabled' : null} update={() => page(cur - 1)}>
+                <Li state={cur === 1 ? 'disabled' : null} update={() => page(cur - 1)}>
                     &laquo;
-                </ItemLi>
+                </Li>
                 {items(10, cur, max).map((item, i) => item
-                    ? <ItemLi key={i} state={item.active ? 'active' : null} update={() => page(item.page)}>{item.page}</ItemLi>
-                    : <ItemLi key={i} state={'disabled'} update={() => { }}>&hellip;</ItemLi>
+                    ? <Li key={i} state={item.active ? 'active' : null} update={() => page(item.page)}>{item.page}</Li>
+                    : <Li key={i} state={'disabled'} update={() => { }}>&hellip;</Li>
                 )}
-                <ItemLi state={cur === max ? 'disabled' : null} update={() => page(cur + 1)}>
+                <Li state={cur === max ? 'disabled' : null} update={() => page(cur + 1)}>
                     &raquo;
-                </ItemLi>
+                </Li>
             </ul>
         </nav>
     )
 }
 
-const ItemLi: React.FC<{ state: 'active' | 'disabled' | null, update: () => void }> = (props) => {
-    const { state, update, children } = props
+type LiProps = {
+    state: 'active' | 'disabled' | null
+    update: () => void
+}
 
+const Li: React.FC<LiProps> = ({ state, update, children }) => (
+    <li className={`page-item ${state === null ? '' : ' ' + state}`}>
+        <A update={update}>{children}</A>
+    </li>
+)
+
+type AProps = {
+    update: () => void
+}
+
+const A: React.FC<AProps> = ({ update, children }) => {
     const onClick = (e: React.MouseEvent) => {
         e.preventDefault()
         update()
     }
 
     return (
-        <li className={`page-item ${state === null ? '' : ' ' + state}`}>
-            <a href="/" className="page-link" onClick={onClick}>
-                {children}
-            </a>
-        </li>
+        <a href="/" className="page-link" onClick={onClick}>
+            {children}
+        </a>
     )
 }
 

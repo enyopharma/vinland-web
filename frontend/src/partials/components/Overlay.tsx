@@ -4,43 +4,41 @@ type Props = {
     input: RefObject<HTMLInputElement>
 }
 
-const isQueryNotEmpty = (query: string) => query.trim().length > 0
+const isQueryNotEmpty = (query: string | undefined) => !!query && query.trim().length > 0
 
 export const Overlay: React.FC<Props> = ({ input, children }) => {
     const [display, setDisplay] = useState<boolean>(false)
 
     useEffect(() => {
-        if (input.current) {
-            const target = input.current
+        const elem = input.current
 
-            const focus = () => { setDisplay(isQueryNotEmpty(target.value)) }
-            const blur = () => { setDisplay(false) }
+        const focus = () => { setDisplay(isQueryNotEmpty(elem?.value)) }
+        const blur = () => { setDisplay(false) }
 
-            const keydown = (e: KeyboardEvent) => {
-                switch (e.keyCode) {
-                    case 38:
-                        setDisplay(isQueryNotEmpty(target.value))
-                        break
-                    case 40:
-                        setDisplay(isQueryNotEmpty(target.value))
-                        break
-                    case 27:
-                        setDisplay(false)
-                        break
-                    default:
-                        setDisplay(isQueryNotEmpty(target.value))
-                }
+        const keydown = (e: KeyboardEvent) => {
+            switch (e.keyCode) {
+                case 38:
+                    setDisplay(isQueryNotEmpty(elem?.value))
+                    break
+                case 40:
+                    setDisplay(isQueryNotEmpty(elem?.value))
+                    break
+                case 27:
+                    setDisplay(false)
+                    break
+                default:
+                    setDisplay(isQueryNotEmpty(elem?.value))
             }
+        }
 
-            target.addEventListener('focus', focus)
-            target.addEventListener('blur', blur)
-            target.addEventListener('keydown', keydown)
+        elem?.addEventListener('focus', focus)
+        elem?.addEventListener('blur', blur)
+        elem?.addEventListener('keydown', keydown)
 
-            return () => {
-                target.removeEventListener('focus', focus)
-                target.removeEventListener('keydown', keydown)
-                target.removeEventListener('blur', blur)
-            }
+        return () => {
+            elem?.removeEventListener('focus', focus)
+            elem?.removeEventListener('keydown', keydown)
+            elem?.removeEventListener('blur', blur)
         }
     })
 

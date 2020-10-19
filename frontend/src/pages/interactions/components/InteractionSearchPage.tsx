@@ -6,9 +6,9 @@ import { state2query } from 'pages/interactions'
 
 import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
-import { ToastContainer } from 'features/toast'
 import { IdentifierCard } from 'features/identifiers'
 import { QueryResultSectionSuspense } from 'features/query'
+import { ToastContainer } from 'partials'
 
 export const InteractionSearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.interactions.search.identifiers)

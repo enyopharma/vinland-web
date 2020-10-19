@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import { Annotation } from 'features/identifiers'
-import { resources } from 'features/identifiers'
+import { resources } from '../api'
+import { Annotation } from '../types'
 
-import { Overlay, SearchResultListSuspense } from 'partials'
+import { Overlay, SearchResultList } from 'partials'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -15,23 +15,15 @@ type Props = {
     select: (annotation: Annotation) => void,
 }
 
-const isSourceSelected = (source: string) => source.trim().length > 0
-
 export const AnnotationInput: React.FC<Props> = ({ select }) => {
-    const ref = useRef<HTMLInputElement>(null)
+    const input = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
     const [source, setSource] = useState<string>('')
-
-    useEffect(() => {
-        if (isSourceSelected(source)) {
-            ref.current?.focus()
-        }
-    }, [source])
 
     const search = (query: string) => resources.annotations(source, query).read()
 
     const selectAndReset = (annotation: Annotation) => {
-        ref.current?.blur()
+        input.current?.blur()
         setSource('')
         setQuery('')
         select(annotation)
@@ -43,18 +35,9 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                 <div className="input-group-prepend">
                     <span className="input-group-text">@</span>
                 </div>
-                <select
-                    className="form-control form-control-lg col-2"
-                    value={source}
-                    onChange={e => { setSource(e.target.value) }}
-                >
-                    <option value="">Source</option>
-                    {sources.map((source, i) => (
-                        <option key={i} value={source.value}>{source.label}</option>
-                    ))}
-                </select>
+                <Select input={input} source={source} update={setSource} />
                 <input
-                    ref={ref}
+                    ref={input}
                     type="text"
                     className="form-control form-control-lg"
                     placeholder="Search for a predefined human annotation"
@@ -63,14 +46,32 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                     onChange={e => setQuery(e.target.value)}
                 />
             </div>
-            <Overlay input={ref}>
-                <SearchResultListSuspense
-                    input={ref}
-                    query={query}
-                    search={search}
-                    select={selectAndReset}
-                />
+            <Overlay input={input}>
+                <SearchResultList input={input} query={query} search={search} select={selectAndReset} />
             </Overlay>
         </div>
+    )
+}
+
+type SelectProps = {
+    input: React.RefObject<HTMLInputElement>
+    source: string
+    update: (source: string) => void
+}
+
+const Select: React.FC<SelectProps> = ({ input, source, update }) => {
+    useEffect(() => { if (source.trim().length > 0) input.current?.focus() }, [input, source])
+
+    return (
+        <select
+            className="form-control form-control-lg col-2"
+            value={source}
+            onChange={e => update(e.target.value)}
+        >
+            <option value="">Source</option>
+            {sources.map((source, i) => (
+                <option key={i} value={source.value}>{source.label}</option>
+            ))}
+        </select>
     )
 }

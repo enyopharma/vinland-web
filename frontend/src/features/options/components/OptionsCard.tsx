@@ -2,8 +2,8 @@ import React from 'react'
 
 import { useActionCreator } from 'app'
 
-import { Options } from 'features/options'
-import { actions } from 'features/options'
+import { Options } from '../types'
+import { actions } from '../reducer'
 
 type Props = {
     options: Options
@@ -18,9 +18,7 @@ export const OptionsCard: React.FC<Props> = (props) => (
     </div>
 )
 
-const DisplayOptionsRow: React.FC<Props> = ({ options }) => {
-    const { hh, vh, neighbors } = options
-
+const DisplayOptionsRow: React.FC<Props> = ({ options: { hh, vh, neighbors } }) => {
     const setHH = useActionCreator(actions.setHH)
     const setVH = useActionCreator(actions.setVH)
     const setNeighbors = useActionCreator(actions.setNeighbors)
@@ -74,9 +72,7 @@ const DisplayOptionsRow: React.FC<Props> = ({ options }) => {
     )
 }
 
-const FilterOptionsRow: React.FC<Props> = ({ options }) => {
-    const { publications, methods } = options
-
+const FilterOptionsRow: React.FC<Props> = ({ options: { publications, methods } }) => {
     const setPublications = useActionCreator(actions.setPublications)
     const setMethods = useActionCreator(actions.setMethods)
 
