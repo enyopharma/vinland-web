@@ -2,9 +2,9 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { Taxon, RelatedTaxa, Name } from './types'
+import { SearchResult } from 'app/types'
 
-import { SearchResult } from 'partials'
+import { Taxon, RelatedTaxa, Name } from './types'
 
 const limit = 5
 

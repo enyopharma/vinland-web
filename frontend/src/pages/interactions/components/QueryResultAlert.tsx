@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { toast } from 'partials'
+import { toast } from 'app/toast'
 
 import { QueryResult, QueryResultStatuses } from '../types'
 

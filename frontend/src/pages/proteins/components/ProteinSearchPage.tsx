@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { ProgressBar } from 'partials'
+import { ProgressBar } from 'app/partials'
 
 import { resources } from '../api'
 import { Protein } from '../types'

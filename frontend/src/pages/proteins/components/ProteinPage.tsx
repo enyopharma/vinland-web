@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ProgressBar } from 'partials'
+import { ProgressBar } from 'app/partials'
 
 import { resources } from '../api'
 import { ProteinIdCard } from './ProteinIdCard'

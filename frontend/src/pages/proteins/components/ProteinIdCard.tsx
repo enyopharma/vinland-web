@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { ProgressBar } from 'partials'
+import { ProgressBar } from 'app/partials'
 
 import { resources } from '../api'
 import { Protein, Isoform } from '../types'

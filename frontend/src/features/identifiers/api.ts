@@ -2,8 +2,9 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
+import { SearchResult } from 'app/types'
+
 import { Annotation } from './types'
-import { SearchResult } from 'partials'
 
 const limit = 5
 

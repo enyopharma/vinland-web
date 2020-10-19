@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
-import { store } from 'app'
-import { Navbar, ProgressBar } from 'partials'
+
+import { store } from 'app/store'
+import { Navbar, ProgressBar } from 'app/partials'
 
 const HomePage = React.lazy(() => import('pages/home').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('pages/proteins').then(module => ({ default: module.ProteinPage })))

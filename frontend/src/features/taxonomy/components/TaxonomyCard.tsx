@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { useActionCreator } from 'app'
-import { ProgressBar } from 'partials'
+import { useActionCreator } from 'app/hooks'
+import { ProgressBar } from 'app/partials'
 
 import { resources } from '../api'
-import { Taxonomy, Taxon, Name } from '../types'
 import { actions } from '../reducer'
+import { Taxonomy, Taxon, Name } from '../types'
 
 import { NameList } from './NameList'
 import { TaxonInput } from './TaxonInput'

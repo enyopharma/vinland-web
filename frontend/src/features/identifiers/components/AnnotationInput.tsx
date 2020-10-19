@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 
+import { Overlay, SearchResultList } from 'app/partials'
+
 import { resources } from '../api'
 import { Annotation } from '../types'
-
-import { Overlay, SearchResultList } from 'partials'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },

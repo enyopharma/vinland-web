@@ -1,5 +1,3 @@
-export { toast } from 'react-toastify'
-export * from './types'
 export * from './components/Navbar'
 export * from './components/Overlay'
 export * from './components/Pagination'

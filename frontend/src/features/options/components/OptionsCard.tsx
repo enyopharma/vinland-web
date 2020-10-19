@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useActionCreator } from 'app'
+import { useActionCreator } from 'app/hooks'
 
 import { Options } from '../types'
 import { actions } from '../reducer'

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { animated, useSpring } from 'react-spring'
 
-import { useActionCreator } from 'app'
+import { useActionCreator } from 'app/hooks'
 
 import { parse } from '../utils'
 import { actions } from '../reducer'

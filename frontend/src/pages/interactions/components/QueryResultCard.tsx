@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { ProgressBar } from 'partials'
+import { ProgressBar } from 'app/partials'
 
 import { config } from '../config'
 import { QueryResult, QueryResultStatuses, SuccessfulQueryResult, ProteinTab } from '../types'

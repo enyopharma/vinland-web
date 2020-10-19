@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
-import { useActionCreator } from 'app'
-import { Overlay, SearchResultList } from 'partials'
+import { useActionCreator } from 'app/hooks'
+import { Overlay, SearchResultList } from 'app/partials'
 
 import { resources } from '../api'
 import { actions } from '../reducer'
