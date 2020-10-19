@@ -1,6 +1,6 @@
 import Konva from 'konva'
-import { Interaction, Protein, Node, Link } from 'features/query'
-import { config } from 'features/query'
+import { Interaction, Protein, Node, Link } from '../types'
+import { config } from '../config'
 import { getLabels } from './labels'
 import { getSelection } from './selection'
 import { getSimulation } from './simulation'

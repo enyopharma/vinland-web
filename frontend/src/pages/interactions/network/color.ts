@@ -1,6 +1,6 @@
 import { scaleOrdinal } from 'd3-scale'
 import { schemeSpectral } from 'd3-scale-chromatic'
-import { Protein } from 'features/query'
+import { Protein } from '../types'
 
 const scale = scaleOrdinal(schemeSpectral[11])
 

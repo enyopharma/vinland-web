@@ -1,39 +1,26 @@
 import React from 'react'
 
-import { Protein } from 'features/query'
-import { usePersistentState } from 'features/query'
-import { config, proteins2csv } from 'features/query'
-
-import { CsvDownloadButton } from './CsvDownloadButton'
 import { Pagination, ProteinLink } from 'partials'
+
+import { ProteinTab, Protein } from '../types'
+import { CsvDownloadButton } from './CsvDownloadButton'
+
+const limit = 20
 
 type Props = {
     proteins: Protein[]
+    tab: ProteinTab
+    offsets: Record<ProteinTab, number>
+    setTab: (tab: ProteinTab) => void
+    setOffsets: (offsets: Record<ProteinTab, number>) => void
 }
 
-type Tab = 'a' | 'h' | 'v'
-
-const filter = (type: Tab, proteins: Protein[]) => {
-    if (type === 'h') {
-        return proteins.filter(protein => protein.type === 'h')
-    }
-
-    if (type === 'v') {
-        return proteins.filter(protein => protein.type === 'v')
-    }
-
-    return proteins
-}
-
-export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
-    const [tab, setTab] = usePersistentState<Tab>('proteins.tab', 'a')
-    const [offsets, setOffsets] = usePersistentState<Record<Tab, number>>('proteins.offsets', { a: 0, h: 0, v: 0 }, [proteins])
-
+export const ProteinCardBody: React.FC<Props> = ({ proteins, tab, offsets, setTab, setOffsets }) => {
     const filtered = filter(tab, proteins)
     const offset = offsets[tab]
     const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })
 
-    const slice = filtered.slice(offset, offset + config.limit)
+    const slice = filtered.slice(offset, offset + limit)
 
     return (
         <React.Fragment>
@@ -58,12 +45,7 @@ export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
                         </p>
                     </div>
                 </div>
-                <Pagination
-                    offset={offset}
-                    total={proteins.length}
-                    limit={config.limit}
-                    update={setOffset}
-                />
+                <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
             </div>
             <table className="table card-table table-stripped table-hover">
                 <thead>
@@ -76,27 +58,26 @@ export const ProteinsCardBody: React.FC<Props> = ({ proteins }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(config.limit)].map((_, i) => slice[i]
+                    {[...Array(limit)].map((_, i) => slice[i]
                         ? <ProteinTr key={i} protein={slice[i]} />
                         : <SkeletonTr key={i} />
                     )}
                 </tbody>
             </table>
             <div className="card-body">
-                <Pagination
-                    offset={offset}
-                    total={proteins.length}
-                    limit={config.limit}
-                    update={setOffset}
-                />
+                <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
             </div>
         </React.Fragment>
     )
 }
 
-const TabCheckbox: React.FC<{ tab: Tab, current: Tab, update: (tab: Tab) => void }> = (props) => {
-    const { tab, current, update, children } = props
+type TabCheckboxProps = {
+    tab: ProteinTab
+    current: ProteinTab
+    update: (tab: ProteinTab) => void
+}
 
+const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, children }) => {
     const onChange = () => update(tab)
 
     return (
@@ -160,3 +141,23 @@ const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
         </td>
     </tr>
 )
+
+const filter = (type: ProteinTab, proteins: Protein[]) => {
+    if (type === 'h') {
+        return proteins.filter(protein => protein.type === 'h')
+    }
+
+    if (type === 'v') {
+        return proteins.filter(protein => protein.type === 'v')
+    }
+
+    return proteins
+}
+
+const proteins2csv = (proteins: Protein[], sep: string = "\t") => {
+    const headers = ['type', 'accession', 'name', 'taxon', 'description']
+
+    const fields = (p: Protein) => [p.type, p.accession, p.name, p.taxon.name, p.description]
+
+    return `#${headers.join(sep)}\n${proteins.map(p => fields(p).join(sep)).join("\n")}`
+}

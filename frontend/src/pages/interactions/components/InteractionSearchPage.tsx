@@ -1,14 +1,17 @@
 import React from 'react'
 
 import { useAppSelector } from 'app'
-
-import { state2query } from 'pages/interactions'
+import { ProgressBar, ToastContainer } from 'partials'
 
 import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
 import { IdentifierCard } from 'features/identifiers'
-import { QueryResultSectionSuspense } from 'features/query'
-import { ToastContainer } from 'partials'
+
+import { resources } from '../api'
+import { state2query } from '../utils'
+import { Query } from '../types'
+import { QueryResultCard } from './QueryResultCard'
+import { QueryResultAlert } from './QueryResultAlert'
 
 export const InteractionSearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.interactions.search.identifiers)
@@ -35,7 +38,30 @@ export const InteractionSearchPage: React.FC = () => {
             </form>
             <h2 id="result">Query result</h2>
             <ToastContainer target='result' />
-            <QueryResultSectionSuspense query={query} />
+            <React.Suspense fallback={<ProgressBar />}>
+                <QueryResultAlertFetcher query={query} />
+                <QueryResultCardFetcher query={query} />
+            </React.Suspense>
         </div>
     )
+}
+
+type QueryResultAlertFetcherProps = {
+    query: Query
+}
+
+const QueryResultAlertFetcher: React.FC<QueryResultAlertFetcherProps> = ({ query }) => {
+    const result = resources.result(query).read()
+
+    return <QueryResultAlert result={result} />
+}
+
+type QueryResultCardFetcherProps = {
+    query: Query
+}
+
+const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ query }) => {
+    const result = resources.result(query).read()
+
+    return <QueryResultCard result={result} />
 }

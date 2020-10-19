@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { resources } from 'pages/proteins/api'
-import { Protein } from 'pages/proteins/types'
 import { ProgressBar } from 'partials'
+
+import { resources } from '../api'
+import { Protein } from '../types'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 

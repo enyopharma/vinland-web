@@ -1,39 +1,15 @@
 import React, { useState } from 'react'
 
-import { Protein, Interaction, Mapping } from 'pages/proteins/types'
 import { Pagination, ProteinLink, InteractionLink } from 'partials'
+
+import { Protein, Interaction, Mapping } from '../types'
+
+const limit = 20
 
 type Props = {
     type: 'h' | 'v'
     width: number
     interactions: Interaction[]
-}
-
-const limit = 20
-
-const sorti = (a: Interaction, b: Interaction) => {
-    if (a.mappings.length > 0 && b.mappings.length === 0) {
-        return -1
-    }
-
-    if (a.mappings.length === 0 && b.mappings.length > 0) {
-        return +1
-    }
-
-    const starta = Math.min(...a.mappings.map(mapping => mapping.start))
-    const startb = Math.min(...b.mappings.map(mapping => mapping.start))
-
-    return starta - startb || b.mappings.length - a.mappings.length
-}
-
-const sortm = (a: Mapping, b: Mapping) => {
-    return a.start - b.start || (a.stop - a.start) - (b.stop - a.stop)
-}
-
-const rowspan = (interaction: Interaction) => {
-    return interaction.mappings.length > 1
-        ? interaction.mappings.length
-        : undefined
 }
 
 export const InteractionTable: React.FC<Props> = ({ type, width, interactions }) => {
@@ -202,4 +178,29 @@ const MappingImg: React.FC<{ type: 'h' | 'v', width: number, mapping: Mapping }>
             <rect width={widthp} x={startp} y="13" height="4" style={{ fill: color, strokeWidth: 0 }} />
         </svg>
     )
+}
+
+const sorti = (a: Interaction, b: Interaction) => {
+    if (a.mappings.length > 0 && b.mappings.length === 0) {
+        return -1
+    }
+
+    if (a.mappings.length === 0 && b.mappings.length > 0) {
+        return +1
+    }
+
+    const starta = Math.min(...a.mappings.map(mapping => mapping.start))
+    const startb = Math.min(...b.mappings.map(mapping => mapping.start))
+
+    return starta - startb || b.mappings.length - a.mappings.length
+}
+
+const sortm = (a: Mapping, b: Mapping) => {
+    return a.start - b.start || (a.stop - a.start) - (b.stop - a.stop)
+}
+
+const rowspan = (interaction: Interaction) => {
+    return interaction.mappings.length > 1
+        ? interaction.mappings.length
+        : undefined
 }

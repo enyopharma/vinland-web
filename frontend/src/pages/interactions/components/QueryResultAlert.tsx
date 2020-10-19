@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 
-import { QueryResultStatuses, QueryResult } from 'features/query'
 import { toast } from 'partials'
+
+import { QueryResult, QueryResultStatuses } from '../types'
 
 type Props = {
     result: QueryResult
@@ -25,9 +26,7 @@ const AlertIncomplete: React.FC = () => (
 )
 
 const AlertFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
-    useEffect(() => {
-        toast('invalid query', { type: toast.TYPE.ERROR })
-    }, [errors])
+    useEffect(() => { toast('invalid query', { type: toast.TYPE.ERROR }) }, [errors])
 
     return (
         <div className="alert alert-danger">
@@ -37,9 +36,7 @@ const AlertFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
 }
 
 const AlertSuccess: React.FC<{ nb: number }> = ({ nb }) => {
-    useEffect(() => {
-        toast(message(nb), { type: toast.TYPE.SUCCESS })
-    }, [nb])
+    useEffect(() => { toast(message(nb), { type: toast.TYPE.SUCCESS }) }, [nb])
 
     return <div className="alert alert-success">{message(nb)}</div>
 }

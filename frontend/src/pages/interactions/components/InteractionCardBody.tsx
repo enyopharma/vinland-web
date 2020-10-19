@@ -1,20 +1,20 @@
 import React from 'react'
 
-import { Interaction } from 'features/query'
-import { usePersistentState } from 'features/query'
-import { config, interactions2csv } from 'features/query'
-
-import { CsvDownloadButton } from './CsvDownloadButton'
 import { Pagination, ProteinLink, InteractionLink } from 'partials'
+
+import { Interaction } from '../types'
+import { CsvDownloadButton } from './CsvDownloadButton'
+
+const limit = 20
 
 type Props = {
     interactions: Interaction[]
+    offset: number
+    setOffset: (offset: number) => void
 }
 
-export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
-    const [offset, setOffset] = usePersistentState<number>('interactions.offset', 0, [interactions])
-
-    const slice = interactions.slice(offset, offset + config.limit)
+export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, setOffset }) => {
+    const slice = interactions.slice(offset, offset + limit)
 
     return (
         <React.Fragment>
@@ -24,12 +24,7 @@ export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
                         Download as csv
                     </CsvDownloadButton>
                 </p>
-                <Pagination
-                    offset={offset}
-                    total={interactions.length}
-                    limit={config.limit}
-                    update={setOffset}
-                />
+                <Pagination offset={offset} total={interactions.length} limit={limit} update={setOffset} />
             </div>
             <table className="table card-table table-stripped table-hover">
                 <thead>
@@ -41,19 +36,14 @@ export const InteractionsCardBody: React.FC<Props> = ({ interactions }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(config.limit)].map((_, i) => slice[i]
+                    {[...Array(limit)].map((_, i) => slice[i]
                         ? <InteractionTr key={i} interaction={slice[i]} />
                         : <SkeletonTr key={i} />
                     )}
                 </tbody>
             </table>
             <div className="card-body">
-                <Pagination
-                    offset={offset}
-                    total={interactions.length}
-                    limit={config.limit}
-                    update={setOffset}
-                />
+                <Pagination offset={offset} total={interactions.length} limit={limit} update={setOffset} />
             </div>
         </React.Fragment>
     )
@@ -108,3 +98,15 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
         </td>
     </tr>
 )
+
+export const interactions2csv = (interactions: Interaction[], sep: string = "\t") => {
+    const headers = ['type', 'accession1', 'name1', 'taxon1', 'accession2', 'name2', 'taxon2']
+
+    const fields = (i: Interaction) => [
+        i.type,
+        i.protein1.accession, i.protein1.name, i.protein1.taxon.name,
+        i.protein2.accession, i.protein2.name, i.protein2.taxon.name,
+    ]
+
+    return `#${headers.join(sep)}\n${interactions.map(i => fields(i).join(sep)).join("\n")}`
+}

@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react'
 
-import { Network } from 'features/query'
-import { usePersistentState } from 'features/query'
-import { config } from 'features/query'
+import { Network } from '../types'
 
 import { NetworkStage } from './NetworkStage'
 
 type Props = {
     network: Network
+    ratio: number
+    labels: boolean
+    setRatio: (ratio: number) => void
+    setLabels: (labels: boolean) => void
 }
 
-export const NetworkCardBody: React.FC<Props> = ({ network }) => {
-    const [ratio, setRatio] = usePersistentState<number>('network.ratio', config.ratio, [network])
-    const [labels, setLabels] = usePersistentState<boolean>('network.labels', false)
-
+export const NetworkCardBody: React.FC<Props> = ({ network, ratio, labels, setRatio, setLabels }) => {
     useEffect(() => {
         const timeout = setTimeout(() => network.setRatio(ratio), 100)
 

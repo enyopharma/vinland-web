@@ -1,7 +1,8 @@
 import React from 'react'
 
-import { Protein } from 'pages/proteins/types'
 import { ProteinLink } from 'partials'
+
+import { Protein } from '../types'
 
 type Props = {
     proteins: Protein[]

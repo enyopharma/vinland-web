@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from 'react'
 
-import { resources } from 'pages/proteins/api'
-import { Protein, Isoform } from 'pages/proteins/types'
 import { ProgressBar } from 'partials'
 
+import { resources } from '../api'
+import { Protein, Isoform } from '../types'
+
 const InteractionTable = React.lazy(() => import('./InteractionTable').then(module => ({ default: module.InteractionTable })))
-
-const canonicalId = (protein: Protein) => {
-    const isoforms = protein.isoforms.filter(isoform => isoform.is_canonical)
-
-    if (isoforms.length === 1) {
-        return isoforms[0].id
-    }
-
-    throw new Error('canonical isoform id error')
-}
 
 type Props = {
     protein: Protein
@@ -104,4 +95,14 @@ const InteractionFetcher: React.FC<InteractionFetcherProps> = ({ type, protein, 
             interactions={interactions}
         />
     )
+}
+
+const canonicalId = (protein: Protein) => {
+    const isoforms = protein.isoforms.filter(isoform => isoform.is_canonical)
+
+    if (isoforms.length === 1) {
+        return isoforms[0].id
+    }
+
+    throw new Error('canonical isoform id error')
 }

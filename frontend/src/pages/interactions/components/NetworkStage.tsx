@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 
-import { Network } from 'features/query'
+import { Network } from '../types'
 
 type Props = {
     network: Network
