@@ -8,6 +8,7 @@ use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
 use App\ReadModel\AnnotationViewInterface;
 use App\ReadModel\InteractionViewInterface;
+use App\ReadModel\DescriptionViewInterface;
 
 return [
     AnnotationViewInterface::class => fn ($c) => new App\ReadModel\AnnotationViewSql(
@@ -23,6 +24,10 @@ return [
     ),
 
     Isoforms\InteractionViewInterface::class => fn ($c) => new App\ReadModel\Isoforms\InteractionViewSql(
+        $c->get(PDO::class),
+    ),
+
+    DescriptionViewInterface::class => fn ($c) => new App\ReadModel\DescriptionViewSql(
         $c->get(PDO::class),
     ),
 

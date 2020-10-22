@@ -46,6 +46,11 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\Isoforms\InteractionViewInterface::class),
         ),
 
+        'GET /interactions/{interaction_id:\d+}' => new App\Endpoints\Interactions\ShowEndpoint(
+            $container->get(App\ReadModel\InteractionViewInterface::class),
+            $container->get(App\ReadModel\DescriptionViewInterface::class),
+        ),
+
         'GET /annotations' => new App\Endpoints\Annotations\IndexEndpoint(
             $container->get(App\ReadModel\AnnotationViewInterface::class),
         ),
