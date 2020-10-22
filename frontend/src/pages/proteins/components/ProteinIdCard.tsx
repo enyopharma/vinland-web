@@ -17,7 +17,7 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
     useEffect(() => setIsoformId(canonicalId(protein)), [protein])
 
     return (
-        <section>
+        <React.Fragment>
             <h1>
                 Protein ID Card - {protein.accession}/{protein.name}
             </h1>
@@ -35,21 +35,30 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
                 </select>
             </div>
             <hr />
+            <ul>
+                <li><a href="#sequence">Sequence</a></li>
+                <li><a href="#vh">VH interactions</a></li>
+                {protein.type === 'h' && <li><a href="#hh">HH interactions</a></li>}
+            </ul>
+            <hr />
             <React.Suspense fallback={<ProgressBar />}>
-                <h2>Sequence</h2>
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="sequence">Sequence</h2>
                 <div className="form-group">
                     <SequenceFetcher protein={protein} isoform_id={isoform_id} />
                 </div>
-                <h2>VH interactions</h2>
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="vh">VH interactions</h2>
                 <InteractionFetcher type="vh" protein={protein} isoform_id={isoform_id} />
                 {protein.type === 'h' && (
                     <React.Fragment>
-                        <h2>HH interactions</h2>
+                        <div className="float-right">[<a href="#top">top</a>]</div>
+                        <h2 id="hh">HH interactions</h2>
                         <InteractionFetcher type="hh" protein={protein} isoform_id={isoform_id} />
                     </React.Fragment>
                 )}
             </React.Suspense>
-        </section>
+        </React.Fragment>
     )
 }
 
