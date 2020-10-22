@@ -181,13 +181,10 @@ const MappingImg: React.FC<{ type: 'h' | 'v', width: number, mapping: Mapping }>
 }
 
 const sorti = (a: Interaction, b: Interaction) => {
-    if (a.mappings.length > 0 && b.mappings.length === 0) {
-        return -1
-    }
-
-    if (a.mappings.length === 0 && b.mappings.length > 0) {
-        return +1
-    }
+    if (a.nb_mappings > 0 && b.nb_mappings === 0) return -1;
+    if (a.nb_mappings === 0 && b.nb_mappings > 0) return +1;
+    if (a.mappings.length > 0 && b.mappings.length === 0) return -1
+    if (a.mappings.length === 0 && b.mappings.length > 0) return +1
 
     const starta = Math.min(...a.mappings.map(mapping => mapping.start))
     const startb = Math.min(...b.mappings.map(mapping => mapping.start))

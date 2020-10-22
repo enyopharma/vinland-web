@@ -22,6 +22,7 @@ export type Interaction = {
     id: number,
     type: 'hh' | 'vh'
     protein: Protein
+    nb_mappings: number
     mappings: Mapping[]
 }
 

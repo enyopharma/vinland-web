@@ -14,24 +14,32 @@ final class InteractionViewSql implements InteractionViewInterface
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            'Homo sapiens' AS taxon
-        FROM interactions AS i, edges AS e, proteins AS p
+            'Homo sapiens' AS taxon, COUNT(m.id) AS nb_mappings
+        FROM
+            interactions AS i,
+            edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
+            proteins AS p
         WHERE i.type = 'hh'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
         AND e.source_id = ?
+        GROUP BY i.id, p.id
     SQL;
 
     const SELECT_VH_INTERACTIONS_SQL = <<<SQL
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            COALESCE(t.name, 'Homo sapiens') AS taxon
-        FROM interactions AS i, edges AS e, proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
+            COALESCE(t.name, 'Homo sapiens') AS taxon, COUNT(m.id) AS nb_mappings
+        FROM
+            interactions AS i,
+            edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
+            proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
         WHERE i.type = 'vh'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
         AND e.source_id = ?
+        GROUP BY i.id, p.id, t.taxon_id
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
@@ -86,6 +94,7 @@ final class InteractionViewSql implements InteractionViewInterface
                     'description' => $row['description'],
                     'taxon' => $row['taxon'],
                 ],
+                'nb_mappings' => $row['nb_mappings'],
                 'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
                     return $row['id'] == $mapping['interaction_id'];
                 })),
