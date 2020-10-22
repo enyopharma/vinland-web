@@ -5,7 +5,7 @@ import { Pagination, ProteinLink, InteractionLink } from 'app/partials'
 import { Interaction } from '../types'
 import { CsvDownloadButton } from './CsvDownloadButton'
 
-const limit = 20
+const limit = 10
 
 type Props = {
     interactions: Interaction[]
@@ -36,10 +36,7 @@ export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, set
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(limit)].map((_, i) => slice[i]
-                        ? <InteractionTr key={i} interaction={slice[i]} />
-                        : <SkeletonTr key={i} />
-                    )}
+                    {slice.map((interaction, i) => <InteractionTr key={i} interaction={interaction} />)}
                 </tbody>
             </table>
             <div className="card-body">
@@ -48,17 +45,6 @@ export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, set
         </React.Fragment>
     )
 }
-
-const SkeletonTr: React.FC = () => (
-    <tr>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-    </tr>
-)
 
 const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) => (
     <tr>
@@ -99,7 +85,7 @@ const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) 
     </tr>
 )
 
-export const interactions2csv = (interactions: Interaction[], sep: string = "\t") => {
+const interactions2csv = (interactions: Interaction[], sep: string = "\t") => {
     const headers = ['type', 'accession1', 'name1', 'taxon1', 'accession2', 'name2', 'taxon2']
 
     const fields = (i: Interaction) => [

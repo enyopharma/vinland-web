@@ -4,7 +4,7 @@ import { Pagination, ProteinLink, InteractionLink } from 'app/partials'
 
 import { Protein, Interaction, Mapping } from '../types'
 
-const limit = 20
+const limit = 10
 
 type Props = {
     type: 'h' | 'v'

@@ -5,7 +5,7 @@ import { Pagination, ProteinLink } from 'app/partials'
 import { ProteinTab, Protein } from '../types'
 import { CsvDownloadButton } from './CsvDownloadButton'
 
-const limit = 20
+const limit = 10
 
 type Props = {
     proteins: Protein[]
@@ -58,10 +58,7 @@ export const ProteinCardBody: React.FC<Props> = ({ proteins, tab, offsets, setTa
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(limit)].map((_, i) => slice[i]
-                        ? <ProteinTr key={i} protein={slice[i]} />
-                        : <SkeletonTr key={i} />
-                    )}
+                    {slice.map((protein, i) => <ProteinTr key={i} protein={protein} />)}
                 </tbody>
             </table>
             <div className="card-body">
@@ -97,16 +94,6 @@ const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, childre
         </div>
     )
 }
-
-const SkeletonTr: React.FC = () => (
-    <tr>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-    </tr>
-)
 
 const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
     <tr>
