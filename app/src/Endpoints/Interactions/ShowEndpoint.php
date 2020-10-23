@@ -20,16 +20,16 @@ final class ShowEndpoint
     }
 
     /**
-     * @return false|array
+     * @return false|iterable
      */
     public function __invoke(callable $input)
     {
         $interaction_id = (int) $input('interaction_id');
 
-        $interaction = $this->interactions->id($interaction_id);
+        $interaction = $this->interactions->id($interaction_id)->fetch();
 
         return $interaction
-            ? $this->descriptions->all($interaction_id)
+            ? $this->descriptions->all($interaction_id, 0, 0)
             : false;
     }
 }

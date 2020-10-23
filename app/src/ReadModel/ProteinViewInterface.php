@@ -6,7 +6,7 @@ namespace App\ReadModel;
 
 interface ProteinViewInterface
 {
-    public function id(int $id, string ...$with): Statement;
+    public function id(int $id): Statement;
 
-    public function search(string $type, string $query, int $limit): Statement;
+    public function all(string $type, string $query, int $limit): Statement;
 }

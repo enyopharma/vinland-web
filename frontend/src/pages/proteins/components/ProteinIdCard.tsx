@@ -12,10 +12,6 @@ type Props = {
 }
 
 export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
-    const [isoform_id, setIsoformId] = useState<number>(canonicalId(protein))
-
-    useEffect(() => setIsoformId(canonicalId(protein)), [protein])
-
     return (
         <React.Fragment>
             <h1>
@@ -24,14 +20,36 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
             <p>
                 {protein.taxon} - {protein.description}
             </p>
+            <React.Suspense fallback={<ProgressBar />}>
+                <IsoformSection protein={protein} />
+            </React.Suspense>
+        </React.Fragment>
+    )
+}
+
+type IsoformSectionProps = {
+    protein: Protein
+}
+
+const IsoformSection: React.FC<IsoformSectionProps> = ({ protein }) => {
+    const isoforms = resources.isoforms(protein.id).read()
+
+    const [selected, setSelected] = useState<number>(canonicalIndex(isoforms))
+
+    useEffect(() => setSelected(canonicalIndex(isoforms)), [isoforms])
+
+    const isoform = isoforms[selected]
+
+    return (
+        <React.Fragment>
             <div className="form-group">
                 <select
                     className="form-control"
-                    value={isoform_id}
-                    onChange={e => { setIsoformId(parseInt(e.target.value)); console.log(e) }}
-                    disabled={protein.isoforms.length === 1}
+                    value={selected}
+                    onChange={e => { setSelected(parseInt(e.target.value)) }}
+                    disabled={isoforms.length === 1}
                 >
-                    {protein.isoforms.map((isoform, i) => <IsoformOption key={i} isoform={isoform} />)}
+                    {isoforms.map((isoform, i) => <IsoformOption key={i} value={i} isoform={isoform} />)}
                 </select>
             </div>
             <hr />
@@ -45,16 +63,16 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="sequence">Sequence</h2>
                 <div className="form-group">
-                    <SequenceFetcher protein={protein} isoform_id={isoform_id} />
+                    <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
                 </div>
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="vh">VH interactions</h2>
-                <InteractionFetcher type="vh" protein={protein} isoform_id={isoform_id} />
+                <InteractionTableFetcher type="vh" protein={protein} isoform={isoform} />
                 {protein.type === 'h' && (
                     <React.Fragment>
                         <div className="float-right">[<a href="#top">top</a>]</div>
                         <h2 id="hh">HH interactions</h2>
-                        <InteractionFetcher type="hh" protein={protein} isoform_id={isoform_id} />
+                        <InteractionTableFetcher type="hh" protein={protein} isoform={isoform} />
                     </React.Fragment>
                 )}
             </React.Suspense>
@@ -63,39 +81,28 @@ export const ProteinIdCard: React.FC<Props> = ({ protein }) => {
 }
 
 type IsoformOptionProps = {
+    value: number
     isoform: Isoform
 }
 
-const IsoformOption: React.FC<IsoformOptionProps> = ({ isoform }) => {
-    const { id, accession, is_canonical, is_mature, start, stop } = isoform
+const IsoformOption: React.FC<IsoformOptionProps> = ({ value, isoform }) => {
+    const { accession, is_canonical, is_mature, start, stop } = isoform
 
     const label = is_mature
         ? `Mature protein from ${accession} [${start}, ${stop}]`
         : is_canonical ? `${accession} (canonical)` : accession
 
-    return <option value={id}>{label}</option>
+    return <option value={value}>{label}</option>
 }
 
-type SequenceFetcherProps = {
-    protein: Protein
-    isoform_id: number
-}
-
-const SequenceFetcher: React.FC<SequenceFetcherProps> = ({ protein, isoform_id }) => {
-    const isoform = resources.isoform(protein.id, isoform_id).read()
-
-    return <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
-}
-
-type InteractionFetcherProps = {
+type InteractionTableFetcherProps = {
     type: 'hh' | 'vh'
     protein: Protein
-    isoform_id: number
+    isoform: Isoform
 }
 
-const InteractionFetcher: React.FC<InteractionFetcherProps> = ({ type, protein, isoform_id }) => {
-    const isoform = resources.isoform(protein.id, isoform_id).read()
-    const interactions = resources.interactions(type, protein.id, isoform_id).read()
+const InteractionTableFetcher: React.FC<InteractionTableFetcherProps> = ({ type, protein, isoform }) => {
+    const interactions = resources.interactions(type, protein.id, isoform.id).read()
 
     return (
         <InteractionTable
@@ -106,11 +113,11 @@ const InteractionFetcher: React.FC<InteractionFetcherProps> = ({ type, protein, 
     )
 }
 
-const canonicalId = (protein: Protein) => {
-    const isoforms = protein.isoforms.filter(isoform => isoform.is_canonical)
+const canonicalIndex = (isoforms: Isoform[]) => {
+    const indexes = [0, isoforms.length - 1].filter(i => isoforms[i].is_canonical)
 
-    if (isoforms.length === 1) {
-        return isoforms[0].id
+    if (indexes.length === 1) {
+        return indexes[0]
     }
 
     throw new Error('canonical isoform id error')

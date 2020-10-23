@@ -22,6 +22,6 @@ final class ShowEndpoint
     {
         $protein_id = (int) $input('protein_id');
 
-        return $this->proteins->id($protein_id, 'isoforms')->fetch();
+        return $this->proteins->id($protein_id)->fetch();
     }
 }

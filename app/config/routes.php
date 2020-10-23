@@ -38,11 +38,19 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\ProteinViewInterface::class),
         ),
 
-        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}' => new App\Endpoints\Proteins\Isoforms\ShowEndpoint(
+        'GET /proteins/{protein_id:\d+}/isoforms' => new App\Endpoints\Isoforms\IndexEndpoint(
+            $container->get(App\ReadModel\ProteinViewInterface::class),
             $container->get(App\ReadModel\IsoformViewInterface::class),
         ),
 
-        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}/interactions/{type:hh|vh}' => new App\Endpoints\Proteins\Isoforms\Interactions\IndexEndpoint(
+        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}' => new App\Endpoints\Isoforms\ShowEndpoint(
+            $container->get(App\ReadModel\ProteinViewInterface::class),
+            $container->get(App\ReadModel\IsoformViewInterface::class),
+        ),
+
+        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}/interactions/{type:hh|vh}' => new App\Endpoints\Isoforms\Interactions\IndexEndpoint(
+            $container->get(App\ReadModel\ProteinViewInterface::class),
+            $container->get(App\ReadModel\IsoformViewInterface::class),
             $container->get(App\ReadModel\Isoforms\InteractionViewInterface::class),
         ),
 

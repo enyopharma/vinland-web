@@ -24,6 +24,6 @@ final class IndexEndpoint
         $query = $input('query', '');
         $limit = (int) $input('limit', 20);
 
-        return $this->proteins->search($type, $query, $limit);
+        return $this->proteins->all($type, $query, $limit);
     }
 }

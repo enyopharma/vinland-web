@@ -35,33 +35,23 @@ final class ProteinViewSql implements ProteinViewInterface
         LIMIT ?
     SQL;
 
-    const SELECT_ISOFORMS_SQL = <<<SQL
-        SELECT * FROM sequences WHERE protein_id = ? ORDER BY id ASC
-    SQL;
-
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    public function id(int $id, string ...$with): Statement
+    public function id(int $id): Statement
     {
         $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
 
         $select_protein_sth->execute([$id]);
 
-        if (!$protein = $select_protein_sth->fetch()) {
-            return Statement::from([]);
-        }
+        $proteins = ($protein = $select_protein_sth->fetch()) ? [$protein] : [];
 
-        if (in_array('isoforms', $with)) {
-            $protein['isoforms'] = $this->isoforms($id);
-        }
-
-        return Statement::from([$protein]);
+        return Statement::from($proteins);
     }
 
-    public function search(string $type, string $query, int $limit): Statement
+    public function all(string $type, string $query, int $limit): Statement
     {
         if (!in_array($type, ['h', 'v'])) {
             return Statement::from([]);
@@ -79,20 +69,5 @@ final class ProteinViewSql implements ProteinViewInterface
         $select_proteins_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_proteins_sth);
-    }
-
-    private function isoforms(int $protein_id): array
-    {
-        $select_isoforms_sth = $this->pdo->prepare(self::SELECT_ISOFORMS_SQL);
-
-        $select_isoforms_sth->execute([$protein_id]);
-
-        $isoforms = $select_isoforms_sth->fetchAll();
-
-        if ($isoforms === false) {
-            throw new \LogicException;
-        }
-
-        return $isoforms;
     }
 }

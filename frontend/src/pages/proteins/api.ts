@@ -9,6 +9,7 @@ const limit = 20
 const protein = cache<Protein>()
 const isoform = cache<Isoform>()
 const proteins = cache<Protein[]>()
+const isoforms = cache<Isoform[]>()
 const interactions = cache<Interaction[]>()
 
 export const resources = {
@@ -25,6 +26,10 @@ export const resources = {
         if (query.trim().length === 0) return { read: () => [] }
 
         return proteins.resource(`${type}:${query}`, () => fetchProteins(type, query), 300)
+    },
+
+    isoforms: (protein_id: number) => {
+        return isoforms.resource(`${protein_id}`, () => fetchIsoforms(protein_id), 300)
     },
 
     interactions: (type: 'hh' | 'vh', protein_id: number, isoform_id: number) => {
@@ -51,6 +56,28 @@ const fetchProtein = async (id: number) => {
     }
 }
 
+const fetchProteins = async (type: string, query: string) => {
+    const querystr = qs.encode({ type: type, query: query, limit: limit })
+    const params = { headers: { accept: 'application/json' } }
+
+    try {
+        const response = await fetch(`/api/proteins?${querystr}`, params)
+        const json = await response.json()
+
+        if (!json.success) {
+            throw new Error(json)
+        }
+
+        return json.data
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+
+    return []
+}
+
 const fetchIsoform = async (protein_id: number, id: number) => {
     const params = { headers: { accept: 'application/json' } }
 
@@ -70,12 +97,11 @@ const fetchIsoform = async (protein_id: number, id: number) => {
     }
 }
 
-const fetchProteins = async (type: string, query: string) => {
-    const querystr = qs.encode({ type: type, query: query, limit: limit })
+const fetchIsoforms = async (protein_id: number) => {
     const params = { headers: { accept: 'application/json' } }
 
     try {
-        const response = await fetch(`/api/proteins?${querystr}`, params)
+        const response = await fetch(`/api/proteins/${protein_id}/isoforms`, params)
         const json = await response.json()
 
         if (!json.success) {
