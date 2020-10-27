@@ -29,23 +29,28 @@ const CardWithoutSelectedTaxon: React.FC = () => (
     </div>
 )
 
-const CardWithSelectedTaxon: React.FC<{ taxon: Taxon, names: Name[] }> = ({ taxon: { name, ncbi_taxon_id }, names }) => {
+type CardWithoutSelectedTaxonProps = {
+    taxon: Taxon
+    names: Name[]
+}
+
+const CardWithSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ taxon, names }) => {
     const unselect = useActionCreator(actions.unselect)
 
     return (
         <div className="card">
             <div className="card-body">
                 <div className="alert alert-danger">
-                    {name}
+                    {taxon.name}
                     <button type="button" className="close" onClick={unselect}>
                         &times;
                     </button>
                 </div>
                 <React.Suspense fallback={<ProgressBar type="danger" />}>
                     <h4>Browse taxonomy:</h4>
-                    <RelatedFormRowFetcher ncbi_taxon_id={ncbi_taxon_id} />
+                    <RelatedFormRowFetcher ncbi_taxon_id={taxon.ncbi_taxon_id} />
                     <h4>Only protein tagged with:</h4>
-                    <NameListFetcher ncbi_taxon_id={ncbi_taxon_id} selected={names} />
+                    <NameListFetcher ncbi_taxon_id={taxon.ncbi_taxon_id} selected={names} />
                 </React.Suspense>
             </div>
         </div>

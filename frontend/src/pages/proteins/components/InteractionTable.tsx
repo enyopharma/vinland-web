@@ -72,75 +72,85 @@ const SkeletonTr: React.FC = () => (
     </tr>
 )
 
-const InteractionTr: React.FC<{ type: 'h' | 'v', width: number, interaction: Interaction }> = (props) => {
-    const { type, width, interaction } = props
+type InteractionTrProps = {
+    type: 'h' | 'v'
+    width: number
+    interaction: Interaction
+}
 
-    return (
-        <React.Fragment>
-            <tr key={0}>
-                <td className="text-center" rowSpan={rowspan(interaction)}>
-                    <InteractionLinkImg interaction={interaction} />
+const InteractionTr: React.FC<InteractionTrProps> = ({ type, width, interaction }) => (
+    <React.Fragment>
+        <tr key={0}>
+            <td className="text-center" rowSpan={rowspan(interaction)}>
+                <InteractionLinkImg interaction={interaction} />
                     &nbsp;
                     <ProteinLinkImg protein={interaction.protein} />
-                </td>
-                <td className="text-center" rowSpan={rowspan(interaction)}>
-                    <ProteinLinkAccession protein={interaction.protein} />
-                </td>
-                <td className="text-center" rowSpan={rowspan(interaction)}>
-                    <ProteinLinkName protein={interaction.protein} />
-                </td>
-                <td className="text-center ellipsis" rowSpan={rowspan(interaction)}>
-                    <span title={interaction.protein.taxon}>
-                        {interaction.protein.taxon}
-                    </span>
-                </td>
-                <td className="ellipsis" rowSpan={rowspan(interaction)}>
-                    <span title={interaction.protein.description}>
-                        {interaction.protein.description}
-                    </span>
-                </td>
+            </td>
+            <td className="text-center" rowSpan={rowspan(interaction)}>
+                <ProteinLinkAccession protein={interaction.protein} />
+            </td>
+            <td className="text-center" rowSpan={rowspan(interaction)}>
+                <ProteinLinkName protein={interaction.protein} />
+            </td>
+            <td className="text-center ellipsis" rowSpan={rowspan(interaction)}>
+                <span title={interaction.protein.taxon}>
+                    {interaction.protein.taxon}
+                </span>
+            </td>
+            <td className="ellipsis" rowSpan={rowspan(interaction)}>
+                <span title={interaction.protein.description}>
+                    {interaction.protein.description}
+                </span>
+            </td>
+            <td className="text-center">
+                {interaction.mappings.length > 0 && (
+                    <MappingImg type={type} width={width} mapping={interaction.mappings.sort(sortm)[0]} />
+                )}
+            </td>
+        </tr>
+        {interaction.mappings.sort(sortm).slice(1).map((mapping, m) => (
+            <tr key={m + 1}>
                 <td className="text-center">
-                    {interaction.mappings.length > 0 && (
-                        <MappingImg type={type} width={width} mapping={interaction.mappings.sort(sortm)[0]} />
-                    )}
+                    <MappingImg type={type} width={width} mapping={mapping} />
                 </td>
             </tr>
-            {interaction.mappings.sort(sortm).slice(1).map((mapping, m) => (
-                <tr key={m + 1}>
-                    <td className="text-center">
-                        <MappingImg type={type} width={width} mapping={mapping} />
-                    </td>
-                </tr>
-            ))}
-        </React.Fragment>
-    )
+        ))}
+    </React.Fragment>
+)
+
+type InteractionLinkImgProps = {
+    interaction: Interaction
 }
 
-const InteractionLinkImg: React.FC<{ interaction: Interaction }> = ({ interaction }) => {
-    return (
-        <InteractionLink {...interaction}>
-            <img
-                src={`/img/${interaction.type}.png`}
-                alt={`${interaction.type.toUpperCase()} interaction`}
-                style={{ maxWidth: '1em' }}
-            />
-        </InteractionLink>
-    )
+const InteractionLinkImg: React.FC<InteractionLinkImgProps> = ({ interaction }) => (
+    <InteractionLink {...interaction}>
+        <img
+            src={`/img/${interaction.type}.png`}
+            alt={`${interaction.type.toUpperCase()} interaction`}
+            style={{ maxWidth: '1em' }}
+        />
+    </InteractionLink>
+)
+
+type ProteinLinkImgProps = {
+    protein: Protein
 }
 
-const ProteinLinkImg: React.FC<{ protein: Protein }> = ({ protein }) => {
-    return (
-        <ProteinLink {...protein}>
-            <img
-                src={`/img/${protein.type}.png`}
-                alt={`${protein.accession} - ${protein.name}`}
-                style={{ maxWidth: '1em' }}
-            />
-        </ProteinLink>
-    )
+const ProteinLinkImg: React.FC<ProteinLinkImgProps> = ({ protein }) => (
+    <ProteinLink {...protein}>
+        <img
+            src={`/img/${protein.type}.png`}
+            alt={`${protein.accession} - ${protein.name}`}
+            style={{ maxWidth: '1em' }}
+        />
+    </ProteinLink>
+)
+
+type ProteinLinkAccessionProps = {
+    protein: Protein
 }
 
-const ProteinLinkAccession: React.FC<{ protein: Protein }> = ({ protein }) => {
+const ProteinLinkAccession: React.FC<ProteinLinkAccessionProps> = ({ protein }) => {
     const classes = protein.type === 'h' ? 'text-info' : 'text-danger'
 
     return (
@@ -150,7 +160,11 @@ const ProteinLinkAccession: React.FC<{ protein: Protein }> = ({ protein }) => {
     )
 }
 
-const ProteinLinkName: React.FC<{ protein: Protein }> = ({ protein }) => {
+type ProteinLinkNameProps = {
+    protein: Protein
+}
+
+const ProteinLinkName: React.FC<ProteinLinkNameProps> = ({ protein }) => {
     const classes = protein.type === 'h' ? 'text-info' : 'text-danger'
 
     return (
@@ -160,7 +174,13 @@ const ProteinLinkName: React.FC<{ protein: Protein }> = ({ protein }) => {
     )
 }
 
-const MappingImg: React.FC<{ type: 'h' | 'v', width: number, mapping: Mapping }> = ({ type, width, mapping }) => {
+type MappingImgProps = {
+    type: 'h' | 'v'
+    width: number
+    mapping: Mapping
+}
+
+const MappingImg: React.FC<MappingImgProps> = ({ type, width, mapping }) => {
     const color = type === 'h' ? '#6CC3D5' : '#FF7851'
     const startp = ((mapping.start / width) * 100) + '%'
     const stopp = ((mapping.stop / width) * 100) + '%'

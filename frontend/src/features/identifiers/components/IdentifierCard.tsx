@@ -48,7 +48,11 @@ export const IdentifierCard: React.FC<Props> = ({ lists }) => {
     )
 }
 
-const FadeIn: React.FC<{ enabled: boolean }> = ({ enabled, children }) => {
+type FadeInProps = {
+    enabled: boolean
+}
+
+const FadeIn: React.FC<FadeInProps> = ({ enabled, children }) => {
     const style = useSpring({
         config: { duration: 500 },
         from: { opacity: 0 },
