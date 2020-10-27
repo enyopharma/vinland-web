@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { ProgressBar } from 'app/partials'
+import { Timeout } from 'app/partials'
 
 import { resources } from '../api'
 import { Protein, Isoform } from '../types'
@@ -13,7 +13,7 @@ export const ProteinPage: React.FC = () => {
 
     return (
         <div className="container">
-            <React.Suspense fallback={<ProgressBar />}>
+            <React.Suspense fallback={<Timeout />}>
                 <ProteinSection id={parseInt(id)} />
             </React.Suspense>
         </div>
@@ -59,7 +59,7 @@ export const ProteinSection: React.FC<ProteinSectionProps> = ({ id }) => {
                 {protein.type === 'h' && <li><a href="#hh">HH interactions</a></li>}
             </ul>
             <hr />
-            <React.Suspense fallback={<ProgressBar />}>
+            <React.Suspense fallback={<Timeout />}>
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="sequence">Sequence - {isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
                 <div className="form-group">

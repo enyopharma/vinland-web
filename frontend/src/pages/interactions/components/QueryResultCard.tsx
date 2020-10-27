@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { ProgressBar } from 'app/partials'
+import { Timeout } from 'app/partials'
 
 import { config } from '../config'
 import { QueryResult, QueryResultStatuses, SuccessfulQueryResult, ProteinTab } from '../types'
@@ -96,7 +96,7 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
 
 const Fallback: React.FC = () => (
     <div className="card-body">
-        <ProgressBar />
+        <Timeout />
     </div>
 )
 

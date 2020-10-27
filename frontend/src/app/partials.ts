@@ -1,4 +1,5 @@
 export * from './components/Navbar'
+export * from './components/Timeout'
 export * from './components/Overlay'
 export * from './components/Pagination'
 export * from './components/ProgressBar'

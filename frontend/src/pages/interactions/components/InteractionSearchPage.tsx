@@ -3,7 +3,7 @@ import React from 'react'
 
 import { AppState } from 'app/types'
 import { useAppSelector } from 'app/hooks'
-import { ProgressBar, ToastContainer } from 'app/partials'
+import { Timeout, ToastContainer } from 'app/partials'
 
 import { OptionsCard } from 'features/options'
 import { TaxonomyCard } from 'features/taxonomy'
@@ -41,7 +41,7 @@ export const InteractionSearchPage: React.FC = () => {
             </form>
             <h2 id="result">Query result</h2>
             <ToastContainer target='result' />
-            <React.Suspense fallback={<ProgressBar />}>
+            <React.Suspense fallback={<Timeout />}>
                 <QueryResultAlertFetcher query={query} />
                 <QueryResultCardFetcher query={query} />
             </React.Suspense>
