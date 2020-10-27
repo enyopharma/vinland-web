@@ -28,9 +28,9 @@ export const ProteinSection: React.FC<ProteinSectionProps> = ({ id }) => {
     const protein = resources.protein(id).read()
     const isoforms = resources.isoforms(id).read()
 
-    const [selected, setSelected] = useState<number>(canonicalIndex(isoforms))
+    const [selected, setSelected] = useState<number>(0)
 
-    useEffect(() => setSelected(canonicalIndex(isoforms)), [isoforms])
+    useEffect(() => setSelected(0), [isoforms])
 
     const isoform = isoforms[selected]
 
