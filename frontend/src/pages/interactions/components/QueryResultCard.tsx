@@ -4,9 +4,10 @@ import { ProgressBar } from 'app/partials'
 
 import { config } from '../config'
 import { QueryResult, QueryResultStatuses, SuccessfulQueryResult, ProteinTab } from '../types'
-import { ProteinCardBody } from './ProteinCardBody'
-import { NetworkCardBody } from './NetworkCardBody'
-import { InteractionCardBody } from './InteractionCardBody'
+
+const ProteinCardBody = React.lazy(() => import('./ProteinCardBody').then(module => ({ default: module.ProteinCardBody })))
+const NetworkCardBody = React.lazy(() => import('./NetworkCardBody').then(module => ({ default: module.NetworkCardBody })))
+const InteractionCardBody = React.lazy(() => import('./InteractionCardBody').then(module => ({ default: module.InteractionCardBody })))
 
 type Tab = 'interactions' | 'proteins' | 'network'
 

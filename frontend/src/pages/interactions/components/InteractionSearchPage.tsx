@@ -12,8 +12,9 @@ import { parse as parseIdentifiers } from 'features/identifiers'
 
 import { resources } from '../api'
 import { Query } from '../types'
-import { QueryResultCard } from './QueryResultCard'
-import { QueryResultAlert } from './QueryResultAlert'
+
+const QueryResultCard = React.lazy(() => import('./QueryResultCard').then(module => ({ default: module.QueryResultCard })))
+const QueryResultAlert = React.lazy(() => import('./QueryResultAlert').then(module => ({ default: module.QueryResultAlert })))
 
 export const InteractionSearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.interactions.search.identifiers)
