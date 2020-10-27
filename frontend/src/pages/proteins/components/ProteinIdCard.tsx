@@ -61,7 +61,7 @@ const IsoformSection: React.FC<IsoformSectionProps> = ({ protein }) => {
             <hr />
             <React.Suspense fallback={<ProgressBar />}>
                 <div className="float-right">[<a href="#top">top</a>]</div>
-                <h2 id="sequence">Sequence</h2>
+                <h2 id="sequence">Sequence - {isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
                 <div className="form-group">
                     <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
                 </div>
