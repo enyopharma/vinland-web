@@ -1,16 +1,17 @@
 import React from 'react'
 
 type Props = {
+    enabled?: boolean
     csv: () => string
 }
 
-export const CsvDownloadButton: React.FC<Props> = ({ csv, children }) => {
+export const CsvDownloadButton: React.FC<Props> = ({ enabled = true, csv, children }) => {
     const prefix = 'data:text/csv;charset=utf-8,'
 
     const download = () => window.open(prefix + encodeURIComponent(csv()))
 
     return (
-        <button className="btn btn-link p-0" onClick={download}>
+        <button className="btn btn-link p-0" onClick={download} disabled={!enabled}>
             {children}
         </button>
     )

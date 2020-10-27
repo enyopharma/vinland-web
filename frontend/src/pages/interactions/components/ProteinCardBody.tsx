@@ -20,8 +20,6 @@ export const ProteinCardBody: React.FC<Props> = ({ proteins, tab, offsets, setTa
     const offset = offsets[tab]
     const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })
 
-    const slice = filtered.slice(offset, offset + limit)
-
     return (
         <React.Fragment>
             <div className="card-body">
@@ -39,31 +37,17 @@ export const ProteinCardBody: React.FC<Props> = ({ proteins, tab, offsets, setTa
                     </div>
                     <div className="col">
                         <p className="text-right">
-                            <CsvDownloadButton csv={() => proteins2csv(filtered)}>
+                            <CsvDownloadButton enabled={filtered.length > 0} csv={() => proteins2csv(filtered)}>
                                 Download as csv
                             </CsvDownloadButton>
                         </p>
                     </div>
                 </div>
-                <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
             </div>
-            <table className="table card-table table-stripped table-hover">
-                <thead>
-                    <tr>
-                        <th className="col-1 text-center">-</th>
-                        <th className="col-2 text-center">Accession</th>
-                        <th className="col-2 text-center">Name</th>
-                        <th className="col-3 text-center">Taxon</th>
-                        <th className="col-4 text-center">Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {slice.map((protein, i) => <ProteinTr key={i} protein={protein} />)}
-                </tbody>
-            </table>
-            <div className="card-body">
-                <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
-            </div>
+            {filtered.length > 0
+                ? <ProteinTable proteins={filtered} offset={offset} setOffset={setOffset} />
+                : <EmptyTable />
+            }
         </React.Fragment>
     )
 }
@@ -95,7 +79,67 @@ const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, childre
     )
 }
 
-const ProteinTr: React.FC<{ protein: Protein }> = ({ protein }) => (
+const EmptyTable: React.FC = () => (
+    <div className="card-body">
+        <p className="text-center">
+            No viral protein
+        </p>
+    </div>
+)
+
+type ProteinTableProps = {
+    proteins: Protein[]
+    offset: number
+    setOffset: (offset: number) => void
+}
+
+const ProteinTable: React.FC<ProteinTableProps> = ({ proteins, offset, setOffset }) => {
+    const slice = proteins.slice(offset, offset + limit)
+
+    return (
+        <React.Fragment>
+            <div className="card-body">
+                <Pagination offset={offset} total={proteins.length} limit={limit} update={setOffset} />
+            </div>
+            <table className="table card-table table-stripped table-hover">
+                <thead>
+                    <tr>
+                        <th className="col-1 text-center">-</th>
+                        <th className="col-2 text-center">Accession</th>
+                        <th className="col-2 text-center">Name</th>
+                        <th className="col-3 text-center">Taxon</th>
+                        <th className="col-4 text-center">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {[...Array(limit)].map((_, i) => slice[i]
+                        ? <ProteinTr key={i} protein={slice[i]} />
+                        : <SkeletonTr />
+                    )}
+                </tbody>
+            </table>
+            <div className="card-body">
+                <Pagination offset={offset} total={proteins.length} limit={limit} update={setOffset} />
+            </div>
+        </React.Fragment>
+    )
+}
+
+const SkeletonTr: React.FC = () => (
+    <tr>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+    </tr>
+)
+
+type ProteinTrProps = {
+    protein: Protein
+}
+
+const ProteinTr: React.FC<ProteinTrProps> = ({ protein }) => (
     <tr>
         <td className="text-center">
             <ProteinLink {...protein} target="_blank">
