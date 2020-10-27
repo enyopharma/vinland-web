@@ -17,10 +17,6 @@ export const resources = {
         return protein.resource(id, () => fetchProtein(id), 300)
     },
 
-    isoform: (protein_id: number, id: number) => {
-        return isoform.resource(`${protein_id}:${id}`, () => fetchIsoform(protein_id, id), 300)
-    },
-
     proteins: (type: string, query: string) => {
         if (type.trim().length === 0) return { read: () => [] }
         if (query.trim().length === 0) return { read: () => [] }
@@ -76,25 +72,6 @@ const fetchProteins = async (type: string, query: string) => {
     }
 
     return []
-}
-
-const fetchIsoform = async (protein_id: number, id: number) => {
-    const params = { headers: { accept: 'application/json' } }
-
-    try {
-        const response = await fetch(`/api/proteins/${protein_id}/isoforms/${id}`, params)
-        const json = await response.json()
-
-        if (!json.success) {
-            throw new Error(json)
-        }
-
-        return json.data
-    }
-
-    catch (error) {
-        console.log(error)
-    }
 }
 
 const fetchIsoforms = async (protein_id: number) => {
