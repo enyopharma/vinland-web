@@ -37,7 +37,7 @@ const CardWithSelectedTaxon: React.FC<{ taxon: Taxon, names: Name[] }> = ({ taxo
             <div className="card-body">
                 <div className="alert alert-danger">
                     {name}
-                    <button type="button" className="close" onClick={() => unselect}>
+                    <button type="button" className="close" onClick={unselect}>
                         &times;
                     </button>
                 </div>
