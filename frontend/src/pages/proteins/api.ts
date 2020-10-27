@@ -7,7 +7,6 @@ import { Protein, Isoform, Interaction } from './types'
 const limit = 20
 
 const protein = cache<Protein>()
-const isoform = cache<Isoform>()
 const proteins = cache<Protein[]>()
 const isoforms = cache<Isoform[]>()
 const interactions = cache<Interaction[]>()
