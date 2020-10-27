@@ -33,7 +33,7 @@ export const ProteinSearchPage: React.FC = () => {
                                     <option value="h">Human</option>
                                     <option value="v">Virus</option>
                                 </select>
-                                <Input input={ref} type={type} value={query} update={setQuery} />
+                                <SearchInput input={ref} type={type} value={query} update={setQuery} />
                             </div>
                         </div>
                         {query.trim().length === 0 && (
@@ -45,7 +45,7 @@ export const ProteinSearchPage: React.FC = () => {
                     {query.trim().length > 0 && (
                         <div className="card-body">
                             <React.Suspense fallback={<ProgressBar />}>
-                                <Fetcher input={ref} type={type} query={query} />
+                                <ProteinTableFetcher input={ref} type={type} query={query} />
                             </React.Suspense>
                         </div>
                     )}
@@ -55,14 +55,14 @@ export const ProteinSearchPage: React.FC = () => {
     )
 }
 
-type InputProps = {
+type SearchInputProps = {
     input: React.RefObject<HTMLInputElement>
     type: string
     value: string
     update: (value: string) => void
 }
 
-const Input: React.FC<InputProps> = ({ input, type, value, update }) => {
+const SearchInput: React.FC<SearchInputProps> = ({ input, type, value, update }) => {
     useEffect(() => { if (type.trim().length > 0) input.current?.focus() }, [input, type])
 
     return (
@@ -78,26 +78,26 @@ const Input: React.FC<InputProps> = ({ input, type, value, update }) => {
     )
 }
 
-type FetcherProps = {
+type ProteinTableFetcherProps = {
     input: React.RefObject<HTMLInputElement>
     type: string
     query: string
 }
 
-const Fetcher: React.FC<FetcherProps> = ({ input, type, query }) => {
+const ProteinTableFetcher: React.FC<ProteinTableFetcherProps> = ({ input, type, query }) => {
     const proteins = resources.proteins(type, query).read()
 
     return proteins.length > 0
-        ? <Table input={input} proteins={proteins} />
+        ? <SmartProteinTable input={input} proteins={proteins} />
         : <p>No protein found.</p>
 }
 
-type TableProps = {
+type SmartProteinTableProps = {
     input: React.RefObject<HTMLInputElement>
     proteins: Protein[]
 }
 
-const Table: React.FC<TableProps> = ({ input, proteins }) => {
+const SmartProteinTable: React.FC<SmartProteinTableProps> = ({ input, proteins }) => {
     const history = useHistory()
 
     const keydown = (e: KeyboardEvent) => {
