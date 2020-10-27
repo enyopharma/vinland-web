@@ -24,6 +24,8 @@ export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, set
                         Download as csv
                     </CsvDownloadButton>
                 </p>
+            </div>
+            <div className="card-body">
                 <Pagination offset={offset} total={interactions.length} limit={limit} update={setOffset} />
             </div>
             <table className="table card-table table-stripped table-hover">
@@ -36,7 +38,10 @@ export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, set
                     </tr>
                 </thead>
                 <tbody>
-                    {slice.map((interaction, i) => <InteractionTr key={i} interaction={interaction} />)}
+                    {[...Array(limit)].map((_, i) => slice[i]
+                        ? <InteractionTr key={i} interaction={slice[i]} />
+                        : <SkeletonTr key={i} />
+                    )}
                 </tbody>
             </table>
             <div className="card-body">
@@ -46,7 +51,22 @@ export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, set
     )
 }
 
-const InteractionTr: React.FC<{ interaction: Interaction }> = ({ interaction }) => (
+const SkeletonTr: React.FC = () => (
+    <tr>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+        <td className="text-center">-</td>
+    </tr>
+)
+
+type InteractionTrProps = {
+    interaction: Interaction
+}
+
+const InteractionTr: React.FC<InteractionTrProps> = ({ interaction }) => (
     <tr>
         <td className="text-center">
             <InteractionLink {...interaction} target="_blank">
