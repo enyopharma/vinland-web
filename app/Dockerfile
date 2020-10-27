@@ -1,5 +1,5 @@
 # Stage 1 - install php dependencies
-FROM composer:1.9 as build-deps
+FROM composer:2.0 as build-deps
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-suggest --no-interaction --prefer-dist --optimize-autoloader
