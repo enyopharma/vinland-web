@@ -25,7 +25,11 @@ const AlertIncomplete: React.FC = () => (
     </div>
 )
 
-const AlertFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
+type AlertFailureProps = {
+    errors: string[]
+}
+
+const AlertFailure: React.FC<AlertFailureProps> = ({ errors }) => {
     useEffect(() => { toast('invalid query', { type: toast.TYPE.ERROR }) }, [errors])
 
     return (
@@ -35,10 +39,14 @@ const AlertFailure: React.FC<{ errors: string[] }> = ({ errors }) => {
     )
 }
 
-const AlertSuccess: React.FC<{ nb: number }> = ({ nb }) => {
-    useEffect(() => { toast(message(nb), { type: toast.TYPE.SUCCESS }) }, [nb])
-
-    return <div className="alert alert-success">{message(nb)}</div>
+type AlertSuccessProps = {
+    nb: number
 }
 
-const message = (nb: number) => `${nb} ${nb > 1 ? 'interactions' : 'interaction'} found.`
+const AlertSuccess: React.FC<AlertSuccessProps> = ({ nb }) => {
+    const message = `${nb} ${nb > 1 ? 'interactions' : 'interaction'} found.`
+
+    useEffect(() => { toast(message, { type: toast.TYPE.SUCCESS }) }, [message])
+
+    return <div className="alert alert-success">{message}</div>
+}
