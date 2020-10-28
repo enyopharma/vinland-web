@@ -28,9 +28,11 @@ export const ProteinSection: React.FC<ProteinSectionProps> = ({ id }) => {
     const protein = resources.protein(id).read()
     const isoforms = resources.isoforms(id).read()
 
-    const [selected, setSelected] = useState<number>(0)
+    const index = canonicalIndex(isoforms)
 
-    useEffect(() => setSelected(0), [isoforms])
+    const [selected, setSelected] = useState<number>(index)
+
+    useEffect(() => setSelected(index), [isoforms, index])
 
     const isoform = isoforms[selected]
 
@@ -114,10 +116,8 @@ const InteractionTableFetcher: React.FC<InteractionTableFetcherProps> = ({ type,
 }
 
 const canonicalIndex = (isoforms: Isoform[]) => {
-    const indexes = [0, isoforms.length - 1].filter(i => isoforms[i].is_canonical)
-
-    if (indexes.length === 1) {
-        return indexes[0]
+    for (let i = 0; i < isoforms.length; i++) {
+        if (isoforms[i].is_canonical) return i
     }
 
     throw new Error('canonical isoform id error')
