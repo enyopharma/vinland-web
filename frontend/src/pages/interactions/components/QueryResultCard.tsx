@@ -2,36 +2,51 @@ import React, { useEffect, useState } from 'react'
 
 import { Timeout } from 'app/partials'
 
+import { cache } from '../cache'
 import { config } from '../config'
-import { QueryResult, QueryResultStatuses, SuccessfulQueryResult, ProteinTab } from '../types'
+import { ResultTab, ProteinTab } from '../types'
+import { QueryResult, QueryResultStatuses, QueryResultCache } from '../types'
 
 const ProteinCardBody = React.lazy(() => import('./ProteinCardBody').then(module => ({ default: module.ProteinCardBody })))
 const NetworkCardBody = React.lazy(() => import('./NetworkCardBody').then(module => ({ default: module.NetworkCardBody })))
 const InteractionCardBody = React.lazy(() => import('./InteractionCardBody').then(module => ({ default: module.InteractionCardBody })))
 
-type Tab = 'interactions' | 'proteins' | 'network'
-
-type Props = {
+type QueryResultCardProps = {
     result: QueryResult
 }
 
-export const QueryResultCard: React.FC<Props> = ({ result }) => {
-    const [tab, setTab] = useState<Tab>('interactions')
+export const QueryResultCard: React.FC<QueryResultCardProps> = ({ result }) => {
+    switch (result.status) {
+        case QueryResultStatuses.INCOMPLETE:
+            return null
+        case QueryResultStatuses.FAILURE:
+            return null
+        case QueryResultStatuses.SUCCESS:
+            return <SuccessfulQueryResultCard cache={cache(result)} />
+    }
+}
+
+type SuccessfulQueryResultCardProps = {
+    cache: QueryResultCache
+}
+
+const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ cache }) => {
+    const [tab, setTab] = useState<ResultTab>('interactions')
     const [interactionOffset, setInteractionOffset] = useState<number>(0)
     const [proteinTab, setProteinTab] = useState<ProteinTab>('a')
     const [proteinOffsets, setProteinOffsets] = useState<Record<ProteinTab, number>>({ a: 0, h: 0, v: 0 })
     const [networkRatio, setNetworkRatio] = useState<number>(config.ratio)
     const [networkLabels, setNetworkLabels] = useState<boolean>(false)
 
-    useEffect(() => setInteractionOffset(0), [result])
-    useEffect(() => setProteinOffsets({ a: 0, h: 0, v: 0 }), [result])
+    useEffect(() => setInteractionOffset(0), [cache])
+    useEffect(() => setProteinOffsets({ a: 0, h: 0, v: 0 }), [cache])
 
-    const body = (result: SuccessfulQueryResult) => {
+    const body = () => {
         switch (tab) {
             case 'interactions':
                 return (
                     <InteractionCardBody
-                        interactions={result.interactions}
+                        interactions={cache.interactions}
                         offset={interactionOffset}
                         setOffset={setInteractionOffset}
                     />
@@ -39,7 +54,7 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
             case 'proteins':
                 return (
                     <ProteinCardBodyFetcher
-                        result={result}
+                        cache={cache}
                         tab={proteinTab}
                         setTab={setProteinTab}
                         offsets={proteinOffsets}
@@ -49,7 +64,7 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
             case 'network':
                 return (
                     <NetworkCardBodyFetcher
-                        result={result}
+                        cache={cache}
                         ratio={networkRatio}
                         labels={networkLabels}
                         setRatio={setNetworkRatio}
@@ -59,54 +74,41 @@ export const QueryResultCard: React.FC<Props> = ({ result }) => {
         }
     }
 
-    switch (result.status) {
-        case QueryResultStatuses.INCOMPLETE:
-            return null
-        case QueryResultStatuses.FAILURE:
-            return null
-        case QueryResultStatuses.SUCCESS:
-            return (
-                <div className="card">
-                    <div className="card-header pb-0">
-                        <ul className="nav nav-tabs card-header-tabs">
-                            <li className="nav-item">
-                                <TabLink tab="interactions" current={tab} update={setTab}>
-                                    Interactions
-                                </TabLink>
-                            </li>
-                            <li className="nav-item">
-                                <TabLink tab="proteins" current={tab} update={setTab}>
-                                    Proteins
-                                </TabLink>
-                            </li>
-                            <li className="nav-item">
-                                <TabLink tab="network" current={tab} update={setTab}>
-                                    Network
-                                </TabLink>
-                            </li>
-                        </ul>
-                    </div>
-                    <React.Suspense fallback={<Fallback />}>
-                        {body(result)}
-                    </React.Suspense>
-                </div>
-            )
-    }
+    return (
+        <div className="card">
+            <div className="card-header pb-0">
+                <ul className="nav nav-tabs card-header-tabs">
+                    <li className="nav-item">
+                        <ResultTabLink tab="interactions" current={tab} update={setTab}>
+                            Interactions
+                        </ResultTabLink>
+                    </li>
+                    <li className="nav-item">
+                        <ResultTabLink tab="proteins" current={tab} update={setTab}>
+                            Proteins
+                        </ResultTabLink>
+                    </li>
+                    <li className="nav-item">
+                        <ResultTabLink tab="network" current={tab} update={setTab}>
+                            Network
+                        </ResultTabLink>
+                    </li>
+                </ul>
+            </div>
+            <React.Suspense fallback={<Timeout />}>
+                {body()}
+            </React.Suspense>
+        </div>
+    )
 }
 
-const Fallback: React.FC = () => (
-    <div className="card-body">
-        <Timeout />
-    </div>
-)
-
-type TabLinkProps = {
-    tab: Tab
-    current: Tab
-    update: (tab: Tab) => void
+type ResultTabLinkProps = {
+    tab: ResultTab
+    current: ResultTab
+    update: (tab: ResultTab) => void
 }
 
-const TabLink: React.FC<TabLinkProps> = ({ tab, current, update, children }) => {
+const ResultTabLink: React.FC<ResultTabLinkProps> = ({ tab, current, update, children }) => {
     const classes = current === tab ? 'nav-link active' : 'nav-link'
 
     const onClick = (e: React.MouseEvent) => {
@@ -118,29 +120,29 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, current, update, children }) => 
 }
 
 type ProteinCardBodyFetcherProps = {
-    result: SuccessfulQueryResult
+    cache: QueryResultCache
     tab: ProteinTab
     offsets: Record<ProteinTab, number>
     setTab: (tab: ProteinTab) => void
     setOffsets: (offsets: Record<ProteinTab, number>) => void
 }
 
-const ProteinCardBodyFetcher: React.FC<ProteinCardBodyFetcherProps> = ({ result, ...props }) => {
-    const proteins = result.proteins();
+const ProteinCardBodyFetcher: React.FC<ProteinCardBodyFetcherProps> = ({ cache, ...props }) => {
+    const proteins = cache.proteins();
 
     return <ProteinCardBody proteins={proteins} {...props} />
 }
 
 type NetworkCardBodyFetcherProps = {
-    result: SuccessfulQueryResult
+    cache: QueryResultCache
     labels: boolean
     ratio: number
     setLabels: (labels: boolean) => void
     setRatio: (ratio: number) => void
 }
 
-const NetworkCardBodyFetcher: React.FC<NetworkCardBodyFetcherProps> = ({ result, ...props }) => {
-    const network = result.network();
+const NetworkCardBodyFetcher: React.FC<NetworkCardBodyFetcherProps> = ({ cache, ...props }) => {
+    const network = cache.network();
 
     return <NetworkCardBody network={network} {...props} />
 }

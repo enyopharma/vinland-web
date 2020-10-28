@@ -1,4 +1,5 @@
 import { SimulationNodeDatum, SimulationLinkDatum } from 'd3-force'
+import { cache } from './cache'
 import { network } from './network'
 
 export type Query = {
@@ -31,14 +32,14 @@ export interface IncompleteQueryResult {
 export interface SuccessfulQueryResult {
     status: typeof QueryResultStatuses.SUCCESS
     interactions: Interaction[]
-    proteins: () => Protein[]
-    network: () => Network
 }
 
 export interface FailedQueryResult {
     status: typeof QueryResultStatuses.FAILURE
     errors: string[]
 }
+
+export type QueryResultCache = ReturnType<typeof cache>
 
 export type Interaction = {
     id: number
@@ -89,5 +90,7 @@ export interface Link extends SimulationLinkDatum<Node> {
 }
 
 export type Network = ReturnType<typeof network>
+
+export type ResultTab = 'interactions' | 'proteins' | 'network'
 
 export type ProteinTab = 'a' | 'h' | 'v'

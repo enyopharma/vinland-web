@@ -1,7 +1,15 @@
-import { Protein, Interaction, Network } from './types'
+import { SuccessfulQueryResult, Protein, Interaction, Network } from './types'
 import { network } from './network'
 
-export const getProteinCache = (interactions: Interaction[]) => {
+export const cache = (result: SuccessfulQueryResult) => {
+    return {
+        interactions: result.interactions,
+        proteins: getProteinCache(result.interactions),
+        network: getNetworkCache(result.interactions),
+    }
+}
+
+const getProteinCache = (interactions: Interaction[]) => {
     let cache: Protein[] | null = null
 
     const filter = (interactions: Interaction[]) => {
@@ -16,23 +24,27 @@ export const getProteinCache = (interactions: Interaction[]) => {
     }
 
     return () => {
-        if (cache === null) throw new Promise(resolve => setTimeout(() => {
-            cache = filter(interactions)
-            resolve()
-        }, 0))
+        if (cache === null) {
+            throw new Promise(resolve => setTimeout(() => {
+                cache = filter(interactions)
+                resolve()
+            }, 0))
+        }
 
         return cache
     }
 }
 
-export const getNetworkCache = (interactions: Interaction[]) => {
+const getNetworkCache = (interactions: Interaction[]) => {
     let cache: Network | null = null
 
     return () => {
-        if (cache === null) throw new Promise(resolve => setTimeout(() => {
-            cache = network(interactions)
-            resolve()
-        }, 0))
+        if (cache === null) {
+            throw new Promise(resolve => setTimeout(() => {
+                cache = network(interactions)
+                resolve()
+            }, 0))
+        }
 
         return cache
     }

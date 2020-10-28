@@ -1,6 +1,5 @@
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
-import { getProteinCache, getNetworkCache } from './cache'
 
 import { Query, QueryResult, QueryResultStatuses } from './types'
 
@@ -36,12 +35,7 @@ const fetchResult = async (query: Query) => {
             case QueryResultStatuses.FAILURE:
                 return { status: json.status, errors: json.errors }
             case QueryResultStatuses.SUCCESS:
-                return {
-                    status: json.status,
-                    interactions: json.data,
-                    proteins: getProteinCache(json.data),
-                    network: getNetworkCache(json.data),
-                }
+                return { status: json.status, interactions: json.data }
             default:
                 throw new Error(json)
         }
