@@ -43,13 +43,11 @@ final class InteractorViewSql implements InteractorViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT DISTINCT i.id AS interaction_id, m.start, m.stop, m.identity, m.sequence
-        FROM interactions AS i, edges AS e, descriptions AS d, mappings AS m
-        WHERE i.type = ?
-        AND i.id = d.interaction_id
-        AND i.id = e.interaction_id
+        SELECT DISTINCT e.interaction_id, m.start, m.stop, m.identity, m.sequence
+        FROM proteins AS p, edges AS e, mappings AS m
+        WHERE p.type = ?
+        AND p.id = e.target_id
         AND e.id = m.edge_id
-        AND d.id = m.description_id
         AND e.source_id = ?
         AND m.sequence_id = ?
     SQL;
