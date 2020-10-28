@@ -82,8 +82,10 @@ final class InteractorViewSql implements InteractorViewInterface
     {
         foreach ($rows as $row) {
             yield [
-                'id' => $row['id'],
-                'type' => $row['type'],
+                'interaction' => [
+                    'id' => $row['id'],
+                    'type' => $row['type'],
+                ],
                 'protein' => [
                     'id' => $row['protein_id'],
                     'type' => $row['protein_type'],
