@@ -20,7 +20,7 @@ export const resources = {
 }
 
 const fetchAnnotations = async (source: string, query: string) => {
-    const querystr = qs.encode({ source: source, query: query, limit: limit })
+    const querystr = qs.encode({ source, query, limit })
     const params = { headers: { accept: 'application/json' } }
 
     try {

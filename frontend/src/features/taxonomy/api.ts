@@ -31,7 +31,7 @@ export const resources = {
 }
 
 const fetchTaxa = async (query: string) => {
-    const querystr = qs.encode({ query: query, limit: limit })
+    const querystr = qs.encode({ query, limit })
     const params = { headers: { 'accept': 'application/json' } }
 
     try {

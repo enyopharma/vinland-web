@@ -52,7 +52,7 @@ const fetchProtein = async (id: number) => {
 }
 
 const fetchProteins = async (type: string, query: string) => {
-    const querystr = qs.encode({ type: type, query: query, limit: limit })
+    const querystr = qs.encode({ type, query, limit })
     const params = { headers: { accept: 'application/json' } }
 
     try {
