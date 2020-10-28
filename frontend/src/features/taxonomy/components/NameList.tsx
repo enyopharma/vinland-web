@@ -5,28 +5,28 @@ import { useActionCreator } from 'app/hooks'
 import { Name } from '../types'
 import { actions } from '../reducer'
 
-type Props = {
+type NameListProps = {
     names: Name[]
     selected: Name[]
 }
 
-export const NameList: React.FC<Props> = ({ names, selected }) => {
+export const NameList: React.FC<NameListProps> = ({ names, selected }) => {
     const update = useActionCreator(actions.update)
 
     const buttons = names.length === 0
         ? 'no interactor associated to this taxon'
-        : names.map((name, i) => <Button key={i} name={name} selected={selected} update={update} />)
+        : names.map((name, i) => <NameButton key={i} name={name} selected={selected} update={update} />)
 
     return <p>{buttons}</p>
 }
 
-type ButtonProps = {
+type NameButtonProps = {
     name: Name
     selected: Name[]
     update: (names: Name[]) => void
 }
 
-const Button: React.FC<ButtonProps> = ({ name, selected, update }) => {
+const NameButton: React.FC<NameButtonProps> = ({ name, selected, update }) => {
     const classes = selected.includes(name)
         ? 'm-1 btn btn-sm btn-danger'
         : 'm-1 btn btn-sm btn-outline-danger'

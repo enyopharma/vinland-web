@@ -2,11 +2,11 @@ import React from 'react'
 import { ToastContainer as RawToastContainer, toast } from 'react-toastify'
 import '../toast/style.scss'
 
-type Props = {
+type ToastContainerProps = {
     target: string
 }
 
-export const ToastContainer: React.FC<Props> = ({ target }) => (
+export const ToastContainer: React.FC<ToastContainerProps> = ({ target }) => (
     <RawToastContainer
         autoClose={2000}
         hideProgressBar={true}

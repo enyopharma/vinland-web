@@ -6,13 +6,13 @@ import { Interactor, Interaction, Protein, Mapping } from '../types'
 
 const limit = 10
 
-type Props = {
+type InteractorTableProps = {
     source: Protein
     interactors: Interactor[]
     width: number
 }
 
-export const InteractorTable: React.FC<Props> = ({ source, interactors, width }) => {
+export const InteractorTable: React.FC<InteractorTableProps> = ({ source, interactors, width }) => {
     const [offset, setOffset] = useState<number>(0)
 
     const slice = interactors.sort(sorti).slice(offset, offset + limit)

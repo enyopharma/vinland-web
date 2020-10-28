@@ -5,12 +5,12 @@ import { useActionCreator } from 'app/hooks'
 import { Taxon } from '../types'
 import { actions } from '../reducer'
 
-type Props = {
+type RelatedFormRowProps = {
     parent: Taxon | null
     children: Taxon[]
 }
 
-export const RelatedFormRow: React.FC<Props> = ({ parent, children }) => {
+export const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ parent, children }) => {
     const select = useActionCreator(actions.select)
 
     const selectParent = () => parent && select(parent)

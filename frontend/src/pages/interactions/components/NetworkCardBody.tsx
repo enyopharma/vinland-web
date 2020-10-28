@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 
 import { Network } from '../types'
 
-type Props = {
+type NetworkCardBodyProps = {
     network: Network
     ratio: number
     labels: boolean
@@ -10,7 +10,7 @@ type Props = {
     setLabels: (labels: boolean) => void
 }
 
-export const NetworkCardBody: React.FC<Props> = ({ network, ratio, labels, setRatio, setLabels }) => (
+export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network, ratio, labels, setRatio, setLabels }) => (
     <React.Fragment>
         <div className="card-body">
             <div className="row">

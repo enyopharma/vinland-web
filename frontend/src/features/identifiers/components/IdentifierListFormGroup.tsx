@@ -2,13 +2,13 @@ import React from 'react'
 
 import { IdentifierList } from '../types'
 
-type Props = {
+type IdentifierListFormGroupProps = {
     list: IdentifierList
     update: (identifiers: string) => void
     remove: () => void
 }
 
-export const IdentifierListFormGroup: React.FC<Props> = ({ list, update, remove }) => {
+export const IdentifierListFormGroup: React.FC<IdentifierListFormGroupProps> = ({ list, update, remove }) => {
     return (
         <div className="form-group">
             <label>{list.name}</label>

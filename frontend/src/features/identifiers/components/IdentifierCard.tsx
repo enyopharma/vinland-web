@@ -10,11 +10,11 @@ import { IdentifierList } from '../types'
 import { AnnotationInput } from './AnnotationInput'
 import { IdentifierListFormGroup } from './IdentifierListFormGroup'
 
-type Props = {
+type IdentifierCardProps = {
     lists: IdentifierList[]
 }
 
-export const IdentifierCard: React.FC<Props> = ({ lists }) => {
+export const IdentifierCard: React.FC<IdentifierCardProps> = ({ lists }) => {
     const add = useActionCreator(actions.add)
     const select = useActionCreator(actions.select)
     const update = useActionCreator(actions.update)

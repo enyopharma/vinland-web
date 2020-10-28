@@ -1,13 +1,13 @@
 import React from 'react'
 
-type Props = {
+type PaginationProps = {
     offset: number
     total: number
     limit: number
     update: (offset: number) => void
 }
 
-export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) => {
+export const Pagination: React.FC<PaginationProps> = ({ offset, total, limit, update }) => {
     const cur = Math.floor(offset / limit) + 1
     const max = Math.ceil(total / limit)
 
@@ -16,37 +16,37 @@ export const Pagination: React.FC<Props> = ({ offset, total, limit, update }) =>
     return (
         <nav>
             <ul className="pagination justify-content-center">
-                <Li state={cur === 1 ? 'disabled' : null} update={() => page(cur - 1)}>
+                <PageLi state={cur === 1 ? 'disabled' : null} update={() => page(cur - 1)}>
                     &laquo;
-                </Li>
+                </PageLi>
                 {items(10, cur, max).map((item, i) => item
-                    ? <Li key={i} state={item.active ? 'active' : null} update={() => page(item.page)}>{item.page}</Li>
-                    : <Li key={i} state={'disabled'} update={() => { }}>&hellip;</Li>
+                    ? <PageLi key={i} state={item.active ? 'active' : null} update={() => page(item.page)}>{item.page}</PageLi>
+                    : <PageLi key={i} state={'disabled'} update={() => { }}>&hellip;</PageLi>
                 )}
-                <Li state={cur === max ? 'disabled' : null} update={() => page(cur + 1)}>
+                <PageLi state={cur === max ? 'disabled' : null} update={() => page(cur + 1)}>
                     &raquo;
-                </Li>
+                </PageLi>
             </ul>
         </nav>
     )
 }
 
-type LiProps = {
+type PageLiProps = {
     state: 'active' | 'disabled' | null
     update: () => void
 }
 
-const Li: React.FC<LiProps> = ({ state, update, children }) => (
+const PageLi: React.FC<PageLiProps> = ({ state, update, children }) => (
     <li className={`page-item ${state === null ? '' : ' ' + state}`}>
-        <A update={update}>{children}</A>
+        <PageLink update={update}>{children}</PageLink>
     </li>
 )
 
-type AProps = {
+type PageLinkProps = {
     update: () => void
 }
 
-const A: React.FC<AProps> = ({ update, children }) => {
+const PageLink: React.FC<PageLinkProps> = ({ update, children }) => {
     const onClick = (e: React.MouseEvent) => {
         e.preventDefault()
         update()

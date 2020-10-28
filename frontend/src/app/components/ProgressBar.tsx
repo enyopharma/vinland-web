@@ -1,10 +1,10 @@
 import React from 'react'
 
-type Props = {
+type ProgressBarProps = {
     type?: 'primary' | 'info' | 'danger'
 }
 
-export const ProgressBar: React.FC<Props> = ({ type = 'primary' }) => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({ type = 'primary' }) => {
     const classes = `progress-bar progress-bar-striped progress-bar-animated bg-${type}`
 
     return (

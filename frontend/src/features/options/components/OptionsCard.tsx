@@ -5,20 +5,26 @@ import { useActionCreator } from 'app/hooks'
 import { Options } from '../types'
 import { actions } from '../reducer'
 
-type Props = {
+type OptionsCardProps = {
     options: Options
 }
 
-export const OptionsCard: React.FC<Props> = (props) => (
+export const OptionsCard: React.FC<OptionsCardProps> = ({ options }) => (
     <div className="card">
         <div className="card-body">
-            <DisplayOptionsRow {...props} />
-            <FilterOptionsRow {...props} />
+            <DisplayOptionsRow {...options} />
+            <FilterOptionsRow {...options} />
         </div>
     </div>
 )
 
-const DisplayOptionsRow: React.FC<Props> = ({ options: { hh, vh, neighbors } }) => {
+type DisplayOptionsRowProps = {
+    hh: boolean
+    vh: boolean
+    neighbors: boolean
+}
+
+const DisplayOptionsRow: React.FC<DisplayOptionsRowProps> = ({ hh, vh, neighbors }) => {
     const setHH = useActionCreator(actions.setHH)
     const setVH = useActionCreator(actions.setVH)
     const setNeighbors = useActionCreator(actions.setNeighbors)
@@ -72,7 +78,12 @@ const DisplayOptionsRow: React.FC<Props> = ({ options: { hh, vh, neighbors } }) 
     )
 }
 
-const FilterOptionsRow: React.FC<Props> = ({ options: { publications, methods } }) => {
+type FilterOptionsRowProps = {
+    publications: number
+    methods: number
+}
+
+const FilterOptionsRow: React.FC<FilterOptionsRowProps> = ({ publications, methods }) => {
     const setPublications = useActionCreator(actions.setPublications)
     const setMethods = useActionCreator(actions.setMethods)
 

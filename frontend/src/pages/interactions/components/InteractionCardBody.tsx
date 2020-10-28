@@ -7,13 +7,13 @@ import { CsvDownloadButton } from './CsvDownloadButton'
 
 const limit = 10
 
-type Props = {
+type InteractionCardBodyProps = {
     interactions: Interaction[]
     offset: number
     setOffset: (offset: number) => void
 }
 
-export const InteractionCardBody: React.FC<Props> = ({ interactions, offset, setOffset }) => {
+export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions, offset, setOffset }) => {
     const slice = interactions.slice(offset, offset + limit)
 
     return (

@@ -11,11 +11,11 @@ import { NameList } from './NameList'
 import { TaxonInput } from './TaxonInput'
 import { RelatedFormRow } from './RelatedFormRow'
 
-type Props = {
+type TaxonomyCardProps = {
     taxonomy: Taxonomy
 }
 
-export const TaxonomyCard: React.FC<Props> = ({ taxonomy }) => {
+export const TaxonomyCard: React.FC<TaxonomyCardProps> = ({ taxonomy }) => {
     return taxonomy.taxon === null
         ? <CardWithoutSelectedTaxon />
         : <CardWithSelectedTaxon taxon={taxonomy.taxon} names={taxonomy.names} />

@@ -1,12 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-type Props = {
+type ProteinLinkProps = {
     id: number
     target?: string
 }
 
-export const ProteinLink: React.FC<Props> = ({ id, target = '', children }) => {
+export const ProteinLink: React.FC<ProteinLinkProps> = ({ id, target = '', children }) => {
     const href = `/proteins/${id}`
     const style = { textDecoration: 'none' }
 

@@ -3,20 +3,20 @@ import React, { RefObject, useState, useEffect } from 'react'
 import { SearchResult } from '../types'
 import { ProgressBar } from './ProgressBar'
 
-type Props = {
+type SearchResultListProps = {
     input: RefObject<HTMLInputElement>
     query: string,
     search: (value: string) => SearchResult<any>[]
     select: (value: any) => void
 }
 
-export const SearchResultList: React.FC<Props> = (props) => (
-    <React.Suspense fallback={<Fallback />}>
-        <Fetcher {...props} />
+export const SearchResultList: React.FC<SearchResultListProps> = (props) => (
+    <React.Suspense fallback={<FallbackList />}>
+        <List {...props} />
     </React.Suspense>
 )
 
-const Fallback: React.FC = () => (
+const FallbackList: React.FC = () => (
     <ul className="list-group">
         <li className="list-group-item">
             <ProgressBar />
@@ -24,20 +24,16 @@ const Fallback: React.FC = () => (
     </ul>
 )
 
-const Fetcher: React.FC<Props> = ({ query, search, ...props }) => {
-    const results = search(query)
-
-    return <Ul query={query} results={results} {...props} />
-}
-
-type UlProps = {
+type ListProps = {
     input: RefObject<HTMLInputElement>
     query: string,
-    results: SearchResult<any>[]
+    search: (query: string) => SearchResult<any>[]
     select: (value: any) => void
 }
 
-const Ul: React.FC<UlProps> = ({ input, query, results, select, children }) => {
+const List: React.FC<ListProps> = ({ input, query, search, select, children }) => {
+    const results = search(query)
+
     const [active, setActive] = useState<number>(0)
 
     const active1 = results.length === 0 ? 0 : active % results.length

@@ -7,7 +7,7 @@ import { CsvDownloadButton } from './CsvDownloadButton'
 
 const limit = 10
 
-type Props = {
+type ProteinCardBodyProps = {
     proteins: Protein[]
     tab: ProteinTab
     offsets: Record<ProteinTab, number>
@@ -15,7 +15,7 @@ type Props = {
     setOffsets: (offsets: Record<ProteinTab, number>) => void
 }
 
-export const ProteinCardBody: React.FC<Props> = ({ proteins, tab, offsets, setTab, setOffsets }) => {
+export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab, offsets, setTab, setOffsets }) => {
     const filtered = filter(tab, proteins)
     const offset = offsets[tab]
     const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
-type Props = {
+type TimeoutProps = {
     ms?: number
 }
 
-export const Timeout: React.FC<Props> = ({ ms = 1000 }) => {
+export const Timeout: React.FC<TimeoutProps> = ({ ms = 1000 }) => {
     const dots = ['.&nbsp;&nbsp;', '..&nbsp;', '...']
 
     const [i, setI] = useState(0)

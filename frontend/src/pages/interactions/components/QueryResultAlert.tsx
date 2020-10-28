@@ -4,11 +4,11 @@ import { toast } from 'app/toast'
 
 import { QueryResult, QueryResultStatuses } from '../types'
 
-type Props = {
+type QueryResultAlertProps = {
     result: QueryResult
 }
 
-export const QueryResultAlert: React.FC<Props> = ({ result }) => {
+export const QueryResultAlert: React.FC<QueryResultAlertProps> = ({ result }) => {
     switch (result.status) {
         case QueryResultStatuses.INCOMPLETE:
             return <AlertIncomplete />

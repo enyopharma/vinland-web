@@ -1,11 +1,11 @@
 import React from 'react'
 
-type Props = {
+type CsvDownloadButtonProps = {
     enabled?: boolean
     csv: () => string
 }
 
-export const CsvDownloadButton: React.FC<Props> = ({ enabled = true, csv, children }) => {
+export const CsvDownloadButton: React.FC<CsvDownloadButtonProps> = ({ enabled = true, csv, children }) => {
     const prefix = 'data:text/csv;charset=utf-8,'
 
     const download = () => window.open(prefix + encodeURIComponent(csv()))

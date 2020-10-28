@@ -11,11 +11,11 @@ const sources = [
     { value: 'GOmf', label: 'GOmf' },
 ]
 
-type Props = {
+type AnnotationInputProps = {
     select: (annotation: Annotation) => void,
 }
 
-export const AnnotationInput: React.FC<Props> = ({ select }) => {
+export const AnnotationInput: React.FC<AnnotationInputProps> = ({ select }) => {
     const input = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
     const [source, setSource] = useState<string>('')
@@ -35,7 +35,7 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
                 <div className="input-group-prepend">
                     <span className="input-group-text">@</span>
                 </div>
-                <Select input={input} source={source} update={setSource} />
+                <AnnotationSourceSelect input={input} source={source} update={setSource} />
                 <input
                     ref={input}
                     type="text"
@@ -53,13 +53,13 @@ export const AnnotationInput: React.FC<Props> = ({ select }) => {
     )
 }
 
-type SelectProps = {
+type AnnotationSourceSelectProps = {
     input: React.RefObject<HTMLInputElement>
     source: string
     update: (source: string) => void
 }
 
-const Select: React.FC<SelectProps> = ({ input, source, update }) => {
+const AnnotationSourceSelect: React.FC<AnnotationSourceSelectProps> = ({ input, source, update }) => {
     useEffect(() => { if (source.trim().length > 0) input.current?.focus() }, [input, source])
 
     return (
