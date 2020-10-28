@@ -1,4 +1,4 @@
-import { Node, Link } from '../types'
+import { Node, Link } from './types'
 
 export const getSelection = ({ links }: { links: Link[] }) => {
     let current = 0

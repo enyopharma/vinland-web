@@ -1,6 +1,7 @@
 import Konva from 'konva'
-import { Interaction, Protein, Node, Link } from '../types'
 import { config } from '../config'
+import { Interaction, Protein } from '../types'
+import { Node, Link } from './types'
 import { getLabels } from './labels'
 import { getSelection } from './selection'
 import { getSimulation } from './simulation'

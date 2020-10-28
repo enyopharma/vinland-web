@@ -1,6 +1,6 @@
 import * as d3 from 'd3-force'
-import { Node, Link } from '../types'
 import { config } from '../config'
+import { Node, Link } from './types'
 
 export const getSimulation = (network: { nodes: Node[], links: Link[] }) => {
     let ratio = config.ratio
