@@ -235,8 +235,8 @@ const sorti = (a: Interaction, b: Interaction) => {
     //    - min interaction id
     const starta = Math.min(...a.mappings.map(mapping => mapping.start))
     const startb = Math.min(...b.mappings.map(mapping => mapping.start))
-    const densitya = a.mappings.reduce((a, m) => a + m.stop - m.start + 1, 0)
-    const densityb = a.mappings.reduce((a, m) => a + m.stop - m.start + 1, 0)
+    const densitya = a.mappings.reduce((acc, m) => acc + m.stop - m.start + 1, 0)
+    const densityb = b.mappings.reduce((acc, m) => acc + m.stop - m.start + 1, 0)
 
     return starta - startb || densityb - densitya || a.id - b.id
 }
