@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import { IdentifierList, Annotation } from './types'
+import { IdentifierList, Annotation } from '../types'
 
 let listKeyCounter = 0
 

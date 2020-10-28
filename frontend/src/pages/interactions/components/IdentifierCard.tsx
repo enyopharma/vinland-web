@@ -4,11 +4,10 @@ import { animated, useSpring } from 'react-spring'
 import { useActionCreator } from 'app/hooks'
 
 import { parse } from '../utils'
-import { actions } from '../reducer'
 import { IdentifierList } from '../types'
+import { actions } from '../reducers/identifiers'
 
 import { AnnotationInput } from './AnnotationInput'
-import { IdentifierListFormGroup } from './IdentifierListFormGroup'
 
 type IdentifierCardProps = {
     lists: IdentifierList[]
@@ -63,5 +62,32 @@ const FadeIn: React.FC<FadeInProps> = ({ enabled, children }) => {
         <animated.div className="animation" style={enabled ? style : {}}>
             {children}
         </animated.div>
+    )
+}
+
+type IdentifierListFormGroupProps = {
+    list: IdentifierList
+    update: (identifiers: string) => void
+    remove: () => void
+}
+
+const IdentifierListFormGroup: React.FC<IdentifierListFormGroupProps> = ({ list, update, remove }) => {
+    return (
+        <div className="form-group">
+            <label>{list.name}</label>
+            <div className="input-group">
+                <textarea
+                    className="form-control"
+                    placeholder="Uniprot accession numbers or names spaced by commas or new lines."
+                    value={list.identifiers}
+                    onChange={e => update(e.target.value)}
+                />
+                <div className="input-group-append">
+                    <button type="button" className="btn btn-danger" onClick={remove}>
+                        X
+                    </button>
+                </div>
+            </div>
+        </div>
     )
 }

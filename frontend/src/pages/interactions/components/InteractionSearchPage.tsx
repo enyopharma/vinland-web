@@ -5,13 +5,12 @@ import { AppState } from 'app/types'
 import { useAppSelector } from 'app/hooks'
 import { Timeout, ToastContainer } from 'app/partials'
 
-import { OptionsCard } from 'features/options'
-import { TaxonomyCard } from 'features/taxonomy'
-import { IdentifierCard } from 'features/identifiers'
-import { parse as parseIdentifiers } from 'features/identifiers'
-
-import { resources } from '../api'
 import { Query } from '../types'
+import { resources } from '../api'
+import { parse as parseIdentifiers } from '../utils'
+import { TaxonomyCard } from './TaxonomyCard'
+import { IdentifierCard } from './IdentifierCard'
+import { DisplayOptionsCard } from './DisplayOptionsCard'
 
 const QueryResultCard = React.lazy(() => import('./QueryResultCard').then(module => ({ default: module.QueryResultCard })))
 const QueryResultAlert = React.lazy(() => import('./QueryResultAlert').then(module => ({ default: module.QueryResultAlert })))
@@ -36,7 +35,7 @@ export const InteractionSearchPage: React.FC = () => {
                 </fieldset>
                 <fieldset>
                     <legend>PPI display options</legend>
-                    <OptionsCard options={options} />
+                    <DisplayOptionsCard options={options} />
                 </fieldset>
             </form>
             <h2 id="result">Query result</h2>

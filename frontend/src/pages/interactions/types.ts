@@ -1,6 +1,49 @@
 import { cache } from './cache'
 import { network } from './network'
 
+export type Annotation = {
+    source: string
+    ref: string
+    name: string
+    accessions: string[]
+}
+
+export type IdentifierList = {
+    i: number
+    name: string
+    identifiers: string
+}
+
+export type Taxonomy = {
+    taxon: Taxon | null
+    names: Name[]
+}
+
+export type Taxon = {
+    ncbi_taxon_id: number
+    name: string
+    nb_interactions: number
+}
+
+export type Name = string
+
+export type RelatedTaxa = {
+    parent: Taxon | null
+    children: Taxon[]
+}
+
+export type DisplayOptions = {
+    hh: boolean
+    vh: boolean
+    neighbors: boolean
+    publications: number
+    methods: number
+}
+
+export type ResultTab = 'interactions' | 'proteins' | 'network'
+
+export type ProteinTab = 'a' | 'h' | 'v'
+
 export type Query = {
     key: string
     identifiers: string[]
@@ -66,7 +109,3 @@ export type Protein = {
 }
 
 export type Network = ReturnType<typeof network>
-
-export type ResultTab = 'interactions' | 'proteins' | 'network'
-
-export type ProteinTab = 'a' | 'h' | 'v'

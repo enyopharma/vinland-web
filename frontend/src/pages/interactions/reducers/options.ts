@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import { Options } from './types'
-import { actions as taxonomy } from 'features/taxonomy'
+import { DisplayOptions } from '../types'
+import { actions as taxonomy } from './taxonomy'
 
-const initialState: Options = {
+const initialState: DisplayOptions = {
     hh: true,
     vh: true,
     neighbors: true,

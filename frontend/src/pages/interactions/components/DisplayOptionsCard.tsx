@@ -2,14 +2,14 @@ import React from 'react'
 
 import { useActionCreator } from 'app/hooks'
 
-import { Options } from '../types'
-import { actions } from '../reducer'
+import { DisplayOptions } from '../types'
+import { actions } from '../reducers/options'
 
-type OptionsCardProps = {
-    options: Options
+type DisplayOptionsCardProps = {
+    options: DisplayOptions
 }
 
-export const OptionsCard: React.FC<OptionsCardProps> = ({ options }) => (
+export const DisplayOptionsCard: React.FC<DisplayOptionsCardProps> = ({ options }) => (
     <div className="card">
         <div className="card-body">
             <DisplayOptionsRow {...options} />
