@@ -48,10 +48,10 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\IsoformViewInterface::class),
         ),
 
-        'GET /proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}/interactions/{type:hh|vh}' => new App\Endpoints\Isoforms\Interactions\IndexEndpoint(
+        'GET /proteins/{protein_id:\d+}/interactors/{type:h|v}' => new App\Endpoints\Interactors\IndexEndpoint(
             $container->get(App\ReadModel\ProteinViewInterface::class),
             $container->get(App\ReadModel\IsoformViewInterface::class),
-            $container->get(App\ReadModel\Isoforms\InteractionViewInterface::class),
+            $container->get(App\ReadModel\InteractorViewInterface::class),
         ),
 
         'GET /interactions/{interaction_id:\d+}' => new App\Endpoints\Interactions\ShowEndpoint(

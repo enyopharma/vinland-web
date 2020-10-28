@@ -16,6 +16,10 @@ final class IsoformViewSql implements IsoformViewInterface
         SELECT * FROM sequences WHERE protein_id = ? ORDER BY id ASC
     SQL;
 
+    const SELECT_CANONICAL_SQL = <<<SQL
+        SELECT * FROM sequences WHERE protein_id = ? AND is_canonical IS TRUE
+    SQL;
+
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
@@ -37,5 +41,14 @@ final class IsoformViewSql implements IsoformViewInterface
         $select_isoforms_sth->execute([$protein_id]);
 
         return Statement::from($select_isoforms_sth);
+    }
+
+    public function canonical(int $protein_id): Statement
+    {
+        $select_isoform_sth = $this->pdo->prepare(self::SELECT_CANONICAL_SQL);
+
+        $select_isoform_sth->execute([$protein_id]);
+
+        return Statement::from($select_isoform_sth);
     }
 }

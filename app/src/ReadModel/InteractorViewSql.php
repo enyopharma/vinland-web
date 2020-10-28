@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\ReadModel\Isoforms;
+namespace App\ReadModel;
 
-use App\ReadModel\Statement;
-
-final class InteractionViewSql implements InteractionViewInterface
+final class InteractorViewSql implements InteractorViewInterface
 {
     private \PDO $pdo;
 
-    const SELECT_HH_INTERACTIONS_SQL = <<<SQL
+    const SELECT_H_INTERACTORS_SQL = <<<SQL
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
@@ -19,25 +17,27 @@ final class InteractionViewSql implements InteractionViewInterface
             interactions AS i,
             edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
             proteins AS p
-        WHERE i.type = 'hh'
+        WHERE p.type = 'h'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
         AND e.source_id = ?
         GROUP BY i.id, p.id
     SQL;
 
-    const SELECT_VH_INTERACTIONS_SQL = <<<SQL
+    const SELECT_V_INTERACTORS_SQL = <<<SQL
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            COALESCE(t.name, 'Homo sapiens') AS taxon, COUNT(m.id) AS nb_mappings
+            t.name AS taxon, COUNT(m.id) AS nb_mappings
         FROM
             interactions AS i,
             edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
-            proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
-        WHERE i.type = 'vh'
+            proteins AS p,
+            taxonomy AS t
+        WHERE p.type = 'v'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
+        AND p.ncbi_taxon_id = t.ncbi_taxon_id
         AND e.source_id = ?
         GROUP BY i.id, p.id, t.taxon_id
     SQL;
@@ -59,13 +59,13 @@ final class InteractionViewSql implements InteractionViewInterface
         $this->pdo = $pdo;
     }
 
-    public function isoform(string $type, int $protein_id, int $isoform_id): Statement
+    public function all(string $type, int $protein_id, int $isoform_id): Statement
     {
-        $select_interactions_sth = $type == 'hh'
-            ? $this->pdo->prepare(self::SELECT_HH_INTERACTIONS_SQL)
-            : $this->pdo->prepare(self::SELECT_VH_INTERACTIONS_SQL);
+        $select_interactors_sth = $type == 'h'
+            ? $this->pdo->prepare(self::SELECT_H_INTERACTORS_SQL)
+            : $this->pdo->prepare(self::SELECT_V_INTERACTORS_SQL);
 
-        $select_interactions_sth->execute([$protein_id]);
+        $select_interactors_sth->execute([$protein_id]);
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
@@ -77,7 +77,7 @@ final class InteractionViewSql implements InteractionViewInterface
             throw new \LogicException;
         }
 
-        return Statement::from($this->generator($select_interactions_sth, $mappings));
+        return Statement::from($this->generator($select_interactors_sth, $mappings));
     }
 
     private function generator(iterable $rows, array $mappings): \Generator

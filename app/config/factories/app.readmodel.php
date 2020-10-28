@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\ReadModel\Isoforms;
 use App\ReadModel\TaxonViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
 use App\ReadModel\AnnotationViewInterface;
+use App\ReadModel\InteractorViewInterface;
 use App\ReadModel\InteractionViewInterface;
 use App\ReadModel\DescriptionViewInterface;
 
@@ -23,7 +23,7 @@ return [
         $c->get(PDO::class),
     ),
 
-    Isoforms\InteractionViewInterface::class => fn ($c) => new App\ReadModel\Isoforms\InteractionViewSql(
+    InteractorViewInterface::class => fn ($c) => new App\ReadModel\InteractorViewSql(
         $c->get(PDO::class),
     ),
 
