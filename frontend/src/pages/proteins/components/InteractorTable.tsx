@@ -24,7 +24,7 @@ export const InteractorTable: React.FC<Props> = ({ source, interactors, width })
                     <Pagination offset={offset} total={interactors.length} limit={limit} update={setOffset} />
                 </div>
             </div>
-            <table className="table">
+            <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
                         <th className="col-1 text-center">-</th>
