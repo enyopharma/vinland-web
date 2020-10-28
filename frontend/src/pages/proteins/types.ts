@@ -18,11 +18,15 @@ export type Isoform = {
 }
 
 export type Interaction = {
-    id: number,
+    id: number
     type: 'hh' | 'vh'
+}
+
+export type Interactor = {
+    interaction: Interaction
     protein: Protein
-    nb_mappings: number
     mappings: Mapping[]
+    nb_mappings: number
 }
 
 export type Mapping = {

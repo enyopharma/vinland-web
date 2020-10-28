@@ -2,31 +2,26 @@ import React, { useState } from 'react'
 
 import { Pagination, ProteinLink, InteractionLink } from 'app/partials'
 
-import { Protein, Interaction, Mapping } from '../types'
+import { Interactor, Interaction, Protein, Mapping } from '../types'
 
 const limit = 10
 
 type Props = {
-    type: 'h' | 'v'
+    source: Protein
+    interactors: Interactor[]
     width: number
-    interactions: Interaction[]
 }
 
-export const InteractionTable: React.FC<Props> = ({ type, width, interactions }) => {
+export const InteractorTable: React.FC<Props> = ({ source, interactors, width }) => {
     const [offset, setOffset] = useState<number>(0)
 
-    const slice = interactions.sort(sorti).slice(offset, offset + limit)
+    const slice = interactors.sort(sorti).slice(offset, offset + limit)
 
     return (
         <React.Fragment>
             <div className="row">
                 <div className="col">
-                    <Pagination
-                        offset={offset}
-                        total={interactions.length}
-                        limit={limit}
-                        update={setOffset}
-                    />
+                    <Pagination offset={offset} total={interactors.length} limit={limit} update={setOffset} />
                 </div>
             </div>
             <table className="table">
@@ -42,19 +37,14 @@ export const InteractionTable: React.FC<Props> = ({ type, width, interactions })
                 </thead>
                 <tbody>
                     {[...Array(limit)].map((_, i) => slice[i]
-                        ? <InteractionTr key={i} type={type} width={width} interaction={slice[i]} />
+                        ? <InteractionTr key={i} source={source} interactor={slice[i]} width={width} />
                         : <SkeletonTr key={i} />
                     )}
                 </tbody>
             </table>
             <div className="row">
                 <div className="col">
-                    <Pagination
-                        offset={offset}
-                        total={interactions.length}
-                        limit={limit}
-                        update={setOffset}
-                    />
+                    <Pagination offset={offset} total={interactors.length} limit={limit} update={setOffset} />
                 </div>
             </div>
         </React.Fragment>
@@ -73,13 +63,13 @@ const SkeletonTr: React.FC = () => (
 )
 
 type InteractionTrProps = {
-    type: 'h' | 'v'
+    source: Protein
+    interactor: Interactor
     width: number
-    interaction: Interaction
 }
 
-const InteractionTr: React.FC<InteractionTrProps> = ({ type, width, interaction }) => {
-    const clx = clusters(interaction.mappings)
+const InteractionTr: React.FC<InteractionTrProps> = ({ source, interactor, width }) => {
+    const clx = clusters(interactor.mappings)
 
     const rowspan = clx.length > 1 ? clx.length : undefined
 
@@ -87,34 +77,34 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ type, width, interaction 
         <React.Fragment>
             <tr key={0}>
                 <td className="text-center" rowSpan={rowspan}>
-                    <InteractionLinkImg interaction={interaction} />
+                    <InteractionLinkImg interaction={interactor.interaction} />
                     &nbsp;
-                    <ProteinLinkImg protein={interaction.protein} />
+                    <ProteinLinkImg protein={interactor.protein} />
                 </td>
                 <td className="text-center" rowSpan={rowspan}>
-                    <ProteinLinkAccession protein={interaction.protein} />
+                    <ProteinLinkAccession protein={interactor.protein} />
                 </td>
                 <td className="text-center" rowSpan={rowspan}>
-                    <ProteinLinkName protein={interaction.protein} />
+                    <ProteinLinkName protein={interactor.protein} />
                 </td>
                 <td className="text-center ellipsis" rowSpan={rowspan}>
-                    <span title={interaction.protein.taxon}>
-                        {interaction.protein.taxon}
+                    <span title={interactor.protein.taxon}>
+                        {interactor.protein.taxon}
                     </span>
                 </td>
                 <td className="ellipsis" rowSpan={rowspan}>
-                    <span title={interaction.protein.description}>
-                        {interaction.protein.description}
+                    <span title={interactor.protein.description}>
+                        {interactor.protein.description}
                     </span>
                 </td>
                 <td className="text-center">
-                    {clx.length > 0 && <MappingImg type={type} width={width} mappings={clx[0]} />}
+                    {clx.length > 0 && <MappingImg source={source} mappings={clx[0]} width={width} />}
                 </td>
             </tr>
             {clx.slice(1).map((mappings, m) => (
                 <tr key={m + 1}>
                     <td className="text-center">
-                        <MappingImg type={type} width={width} mappings={mappings} />
+                        <MappingImg source={source} mappings={mappings} width={width} />
                     </td>
                 </tr>
             ))}
@@ -179,26 +169,26 @@ const ProteinLinkName: React.FC<ProteinLinkNameProps> = ({ protein }) => {
 }
 
 type MappingImgProps = {
-    type: 'h' | 'v'
-    width: number
+    source: Protein
     mappings: Mapping[]
+    width: number
 }
 
-const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappings }) => (
+const MappingImg: React.FC<MappingImgProps> = ({ source, mappings, width }) => (
     <svg width="100%" height="30">
         <rect width="100%" y="14" height="2" style={{ fill: '#eee', strokeWidth: 0 }} />
-        {mappings.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
+        {mappings.map((mapping, i) => <MappingRect key={i} source={source} mapping={mapping} width={width} />)}
     </svg>
 )
 
 type MappingRectProps = {
-    type: 'h' | 'v'
-    width: number
+    source: Protein
     mapping: Mapping
+    width: number
 }
 
-const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
-    const color = type === 'h' ? '#6CC3D5' : '#FF7851'
+const MappingRect: React.FC<MappingRectProps> = ({ source, mapping, width }) => {
+    const color = source.type === 'h' ? '#6CC3D5' : '#FF7851'
     const startp = ((mapping.start / width) * 100) + '%'
     const stopp = ((mapping.stop / width) * 100) + '%'
     const widthp = (((mapping.stop - mapping.start + 1) / width) * 100) + '%'
@@ -216,14 +206,14 @@ const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
     )
 }
 
-const sorti = (a: Interaction, b: Interaction) => {
+const sorti = (a: Interactor, b: Interactor) => {
     // 1. whether one interaction has mapping on at least one isoform and not the other
     //    -> prevents from changing order form an isoform to another
     if (a.nb_mappings > 0 && b.nb_mappings === 0) return -1;
     if (a.nb_mappings === 0 && b.nb_mappings > 0) return +1;
 
     // 2. min interaction id when no interaction has mapping
-    if (a.mappings.length === 0 && b.mappings.length === 0) return a.id - b.id
+    if (a.mappings.length === 0 && b.mappings.length === 0) return a.interaction.id - b.interaction.id
 
     // 3. whether one interaction has mapping on the current isoform and not the other
     if (a.mappings.length > 0 && b.mappings.length === 0) return -1
@@ -238,7 +228,7 @@ const sorti = (a: Interaction, b: Interaction) => {
     const densitya = a.mappings.reduce((acc, m) => acc + m.stop - m.start + 1, 0)
     const densityb = b.mappings.reduce((acc, m) => acc + m.stop - m.start + 1, 0)
 
-    return starta - startb || densityb - densitya || a.id - b.id
+    return starta - startb || densityb - densitya || a.interaction.id - b.interaction.id
 }
 
 const clusters = (mappings: Mapping[]): Array<Mapping[]> => {

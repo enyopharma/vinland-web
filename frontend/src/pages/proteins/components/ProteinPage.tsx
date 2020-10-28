@@ -6,7 +6,7 @@ import { Timeout } from 'app/partials'
 import { resources } from '../api'
 import { Protein, Isoform } from '../types'
 
-const InteractionTable = React.lazy(() => import('./InteractionTable').then(module => ({ default: module.InteractionTable })))
+const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
 
 export const ProteinPage: React.FC = () => {
     const { id } = useParams<{ id: string }>()
@@ -69,12 +69,12 @@ export const ProteinSection: React.FC<ProteinSectionProps> = ({ id }) => {
                 </div>
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="vh">VH interactions</h2>
-                <InteractionTableFetcher type="vh" protein={protein} isoform={isoform} />
+                <InteractorTableFetcher type={protein.type === 'h' ? 'v' : 'h'} protein={protein} isoform={isoform} />
                 {protein.type === 'h' && (
                     <React.Fragment>
                         <div className="float-right">[<a href="#top">top</a>]</div>
                         <h2 id="hh">HH interactions</h2>
-                        <InteractionTableFetcher type="hh" protein={protein} isoform={isoform} />
+                        <InteractorTableFetcher type="h" protein={protein} isoform={isoform} />
                     </React.Fragment>
                 )}
             </React.Suspense>
@@ -97,20 +97,20 @@ const IsoformOption: React.FC<IsoformOptionProps> = ({ value, isoform }) => {
     return <option value={value}>{label}</option>
 }
 
-type InteractionTableFetcherProps = {
-    type: 'hh' | 'vh'
+type InteractorTableFetcherProps = {
+    type: 'h' | 'v'
     protein: Protein
     isoform: Isoform
 }
 
-const InteractionTableFetcher: React.FC<InteractionTableFetcherProps> = ({ type, protein, isoform }) => {
-    const interactions = resources.interactions(type, protein.id, isoform.id).read()
+const InteractorTableFetcher: React.FC<InteractorTableFetcherProps> = ({ type, protein, isoform }) => {
+    const interactors = resources.interactors(type, protein.id, isoform.id).read()
 
     return (
-        <InteractionTable
-            type={protein.type}
+        <InteractorTable
+            source={protein}
+            interactors={interactors}
             width={isoform.sequence.length}
-            interactions={interactions}
         />
     )
 }

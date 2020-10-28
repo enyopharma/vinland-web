@@ -2,14 +2,14 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { Protein, Isoform, Interaction } from './types'
+import { Protein, Isoform, Interactor } from './types'
 
 const limit = 20
 
 const protein = cache<Protein>()
 const proteins = cache<Protein[]>()
 const isoforms = cache<Isoform[]>()
-const interactions = cache<Interaction[]>()
+const interactors = cache<Interactor[]>()
 
 export const resources = {
     protein: (id: number) => {
@@ -27,8 +27,8 @@ export const resources = {
         return isoforms.resource(`${protein_id}`, () => fetchIsoforms(protein_id), 300)
     },
 
-    interactions: (type: 'hh' | 'vh', protein_id: number, isoform_id: number) => {
-        return interactions.resource(`${type}:${protein_id}:${isoform_id}`, () => fetchInteractions(type, protein_id, isoform_id), 300)
+    interactors: (type: 'h' | 'v', protein_id: number, isoform_id: number) => {
+        return interactors.resource(`${type}:${protein_id}:${isoform_id}`, () => fetchInteractors(type, protein_id, isoform_id), 300)
     },
 }
 
@@ -94,11 +94,12 @@ const fetchIsoforms = async (protein_id: number) => {
     return []
 }
 
-const fetchInteractions = async (type: 'hh' | 'vh', protein_id: number, isoform_id: number) => {
+const fetchInteractors = async (type: 'h' | 'v', protein_id: number, isoform_id: number) => {
+    const querystr = qs.encode({ isoform_id })
     const params = { headers: { accept: 'application/json' } }
 
     try {
-        const response = await fetch(`/api/proteins/${protein_id}/isoforms/${isoform_id}/interactions/${type}`, params)
+        const response = await fetch(`/api/proteins/${protein_id}/interactors/${type}?${querystr}`, params)
         const json = await response.json()
 
         if (!json.success) {
