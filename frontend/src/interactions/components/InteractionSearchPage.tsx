@@ -3,8 +3,8 @@ import React from 'react'
 
 import { AppState } from 'app/types'
 import { useAppSelector } from 'app/hooks'
-import { Timeout } from 'app/partials'
 import { ToastContainer } from 'app/toast'
+import { Timeout, PleaseWait } from 'app/partials'
 
 import { Query } from '../types'
 import { resources } from '../api'
@@ -41,7 +41,7 @@ export const InteractionSearchPage: React.FC = () => {
             </form>
             <h2 id="result">Query result</h2>
             <ToastContainer target='result' />
-            <React.Suspense fallback={<Timeout />}>
+            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
                 <QueryResultAlertFetcher query={query} />
                 <QueryResultCardFetcher query={query} />
             </React.Suspense>

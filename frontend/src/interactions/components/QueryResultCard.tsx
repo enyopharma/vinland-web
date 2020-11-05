@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { Timeout } from 'app/partials'
+import { Timeout, PleaseWait } from 'app/partials'
 
 import { cache } from '../cache'
 import { config } from '../config'
@@ -95,7 +95,7 @@ const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ c
                     </li>
                 </ul>
             </div>
-            <React.Suspense fallback={<Timeout />}>
+            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
                 {body()}
             </React.Suspense>
         </div>

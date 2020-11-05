@@ -3,7 +3,7 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
 
 import { store } from 'app/store'
-import { Navbar, Timeout } from 'app/partials'
+import { Navbar, Timeout, PleaseWait } from 'app/partials'
 
 const HomePage = React.lazy(() => import('home').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('proteins').then(module => ({ default: module.ProteinPage })))
@@ -16,7 +16,7 @@ export const App: React.FC = () => (
         <BrowserRouter basename="/">
             <ScrollToTop />
             <Navbar />
-            <React.Suspense fallback={<Timeout />}>
+            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
                 <Switch>
                     <Route exact path="/" component={HomePage} />
                     <Route exact path="/proteins" component={ProteinSearchPage} />

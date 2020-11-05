@@ -1,5 +1,6 @@
 export * from './partials/Navbar'
 export * from './partials/Timeout'
+export * from './partials/PleaseWait'
 export * from './partials/Pagination'
 export * from './partials/ProgressBar'
 export * from './partials/ProteinLink'
