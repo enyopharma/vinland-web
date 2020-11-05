@@ -11,9 +11,9 @@ export const Timeout: React.FC<TimeoutProps> = ({ ms = 1000, children }) => {
         const timeout = setTimeout(() => setElapsed(true), ms)
 
         return () => clearTimeout(timeout)
-    }, [ms])
+    })
 
     return elapsed
-        ? <React.Fragment>children</React.Fragment>
+        ? <React.Fragment>{children}</React.Fragment>
         : null
 }
