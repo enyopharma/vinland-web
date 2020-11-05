@@ -43,99 +43,67 @@ export const resources = {
     },
 }
 
-const fetchAnnotations = async (source: string, query: string) => {
+const fetchAnnotations = async (source: string, query: string): Promise<SearchResult<Annotation>[]> => {
     const querystr = qs.encode({ source, query, limit: 5 })
     const params = { headers: { accept: 'application/json' } }
 
-    try {
-        const response = await fetch(`/api/annotations?${querystr}`, params)
-        const json = await response.json()
+    const response = await fetch(`/api/annotations?${querystr}`, params)
+    const json = await response.json()
 
-        if (!json.success) {
-            throw new Error(json)
-        }
-
-        return json.data.map((annotation: Annotation) => ({
-            label: [annotation.ref, annotation.name].join(' '),
-            value: annotation,
-        }))
+    if (!json.success) {
+        throw new Error(json)
     }
 
-    catch (error) {
-        console.log(error)
-    }
-
-    return []
+    return json.data.map((annotation: Annotation) => ({
+        label: [annotation.ref, annotation.name].join(' '),
+        value: annotation,
+    }))
 }
 
-const fetchTaxa = async (query: string) => {
+const fetchTaxa = async (query: string): Promise<SearchResult<Taxon>[]> => {
     const querystr = qs.encode({ query, limit: 5 })
     const params = { headers: { 'accept': 'application/json' } }
 
-    try {
-        const response = await fetch(`/api/taxa?${querystr}`, params)
-        const json = await response.json()
+    const response = await fetch(`/api/taxa?${querystr}`, params)
+    const json = await response.json()
 
-        if (!json.success) {
-            throw new Error(json)
-        }
-
-        return json.data.map((taxon: Taxon) => ({
-            label: taxon.name,
-            value: taxon,
-        }))
+    if (!json.success) {
+        throw new Error(json)
     }
 
-    catch (error) {
-        console.log(error)
-    }
-
-    return []
+    return json.data.map((taxon: Taxon) => ({
+        label: taxon.name,
+        value: taxon,
+    }))
 }
 
-const fetchNames = async (ncbi_taxon_id: number) => {
+const fetchNames = async (ncbi_taxon_id: number): Promise<Name[]> => {
     const params = { headers: { 'accept': 'application/json' } }
 
-    try {
-        const response = await fetch(`/api/taxa/${ncbi_taxon_id}/names`, params)
-        const json = await response.json()
+    const response = await fetch(`/api/taxa/${ncbi_taxon_id}/names`, params)
+    const json = await response.json()
 
-        if (!json.success) {
-            throw new Error(json)
-        }
-
-        return json.data.names
+    if (!json.success) {
+        throw new Error(json)
     }
 
-    catch (error) {
-        console.log(error)
-    }
-
-    return []
+    return json.data.names
 }
 
 const fetchRelated = async (ncbi_taxon_id: number) => {
     const params = { headers: { 'accept': 'application/json' } }
 
-    try {
-        const response = await fetch(`/api/taxa/${ncbi_taxon_id}/related`, params)
-        const json = await response.json()
+    const response = await fetch(`/api/taxa/${ncbi_taxon_id}/related`, params)
+    const json = await response.json()
 
-        if (!json.success) {
-            throw new Error(json)
-        }
-
-        return json.data
+    if (!json.success) {
+        throw new Error(json)
     }
 
-    catch (error) {
-        console.log(error)
-    }
-
-    return { parent: null, children: [] }
+    return json.data
 }
 
-const fetchResult = async (query: Query) => {
+const fetchResult = async (query: Query): Promise<QueryResult> => {
     const params = {
         method: 'POST',
         body: JSON.stringify(query),
@@ -145,29 +113,17 @@ const fetchResult = async (query: Query) => {
         }
     }
 
-    try {
-        const response = await fetch(`/api/interactions`, params)
-        const json = await response.json()
+    const response = await fetch(`/api/interactions`, params)
+    const json = await response.json()
 
-        if (!json.status && json.errors) {
-            return { status: QueryResultStatuses.FAILURE, errors: json.errors }
-        }
-
-        switch (json.status) {
-            case QueryResultStatuses.INCOMPLETE:
-                return { status: json.status }
-            case QueryResultStatuses.FAILURE:
-                return { status: json.status, errors: json.errors }
-            case QueryResultStatuses.SUCCESS:
-                return { status: json.status, interactions: json.data }
-            default:
-                throw new Error(json)
-        }
+    switch (json.status) {
+        case QueryResultStatuses.INCOMPLETE:
+            return { status: json.status }
+        case QueryResultStatuses.FAILURE:
+            return { status: json.status, errors: json.errors }
+        case QueryResultStatuses.SUCCESS:
+            return { status: json.status, interactions: json.data }
+        default:
+            return { status: QueryResultStatuses.FAILURE, errors: ['Something went wrong'] }
     }
-
-    catch (error) {
-        console.log(error)
-    }
-
-    return { status: QueryResultStatuses.FAILURE, errors: ['Something went wrong'] }
 }
