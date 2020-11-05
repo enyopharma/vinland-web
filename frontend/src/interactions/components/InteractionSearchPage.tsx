@@ -3,7 +3,8 @@ import React from 'react'
 
 import { AppState } from 'app/types'
 import { useAppSelector } from 'app/hooks'
-import { Timeout, ToastContainer } from 'app/partials'
+import { Timeout } from 'app/partials'
+import { ToastContainer } from 'app/toast'
 
 import { Query } from '../types'
 import { resources } from '../api'

@@ -1,6 +1,5 @@
 import React from 'react'
 import { ToastContainer as RawToastContainer, toast } from 'react-toastify'
-import '../toast/style.scss'
 
 type ToastContainerProps = {
     target: string

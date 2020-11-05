@@ -2,7 +2,7 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { SearchResult } from 'app/types'
+import { SearchResult } from 'app/search'
 
 import { Annotation, Taxon, Name, RelatedTaxa, Query, QueryResult, QueryResultStatuses } from './types'
 

@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react'
 
 import { useActionCreator } from 'app/hooks'
-import { Overlay, SearchResultList, ProgressBar } from 'app/partials'
+import { ProgressBar } from 'app/partials'
+import { SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
 import { actions } from '../reducers/taxonomy'

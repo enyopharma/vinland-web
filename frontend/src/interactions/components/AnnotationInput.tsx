@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import { Overlay, SearchResultList } from 'app/partials'
+import { SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
 import { Annotation } from '../types'
