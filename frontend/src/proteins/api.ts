@@ -6,14 +6,18 @@ import { Protein, Isoform, Interactor } from './types'
 
 const limit = 20
 
-const protein = cache<Protein>()
+const protein = cache<[Protein, Isoform[]]>()
 const proteins = cache<Protein[]>()
-const isoforms = cache<Isoform[]>()
 const interactors = cache<Interactor[]>()
 
 export const resources = {
     protein: (id: number) => {
-        return protein.resource(id, () => fetchProtein(id))
+        return protein.resource(id, async () => {
+            const protein = await fetchProtein(id)
+            const isoforms = await fetchIsoforms(id)
+
+            return [protein, isoforms]
+        })
     },
 
     proteins: (type: string, query: string) => {
@@ -21,10 +25,6 @@ export const resources = {
         if (query.trim().length === 0) return { read: () => [] }
 
         return proteins.resource(`${type}:${query}`, () => fetchProteins(type, query), 300)
-    },
-
-    isoforms: (protein_id: number) => {
-        return isoforms.resource(`${protein_id}`, () => fetchIsoforms(protein_id))
     },
 
     interactors: (type: 'h' | 'v', protein_id: number, isoform_id: number) => {

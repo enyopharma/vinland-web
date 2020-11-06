@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { Resource } from 'app/cache'
 import { Timeout, PleaseWait } from 'app/partials'
 
 import { resources } from '../api'
@@ -11,22 +12,23 @@ const InteractorTable = React.lazy(() => import('./InteractorTable').then(module
 export const ProteinPage: React.FC = () => {
     const { id } = useParams<{ id: string }>()
 
+    const resource = resources.protein(parseInt(id))
+
     return (
         <div className="container">
             <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-                <ProteinSection id={parseInt(id)} />
+                <ProteinSection resource={resource} />
             </React.Suspense>
         </div>
     )
 }
 
 type ProteinSectionProps = {
-    id: number
+    resource: Resource<[Protein, Isoform[]]>
 }
 
-export const ProteinSection: React.FC<ProteinSectionProps> = ({ id }) => {
-    const protein = resources.protein(id).read()
-    const isoforms = resources.isoforms(id).read()
+export const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
+    const [protein, isoforms] = resource.read()
 
     const index = canonicalIndex(isoforms)
 

@@ -1,17 +1,15 @@
-type Key = number | string
-
-type Resource<T> = {
+export type Resource<T> = {
     read: () => T
-}
-
-type Cache<T> = {
-    resource: (key: Key, factory: () => Promise<T>, delay?: number) => Resource<T>
 }
 
 enum ResourceStatuses { PENDING, SUCCESS, FAILURE }
 
+type Cache<T> = {
+    resource: (key: number | string, factory: () => Promise<T>, delay?: number) => Resource<T>
+}
+
 export const cache = <T>(): Cache<T> => {
-    const map: Record<Key, Resource<T>> = {}
+    const map: Record<number | string, Resource<T>> = {}
 
     return {
         resource: (key, factory, delay = 0) => {
