@@ -4,7 +4,7 @@ import { resources } from '../api'
 import { Taxonomy, Taxon, Name } from '../types'
 
 const initialState: Taxonomy = {
-    current: null,
+    taxon: null,
     names: [],
 }
 
@@ -15,18 +15,14 @@ export const { reducer, actions } = createSlice({
         select: {
             prepare: (taxon: Taxon) => ({ payload: { taxon } }),
             reducer: (state, action: PayloadAction<{ taxon: Taxon }>) => {
-                state.current = {
-                    taxon: action.payload.taxon,
-                    resource: resources.taxon(action.payload.taxon.ncbi_taxon_id),
-                }
-
+                state.taxon = action.payload.taxon
                 state.names = []
             },
         },
         unselect: {
             prepare: () => ({ payload: {} }),
             reducer: (state) => {
-                state.current = null
+                state.taxon = null
                 state.names = []
             },
         },

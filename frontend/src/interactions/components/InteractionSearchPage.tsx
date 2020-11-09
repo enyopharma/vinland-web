@@ -75,18 +75,19 @@ const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ resourc
  * Need to clone identifiers and names (parseIdentifiers() or Array.slice()) before sorting.
  */
 export const state2resource = (state: AppState) => {
-    const identifiers = parseIdentifiers(state.interactions.search.identifiers)
-    const names = state.interactions.search.taxonomy.names.slice()
-    const ncbi_taxon_id = state.interactions.search.taxonomy.current !== null
-        ? state.interactions.search.taxonomy.current.taxon.ncbi_taxon_id
+    const search = state.interactions.search
+    const identifiers = parseIdentifiers(search.identifiers)
+    const names = search.taxonomy.names.slice()
+    const ncbi_taxon_id = search.taxonomy.taxon !== null
+        ? search.taxonomy.taxon.ncbi_taxon_id
         : 0
 
     const parts: string[] = []
-    if (state.interactions.search.options.hh) parts.push('HH')
-    if (state.interactions.search.options.vh) parts.push('VH')
-    if (state.interactions.search.options.hh && state.interactions.search.options.neighbors) parts.push('NEIGHBORS')
-    parts.push(state.interactions.search.options.publications.toString())
-    parts.push(state.interactions.search.options.methods.toString())
+    if (search.options.hh) parts.push('HH')
+    if (search.options.vh) parts.push('VH')
+    if (search.options.hh && search.options.neighbors) parts.push('NEIGHBORS')
+    parts.push(search.options.publications.toString())
+    parts.push(search.options.methods.toString())
     parts.push(ncbi_taxon_id.toString())
     parts.push(...names.sort((a: string, b: string) => a.localeCompare(b)))
     parts.push(...identifiers.sort((a: string, b: string) => a.localeCompare(b)))
@@ -96,10 +97,10 @@ export const state2resource = (state: AppState) => {
         identifiers: identifiers,
         ncbi_taxon_id: ncbi_taxon_id,
         names: names,
-        hh: state.interactions.search.options.hh,
-        vh: state.interactions.search.options.vh,
-        neighbors: state.interactions.search.options.neighbors,
-        publications: state.interactions.search.options.publications,
-        methods: state.interactions.search.options.methods,
+        hh: search.options.hh,
+        vh: search.options.vh,
+        neighbors: search.options.neighbors,
+        publications: search.options.publications,
+        methods: search.options.methods,
     })
 }

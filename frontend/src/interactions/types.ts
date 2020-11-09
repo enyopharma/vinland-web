@@ -17,7 +17,7 @@ export type IdentifierList = {
 }
 
 export type Taxonomy = {
-    current: { taxon: Taxon, resource: Resource<[RelatedTaxa, Name[]]> } | null
+    taxon: Taxon | null
     names: Name[]
 }
 

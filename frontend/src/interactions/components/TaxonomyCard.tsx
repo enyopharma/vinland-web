@@ -14,20 +14,32 @@ type TaxonomyCardProps = {
 }
 
 export const TaxonomyCard: React.FC<TaxonomyCardProps> = ({ taxonomy }) => {
-    return taxonomy.current === null
-        ? <CardWithoutSelectedTaxon />
+    const select = useActionCreator(actions.select)
+    const [resource, setResource] = useState<Resource<[RelatedTaxa, Name[]]>>(resources.taxon(taxonomy.taxon?.ncbi_taxon_id ?? 0))
+
+    const update = (taxon: Taxon) => {
+        select(taxon)
+        setResource(resources.taxon(taxon.ncbi_taxon_id))
+    }
+
+    return taxonomy.taxon === null
+        ? <CardWithoutSelectedTaxon select={update} />
         : (
             <CardWithSelectedTaxon
-                taxon={taxonomy.current.taxon}
-                resource={taxonomy.current.resource}
+                taxon={taxonomy.taxon}
                 names={taxonomy.names}
+                resource={resource}
+                select={update}
             />
         )
 }
 
-const CardWithoutSelectedTaxon: React.FC = () => {
+type CardWithoutSelectedTaxonProps = {
+    select: (taxon: Taxon) => void
+}
+
+const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ select }) => {
     const input = useRef<HTMLInputElement>(null)
-    const select = useActionCreator(actions.select)
     const [query, setQuery] = useState<string>('')
     const [resource, setResource] = useState<Resource<SearchResult<Taxon>[]>>(resources.taxa(query))
 
@@ -71,9 +83,10 @@ type CardWithSelectedTaxonProps = {
     taxon: Taxon
     names: Name[]
     resource: Resource<[RelatedTaxa, Name[]]>
+    select: (taxon: Taxon) => void
 }
 
-const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, names, resource }) => {
+const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, names, select, resource }) => {
     const unselect = useActionCreator(actions.unselect)
 
     return (
@@ -87,7 +100,7 @@ const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, na
                 </div>
                 <React.Suspense fallback={<ProgressBar type="danger" />}>
                     <h4>Browse taxonomy:</h4>
-                    <RelatedFormRow resource={resource} />
+                    <RelatedFormRow resource={resource} select={select} />
                     <h4>Only protein tagged with:</h4>
                     <NameList resource={resource} selected={names} />
                 </React.Suspense>
@@ -98,11 +111,10 @@ const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, na
 
 type RelatedFormRowProps = {
     resource: Resource<[RelatedTaxa, Name[]]>
+    select: (taxon: Taxon) => void
 }
 
-const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource }) => {
-    const select = useActionCreator(actions.select)
-
+const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource, select }) => {
     const { parent, children } = resource.read()[0]
 
     const selectParent = () => parent && select(parent)
