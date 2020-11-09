@@ -3,17 +3,18 @@ import React from 'react'
 import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
 import { Interaction } from '../types'
+import { actions } from '../reducers/nav'
+import { useSelector, useActionCreator } from '../hooks'
+
 import { CsvDownloadButton } from './CsvDownloadButton'
 
 const limit = 10
 
 type InteractionCardBodyProps = {
     interactions: Interaction[]
-    offset: number
-    setOffset: (offset: number) => void
 }
 
-export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions, offset, setOffset }) => (
+export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions }) => (
     <React.Fragment>
         <div className="card-body">
             <p className="text-right">
@@ -23,7 +24,7 @@ export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ intera
             </p>
         </div>
         {interactions.length > 0
-            ? <InteractionTable interactions={interactions} offset={offset} setOffset={setOffset} />
+            ? <InteractionTable interactions={interactions} />
             : <EmptyTable />
         }
     </React.Fragment>
@@ -39,11 +40,12 @@ const EmptyTable: React.FC = () => (
 
 type InteractionTableProps = {
     interactions: Interaction[]
-    offset: number
-    setOffset: (offset: number) => void
 }
 
-const InteractionTable: React.FC<InteractionTableProps> = ({ interactions, offset, setOffset }) => {
+const InteractionTable: React.FC<InteractionTableProps> = ({ interactions }) => {
+    const offset = useSelector(state => state.nav.interactions.offset)
+    const setOffset = useActionCreator(actions.setInteractionsOffset)
+
     const slice = interactions.slice(offset, offset + limit)
 
     return (

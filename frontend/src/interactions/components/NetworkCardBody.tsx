@@ -1,51 +1,56 @@
 import React, { useRef, useEffect } from 'react'
 
 import { Network } from '../types'
+import { actions } from '../reducers/nav'
+import { useSelector, useActionCreator } from '../hooks'
 
 type NetworkCardBodyProps = {
     network: Network
-    ratio: number
-    labels: boolean
-    setRatio: (ratio: number) => void
-    setLabels: (labels: boolean) => void
 }
 
-export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network, ratio, labels, setRatio, setLabels }) => (
-    <React.Fragment>
-        <div className="card-body">
-            <div className="row">
-                <div className="col">
-                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
-                        Save image
+export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => {
+    const ratio = useSelector(state => state.nav.network.ratio)
+    const labels = useSelector(state => state.nav.network.labels)
+    const setRatio = useActionCreator(actions.setNetworkRatio)
+    const setLabels = useActionCreator(actions.setNetworkLabels)
+
+    return (
+        <React.Fragment>
+            <div className="card-body">
+                <div className="row">
+                    <div className="col">
+                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
+                            Save image
                         </button>
-                </div>
-                <div className="col">
-                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.selectNeighbors()}>
-                        Select neighbors
+                    </div>
+                    <div className="col">
+                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.selectNeighbors()}>
+                            Select neighbors
                         </button>
+                    </div>
+                    <div className="col-2">
+                        <LabelsButton network={network} labels={labels} update={setLabels}>
+                            {labels ? 'Hide labels' : 'Show labels'}
+                        </LabelsButton>
+                    </div>
                 </div>
-                <div className="col-2">
-                    <LabelsButton network={network} labels={labels} update={setLabels}>
-                        {labels ? 'Hide labels' : 'Show labels'}
-                    </LabelsButton>
+                <div className="row">
+                    <div className="col">
+                        <RatioRange network={network} ratio={ratio} update={setRatio} />
+                    </div>
+                    <div className="col-2">
+                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.stop()}>
+                            Stop layout
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div className="row">
-                <div className="col">
-                    <RatioRange network={network} ratio={ratio} update={setRatio} />
-                </div>
-                <div className="col-2">
-                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.stop()}>
-                        Stop layout
-                        </button>
-                </div>
+            <div className="card-body">
+                <NetworkContainer network={network} />
             </div>
-        </div>
-        <div className="card-body">
-            <NetworkContainer network={network} />
-        </div>
-    </React.Fragment>
-)
+        </React.Fragment>
+    )
+}
 
 type LabelsButtonProps = {
     network: Network

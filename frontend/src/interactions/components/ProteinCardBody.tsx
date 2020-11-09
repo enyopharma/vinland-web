@@ -3,35 +3,34 @@ import React from 'react'
 import { Pagination, ProteinLink } from 'partials'
 
 import { ProteinTab, Protein } from '../types'
+import { actions } from '../reducers/nav'
+import { useSelector, useActionCreator } from '../hooks'
+
 import { CsvDownloadButton } from './CsvDownloadButton'
 
 const limit = 10
 
 type ProteinCardBodyProps = {
     proteins: Protein[]
-    tab: ProteinTab
-    offsets: Record<ProteinTab, number>
-    setTab: (tab: ProteinTab) => void
-    setOffsets: (offsets: Record<ProteinTab, number>) => void
 }
 
-export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab, offsets, setTab, setOffsets }) => {
+export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins }) => {
+    const tab = useSelector(state => state.nav.proteins.tab)
+
     const filtered = filter(tab, proteins)
-    const offset = offsets[tab]
-    const setOffset = (offset: number) => setOffsets({ ...offsets, [tab]: offset })
 
     return (
         <React.Fragment>
             <div className="card-body">
                 <div className="row">
                     <div className="col">
-                        <TabCheckbox tab="a" current={tab} update={setTab}>
+                        <TabCheckbox tab="a">
                             All
                         </TabCheckbox>
-                        <TabCheckbox tab="h" current={tab} update={setTab}>
+                        <TabCheckbox tab="h">
                             Human
                         </TabCheckbox>
-                        <TabCheckbox tab="v" current={tab} update={setTab}>
+                        <TabCheckbox tab="v">
                             Viral
                         </TabCheckbox>
                     </div>
@@ -45,8 +44,8 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab,
                 </div>
             </div>
             {filtered.length > 0
-                ? <ProteinTable proteins={filtered} offset={offset} setOffset={setOffset} />
-                : <EmptyTable tab={tab} />
+                ? <ProteinTable proteins={filtered} />
+                : <EmptyTable />
             }
         </React.Fragment>
     )
@@ -54,12 +53,11 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab,
 
 type TabCheckboxProps = {
     tab: ProteinTab
-    current: ProteinTab
-    update: (tab: ProteinTab) => void
 }
 
-const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, children }) => {
-    const onChange = () => update(tab)
+const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, children }) => {
+    const current = useSelector(state => state.nav.proteins.tab)
+    const update = useActionCreator(actions.setProteinsTab)
 
     return (
         <div className="form-check form-check-inline">
@@ -70,7 +68,7 @@ const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, childre
                 name="ptab"
                 value={tab}
                 checked={current === tab}
-                onChange={onChange}
+                onChange={e => update(tab)}
             />
             <label className="form-check-label" htmlFor={`ptab-${tab}`}>
                 {children}
@@ -79,25 +77,26 @@ const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, childre
     )
 }
 
-type EmptyTableProps = {
-    tab: ProteinTab
-}
+const EmptyTable: React.FC = () => {
+    const tab = useSelector(state => state.nav.proteins.tab)
 
-const EmptyTable: React.FC<EmptyTableProps> = ({ tab }) => (
-    <div className="card-body">
-        <p className="text-center">
-            {empty[tab]}
-        </p>
-    </div>
-)
+    return (
+        <div className="card-body">
+            <p className="text-center">
+                {empty[tab]}
+            </p>
+        </div>
+    )
+}
 
 type ProteinTableProps = {
     proteins: Protein[]
-    offset: number
-    setOffset: (offset: number) => void
 }
 
-const ProteinTable: React.FC<ProteinTableProps> = ({ proteins, offset, setOffset }) => {
+const ProteinTable: React.FC<ProteinTableProps> = ({ proteins }) => {
+    const offset = useSelector(state => state.nav.proteins.current)
+    const setOffset = useActionCreator(actions.setProteinsOffset)
+
     const slice = proteins.slice(offset, offset + limit)
 
     return (
@@ -146,7 +145,7 @@ type ProteinTrProps = {
 const ProteinTr: React.FC<ProteinTrProps> = ({ protein }) => (
     <tr>
         <td className="text-center">
-            <ProteinLink {...protein} target="_blank">
+            <ProteinLink {...protein}>
                 <img
                     src={`/img/${protein.type}.png`}
                     alt={`${protein.type.toUpperCase()} protein`}

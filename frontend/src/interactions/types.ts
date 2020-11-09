@@ -54,6 +54,22 @@ export type DisplayOptions = {
     methods: number
 }
 
+export type ResultNav = {
+    tab: ResultTab
+    interactions: {
+        offset: number
+    }
+    proteins: {
+        tab: ProteinTab
+        current: number
+        offsets: Record<ProteinTab, number>
+    }
+    network: {
+        ratio: number
+        labels: boolean
+    }
+}
+
 export type ResultTab = 'interactions' | 'proteins' | 'network'
 
 export type ProteinTab = 'a' | 'h' | 'v'
