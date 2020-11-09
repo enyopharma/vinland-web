@@ -1,14 +1,13 @@
 import md5 from 'md5'
 import React from 'react'
 
-import { AppState } from 'app/types'
 import { Resource } from 'app/cache'
-import { useAppSelector } from 'app/hooks'
 import { ToastContainer } from 'app/toast'
 import { Timeout, PleaseWait } from 'app/partials'
 
 import { resources } from '../api'
-import { QueryResult } from '../types'
+import { useSelector } from '../hooks'
+import { SearchState, QueryResult } from '../types'
 import { parse as parseIdentifiers } from '../utils'
 import { TaxonomyCard } from './TaxonomyCard'
 import { IdentifierCard } from './IdentifierCard'
@@ -18,10 +17,10 @@ const QueryResultCard = React.lazy(() => import('./QueryResultCard').then(module
 const QueryResultAlert = React.lazy(() => import('./QueryResultAlert').then(module => ({ default: module.QueryResultAlert })))
 
 export const InteractionSearchPage: React.FC = () => {
-    const lists = useAppSelector(state => state.interactions.search.identifiers)
-    const taxonomy = useAppSelector(state => state.interactions.search.taxonomy)
-    const options = useAppSelector(state => state.interactions.search.options)
-    const resource = useAppSelector(state2resource)
+    const lists = useSelector(state => state.identifiers)
+    const taxonomy = useSelector(state => state.taxonomy)
+    const options = useSelector(state => state.options)
+    const resource = useSelector(state2resource)
 
     return (
         <div className="container">
@@ -74,20 +73,19 @@ const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ resourc
  * Caution: Array.sort() mutates the array which is not allowed.
  * Need to clone identifiers and names (parseIdentifiers() or Array.slice()) before sorting.
  */
-export const state2resource = (state: AppState) => {
-    const search = state.interactions.search
-    const identifiers = parseIdentifiers(search.identifiers)
-    const names = search.taxonomy.names.slice()
-    const ncbi_taxon_id = search.taxonomy.taxon !== null
-        ? search.taxonomy.taxon.ncbi_taxon_id
+export const state2resource = (state: SearchState) => {
+    const identifiers = parseIdentifiers(state.identifiers)
+    const names = state.taxonomy.names.slice()
+    const ncbi_taxon_id = state.taxonomy.taxon !== null
+        ? state.taxonomy.taxon.ncbi_taxon_id
         : 0
 
     const parts: string[] = []
-    if (search.options.hh) parts.push('HH')
-    if (search.options.vh) parts.push('VH')
-    if (search.options.hh && search.options.neighbors) parts.push('NEIGHBORS')
-    parts.push(search.options.publications.toString())
-    parts.push(search.options.methods.toString())
+    if (state.options.hh) parts.push('HH')
+    if (state.options.vh) parts.push('VH')
+    if (state.options.hh && state.options.neighbors) parts.push('NEIGHBORS')
+    parts.push(state.options.publications.toString())
+    parts.push(state.options.methods.toString())
     parts.push(ncbi_taxon_id.toString())
     parts.push(...names.sort((a: string, b: string) => a.localeCompare(b)))
     parts.push(...identifiers.sort((a: string, b: string) => a.localeCompare(b)))
@@ -97,10 +95,10 @@ export const state2resource = (state: AppState) => {
         identifiers: identifiers,
         ncbi_taxon_id: ncbi_taxon_id,
         names: names,
-        hh: search.options.hh,
-        vh: search.options.vh,
-        neighbors: search.options.neighbors,
-        publications: search.options.publications,
-        methods: search.options.methods,
+        hh: state.options.hh,
+        vh: state.options.vh,
+        neighbors: state.options.neighbors,
+        publications: state.options.publications,
+        methods: state.options.methods,
     })
 }

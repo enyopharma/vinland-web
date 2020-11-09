@@ -1,5 +1,10 @@
+import { store } from './store'
 import { cache } from './cache'
 import { network } from './network'
+
+export type SearchState = ReturnType<typeof store.getState>
+
+export type SearchDispatch = typeof store.dispatch
 
 export type Annotation = {
     source: string

@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react'
 import { animated, useSpring } from 'react-spring'
 
-import { useActionCreator } from 'app/hooks'
 
 import { parse } from '../utils'
 import { IdentifierList } from '../types'
+import { useActionCreator } from '../hooks'
 import { actions } from '../reducers/identifiers'
 
 import { AnnotationInput } from './AnnotationInput'

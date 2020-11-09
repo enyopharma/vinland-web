@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { useActionCreator } from 'app/hooks'
-
 import { DisplayOptions } from '../types'
+import { useActionCreator } from '../hooks'
 import { actions } from '../reducers/options'
 
 type DisplayOptionsCardProps = {

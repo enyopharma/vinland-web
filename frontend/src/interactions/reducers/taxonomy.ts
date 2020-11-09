@@ -1,6 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import { resources } from '../api'
 import { Taxonomy, Taxon, Name } from '../types'
 
 const initialState: Taxonomy = {

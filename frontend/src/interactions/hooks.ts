@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import { TypedUseSelectorHook, useSelector as useSelectorRaw, useDispatch } from 'react-redux'
 import { AnyAction, ActionCreator } from '@reduxjs/toolkit'
-import { AppState, AppDispatch } from './types'
+import { SearchState, SearchDispatch } from './types'
 
-export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
+export const useSelector: TypedUseSelectorHook<SearchState> = useSelectorRaw
 
 export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T) => {
-    const dispatch: AppDispatch = useDispatch()
+    const dispatch: SearchDispatch = useDispatch()
 
     return useCallback((...args: Parameters<T>) => {
         dispatch(creator(...args))
