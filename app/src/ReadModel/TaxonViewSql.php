@@ -79,19 +79,15 @@ final class TaxonViewSql implements TaxonViewInterface
         return Statement::from($select_taxa_sth);
     }
 
-    private function parent(int $taxon_id): array
+    private function parent(int $taxon_id): ?array
     {
         $select_parent_sth = $this->pdo->prepare(self::SELECT_PARENT_SQL);
 
         $select_parent_sth->execute([$taxon_id]);
 
-        $parent = $select_parent_sth->fetchAll();
-
-        if ($parent === false) {
-            throw new \LogicException;
-        }
-
-        return $parent;
+        return ($parent = $select_parent_sth->fetch())
+            ? $parent
+            : null;
     }
 
     private function children(int $taxon_id): array

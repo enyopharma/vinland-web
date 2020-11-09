@@ -1,9 +1,10 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
+import { resources } from '../api'
 import { Taxonomy, Taxon, Name } from '../types'
 
 const initialState: Taxonomy = {
-    taxon: null,
+    current: null,
     names: [],
 }
 
@@ -14,14 +15,19 @@ export const { reducer, actions } = createSlice({
         select: {
             prepare: (taxon: Taxon) => ({ payload: { taxon } }),
             reducer: (state, action: PayloadAction<{ taxon: Taxon }>) => {
-                state.taxon = action.payload.taxon
+                state.current = {
+                    taxon: action.payload.taxon,
+                    resource: resources.taxon(action.payload.taxon.ncbi_taxon_id),
+                }
+
                 state.names = []
             },
         },
         unselect: {
             prepare: () => ({ payload: {} }),
             reducer: (state) => {
-                state.taxon = null
+                state.current = null
+                state.names = []
             },
         },
         update: {

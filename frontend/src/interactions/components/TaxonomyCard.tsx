@@ -1,30 +1,40 @@
 import React, { useRef, useState } from 'react'
 
+import { Resource } from 'app/cache'
 import { useActionCreator } from 'app/hooks'
 import { ProgressBar } from 'app/partials'
-import { SearchResultList, Overlay } from 'app/search'
+import { SearchResult, SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
 import { actions } from '../reducers/taxonomy'
-import { Taxonomy, Taxon, Name } from '../types'
+import { Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
 
 type TaxonomyCardProps = {
     taxonomy: Taxonomy
 }
 
 export const TaxonomyCard: React.FC<TaxonomyCardProps> = ({ taxonomy }) => {
-    return taxonomy.taxon === null
+    return taxonomy.current === null
         ? <CardWithoutSelectedTaxon />
-        : <CardWithSelectedTaxon taxon={taxonomy.taxon} names={taxonomy.names} />
+        : (
+            <CardWithSelectedTaxon
+                taxon={taxonomy.current.taxon}
+                resource={taxonomy.current.resource}
+                names={taxonomy.names}
+            />
+        )
 }
 
 const CardWithoutSelectedTaxon: React.FC = () => {
-    const select = useActionCreator(actions.select)
-
     const input = useRef<HTMLInputElement>(null)
+    const select = useActionCreator(actions.select)
     const [query, setQuery] = useState<string>('')
+    const [resource, setResource] = useState<Resource<SearchResult<Taxon>[]>>(resources.taxa(query))
 
-    const search = (query: string) => resources.taxa(query).read()
+    const update = (query: string) => {
+        setQuery(query)
+        setResource(resources.taxa(query))
+    }
 
     return (
         <div className="card">
@@ -40,11 +50,16 @@ const CardWithoutSelectedTaxon: React.FC = () => {
                             className="form-control form-control-lg"
                             placeholder="Search for a viral species"
                             value={query}
-                            onChange={e => setQuery(e.target.value)}
+                            onChange={e => update(e.target.value)}
                         />
                     </div>
                     <Overlay input={input}>
-                        <SearchResultList input={input} query={query} search={search} select={select} />
+                        <SearchResultList
+                            input={input}
+                            query={query}
+                            resource={resource}
+                            select={select}
+                        />
                     </Overlay>
                 </div>
             </div>
@@ -52,12 +67,13 @@ const CardWithoutSelectedTaxon: React.FC = () => {
     )
 }
 
-type CardWithoutSelectedTaxonProps = {
+type CardWithSelectedTaxonProps = {
     taxon: Taxon
     names: Name[]
+    resource: Resource<[RelatedTaxa, Name[]]>
 }
 
-const CardWithSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ taxon, names }) => {
+const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, names, resource }) => {
     const unselect = useActionCreator(actions.unselect)
 
     return (
@@ -67,31 +83,31 @@ const CardWithSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ taxon,
                     {taxon.name}
                     <button type="button" className="close" onClick={unselect}>
                         &times;
-                    </button>
+                </button>
                 </div>
                 <React.Suspense fallback={<ProgressBar type="danger" />}>
                     <h4>Browse taxonomy:</h4>
-                    <RelatedFormRowFetcher ncbi_taxon_id={taxon.ncbi_taxon_id} />
+                    <RelatedFormRow resource={resource} />
                     <h4>Only protein tagged with:</h4>
-                    <NameList ncbi_taxon_id={taxon.ncbi_taxon_id} selected={names} />
+                    <NameList resource={resource} selected={names} />
                 </React.Suspense>
             </div>
         </div>
     )
 }
 
-type RelatedFormRowFetcherProps = {
-    ncbi_taxon_id: number
+type RelatedFormRowProps = {
+    resource: Resource<[RelatedTaxa, Name[]]>
 }
 
-const RelatedFormRowFetcher: React.FC<RelatedFormRowFetcherProps> = ({ ncbi_taxon_id }) => {
-    const { parent, children } = resources.related(ncbi_taxon_id).read()
-
+const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource }) => {
     const select = useActionCreator(actions.select)
+
+    const { parent, children } = resource.read()[0]
 
     const selectParent = () => parent && select(parent)
 
-    const selectChild = (value: string) => value !== '' && select(children[parseInt(value)])
+    const selectChild = (value: string) => value.length > 0 && select(children[parseInt(value)])
 
     return (
         <div className="form-row">
@@ -122,18 +138,16 @@ const RelatedFormRowFetcher: React.FC<RelatedFormRowFetcherProps> = ({ ncbi_taxo
 }
 
 type NameListProps = {
-    ncbi_taxon_id: number
+    resource: Resource<[RelatedTaxa, Name[]]>
     selected: Name[]
 }
 
-const NameList: React.FC<NameListProps> = ({ ncbi_taxon_id, selected }) => {
-    const names = resources.names(ncbi_taxon_id).read()
-
-    const update = useActionCreator(actions.update)
+const NameList: React.FC<NameListProps> = ({ resource, selected }) => {
+    const names = resource.read()[1]
 
     const buttons = names.length === 0
         ? 'no interactor associated to this taxon'
-        : names.map((name, i) => <NameButton key={i} name={name} selected={selected} update={update} />)
+        : names.map((name, i) => <NameButton key={i} name={name} selected={selected} />)
 
     return <p>{buttons}</p>
 }
@@ -141,10 +155,11 @@ const NameList: React.FC<NameListProps> = ({ ncbi_taxon_id, selected }) => {
 type NameButtonProps = {
     name: Name
     selected: Name[]
-    update: (names: Name[]) => void
 }
 
-const NameButton: React.FC<NameButtonProps> = ({ name, selected, update }) => {
+const NameButton: React.FC<NameButtonProps> = ({ name, selected }) => {
+    const update = useActionCreator(actions.update)
+
     const classes = selected.includes(name)
         ? 'm-1 btn btn-sm btn-danger'
         : 'm-1 btn btn-sm btn-outline-danger'

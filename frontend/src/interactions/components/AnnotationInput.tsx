@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import { SearchResultList, Overlay } from 'app/search'
+import { Resource } from 'app/cache'
+import { SearchResult, SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
 import { Annotation } from '../types'
@@ -19,8 +20,13 @@ export const AnnotationInput: React.FC<AnnotationInputProps> = ({ select }) => {
     const input = useRef<HTMLInputElement>(null)
     const [query, setQuery] = useState<string>('')
     const [source, setSource] = useState<string>('')
+    const [resource, setResource] = useState<Resource<SearchResult<Annotation>[]>>(resources.annotations(source, query))
 
-    const search = (query: string) => resources.annotations(source, query).read()
+    const update = (source: string, query: string) => {
+        setQuery(query)
+        setSource(source)
+        setResource(resources.annotations(source, query))
+    }
 
     const selectAndReset = (annotation: Annotation) => {
         input.current?.blur()
@@ -35,7 +41,11 @@ export const AnnotationInput: React.FC<AnnotationInputProps> = ({ select }) => {
                 <div className="input-group-prepend">
                     <span className="input-group-text">@</span>
                 </div>
-                <AnnotationSourceSelect input={input} source={source} update={setSource} />
+                <AnnotationSourceSelect
+                    input={input}
+                    source={source}
+                    update={(source: string) => update(source, query)}
+                />
                 <input
                     ref={input}
                     type="text"
@@ -43,11 +53,16 @@ export const AnnotationInput: React.FC<AnnotationInputProps> = ({ select }) => {
                     placeholder="Search for a predefined human annotation"
                     value={query}
                     disabled={source === ''}
-                    onChange={e => setQuery(e.target.value)}
+                    onChange={e => update(source, e.target.value)}
                 />
             </div>
             <Overlay input={input}>
-                <SearchResultList input={input} query={query} search={search} select={selectAndReset} />
+                <SearchResultList
+                    input={input}
+                    query={query}
+                    resource={resource}
+                    select={selectAndReset}
+                />
             </Overlay>
         </div>
     )

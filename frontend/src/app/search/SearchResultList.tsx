@@ -1,12 +1,13 @@
 import React, { RefObject, useState, useEffect } from 'react'
 
+import { Resource } from '../cache'
 import { SearchResult } from '.'
 import { ProgressBar } from 'app/partials'
 
 type SearchResultListProps = {
     input: RefObject<HTMLInputElement>
     query: string,
-    search: (value: string) => SearchResult<any>[]
+    resource: Resource<SearchResult<any>[]>
     select: (value: any) => void
 }
 
@@ -27,12 +28,12 @@ const FallbackList: React.FC = () => (
 type ListProps = {
     input: RefObject<HTMLInputElement>
     query: string,
-    search: (query: string) => SearchResult<any>[]
+    resource: Resource<SearchResult<any>[]>
     select: (value: any) => void
 }
 
-const List: React.FC<ListProps> = ({ input, query, search, select, children }) => {
-    const results = search(query)
+const List: React.FC<ListProps> = ({ input, query, resource, select, children }) => {
+    const results = resource.read()
 
     const [active, setActive] = useState<number>(0)
 

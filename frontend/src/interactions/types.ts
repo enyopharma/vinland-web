@@ -1,3 +1,5 @@
+import { Resource } from 'app/cache'
+
 import { cache } from './cache'
 import { network } from './network'
 
@@ -15,7 +17,7 @@ export type IdentifierList = {
 }
 
 export type Taxonomy = {
-    taxon: Taxon | null
+    current: { taxon: Taxon, resource: Resource<[RelatedTaxa, Name[]]> } | null
     names: Name[]
 }
 

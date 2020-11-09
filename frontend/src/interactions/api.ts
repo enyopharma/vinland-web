@@ -2,14 +2,14 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
+import { Resource } from 'app/cache'
 import { SearchResult } from 'app/search'
 
 import { Annotation, Taxon, Name, RelatedTaxa, Query, QueryResult, QueryResultStatuses } from './types'
 
 const annotations = cache<SearchResult<Annotation>[]>()
 const taxa = cache<SearchResult<Taxon>[]>()
-const names = cache<Name[]>()
-const related = cache<RelatedTaxa>()
+const taxon = cache<[RelatedTaxa, Name[]]>()
 const result = cache<QueryResult>()
 
 export const resources = {
@@ -26,16 +26,17 @@ export const resources = {
         return taxa.resource(query, () => fetchTaxa(query), 300)
     },
 
-    names: (ncbi_taxon_id: number) => {
-        if (ncbi_taxon_id < 1) return { read: () => [] }
+    taxon: (ncbi_taxon_id: number) => {
+        if (ncbi_taxon_id < 1) {
+            return { read: () => [{ parent: null, children: [] }, []] } as Resource<[RelatedTaxa, Name[]]>
+        }
 
-        return names.resource(ncbi_taxon_id, () => fetchNames(ncbi_taxon_id))
-    },
+        return taxon.resource(ncbi_taxon_id, async () => {
+            const related = await fetchRelated(ncbi_taxon_id)
+            const names = await fetchNames(ncbi_taxon_id)
 
-    related: (ncbi_taxon_id: number) => {
-        if (ncbi_taxon_id < 1) return { read: () => ({ parent: null, children: [] }) }
-
-        return related.resource(ncbi_taxon_id, () => fetchRelated(ncbi_taxon_id))
+            return [related, names]
+        })
     },
 
     result: (query: Query) => {
@@ -90,7 +91,7 @@ const fetchNames = async (ncbi_taxon_id: number): Promise<Name[]> => {
     return json.data.names
 }
 
-const fetchRelated = async (ncbi_taxon_id: number) => {
+const fetchRelated = async (ncbi_taxon_id: number): Promise<RelatedTaxa> => {
     const params = { headers: { 'accept': 'application/json' } }
 
     const response = await fetch(`/api/taxa/${ncbi_taxon_id}/related`, params)

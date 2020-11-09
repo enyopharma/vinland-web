@@ -2,12 +2,13 @@ import md5 from 'md5'
 import React from 'react'
 
 import { AppState } from 'app/types'
+import { Resource } from 'app/cache'
 import { useAppSelector } from 'app/hooks'
 import { ToastContainer } from 'app/toast'
 import { Timeout, PleaseWait } from 'app/partials'
 
-import { Query } from '../types'
 import { resources } from '../api'
+import { QueryResult } from '../types'
 import { parse as parseIdentifiers } from '../utils'
 import { TaxonomyCard } from './TaxonomyCard'
 import { IdentifierCard } from './IdentifierCard'
@@ -20,7 +21,7 @@ export const InteractionSearchPage: React.FC = () => {
     const lists = useAppSelector(state => state.interactions.search.identifiers)
     const taxonomy = useAppSelector(state => state.interactions.search.taxonomy)
     const options = useAppSelector(state => state.interactions.search.options)
-    const query = useAppSelector(state2query)
+    const resource = useAppSelector(state2resource)
 
     return (
         <div className="container">
@@ -42,29 +43,29 @@ export const InteractionSearchPage: React.FC = () => {
             <h2 id="result">Query result</h2>
             <ToastContainer target='result' />
             <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-                <QueryResultAlertFetcher query={query} />
-                <QueryResultCardFetcher query={query} />
+                <QueryResultAlertFetcher resource={resource} />
+                <QueryResultCardFetcher resource={resource} />
             </React.Suspense>
         </div>
     )
 }
 
 type QueryResultAlertFetcherProps = {
-    query: Query
+    resource: Resource<QueryResult>
 }
 
-const QueryResultAlertFetcher: React.FC<QueryResultAlertFetcherProps> = ({ query }) => {
-    const result = resources.result(query).read()
+const QueryResultAlertFetcher: React.FC<QueryResultAlertFetcherProps> = ({ resource }) => {
+    const result = resource.read()
 
     return <QueryResultAlert result={result} />
 }
 
 type QueryResultCardFetcherProps = {
-    query: Query
+    resource: Resource<QueryResult>
 }
 
-const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ query }) => {
-    const result = resources.result(query).read()
+const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ resource }) => {
+    const result = resource.read()
 
     return <QueryResultCard result={result} />
 }
@@ -73,10 +74,12 @@ const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ query }
  * Caution: Array.sort() mutates the array which is not allowed.
  * Need to clone identifiers and names (parseIdentifiers() or Array.slice()) before sorting.
  */
-export const state2query = (state: AppState) => {
+export const state2resource = (state: AppState) => {
     const identifiers = parseIdentifiers(state.interactions.search.identifiers)
     const names = state.interactions.search.taxonomy.names.slice()
-    const ncbi_taxon_id = state.interactions.search.taxonomy.taxon === null ? 0 : state.interactions.search.taxonomy.taxon.ncbi_taxon_id
+    const ncbi_taxon_id = state.interactions.search.taxonomy.current !== null
+        ? state.interactions.search.taxonomy.current.taxon.ncbi_taxon_id
+        : 0
 
     const parts: string[] = []
     if (state.interactions.search.options.hh) parts.push('HH')
@@ -88,7 +91,7 @@ export const state2query = (state: AppState) => {
     parts.push(...names.sort((a: string, b: string) => a.localeCompare(b)))
     parts.push(...identifiers.sort((a: string, b: string) => a.localeCompare(b)))
 
-    return {
+    return resources.result({
         key: md5(parts.join(':')),
         identifiers: identifiers,
         ncbi_taxon_id: ncbi_taxon_id,
@@ -98,5 +101,5 @@ export const state2query = (state: AppState) => {
         neighbors: state.interactions.search.options.neighbors,
         publications: state.interactions.search.options.publications,
         methods: state.interactions.search.options.methods,
-    }
+    })
 }
