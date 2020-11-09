@@ -37,7 +37,7 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab,
                     </div>
                     <div className="col">
                         <p className="text-right">
-                            <CsvDownloadButton enabled={filtered.length > 0} csv={() => proteins2csv(filtered)}>
+                            <CsvDownloadButton csv={() => proteins2csv(filtered)} enabled={filtered.length > 0}>
                                 Download as csv
                             </CsvDownloadButton>
                         </p>
@@ -46,7 +46,7 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins, tab,
             </div>
             {filtered.length > 0
                 ? <ProteinTable proteins={filtered} offset={offset} setOffset={setOffset} />
-                : <EmptyTable />
+                : <EmptyTable tab={tab} />
             }
         </React.Fragment>
     )
@@ -79,10 +79,14 @@ const TabCheckbox: React.FC<TabCheckboxProps> = ({ tab, current, update, childre
     )
 }
 
-const EmptyTable: React.FC = () => (
+type EmptyTableProps = {
+    tab: ProteinTab
+}
+
+const EmptyTable: React.FC<EmptyTableProps> = ({ tab }) => (
     <div className="card-body">
         <p className="text-center">
-            No viral protein
+            {empty[tab]}
         </p>
     </div>
 )
@@ -172,6 +176,12 @@ const ProteinTr: React.FC<ProteinTrProps> = ({ protein }) => (
         </td>
     </tr>
 )
+
+const empty = {
+    a: "not protein found",
+    h: "no human protein found",
+    v: "no viral protein found"
+}
 
 const filter = (type: ProteinTab, proteins: Protein[]) => {
     if (type === 'h') {

@@ -13,18 +13,41 @@ type InteractionCardBodyProps = {
     setOffset: (offset: number) => void
 }
 
-export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions, offset, setOffset }) => {
+export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions, offset, setOffset }) => (
+    <React.Fragment>
+        <div className="card-body">
+            <p className="text-right">
+                <CsvDownloadButton csv={() => interactions2csv(interactions)} enabled={interactions.length > 0}>
+                    Download as csv
+                </CsvDownloadButton>
+            </p>
+        </div>
+        {interactions.length > 0
+            ? <InteractionTable interactions={interactions} offset={offset} setOffset={setOffset} />
+            : <EmptyTable />
+        }
+    </React.Fragment>
+)
+
+const EmptyTable: React.FC = () => (
+    <div className="card-body">
+        <p className="text-center">
+            No interaction found
+        </p>
+    </div>
+)
+
+type InteractionTableProps = {
+    interactions: Interaction[]
+    offset: number
+    setOffset: (offset: number) => void
+}
+
+const InteractionTable: React.FC<InteractionTableProps> = ({ interactions, offset, setOffset }) => {
     const slice = interactions.slice(offset, offset + limit)
 
     return (
         <React.Fragment>
-            <div className="card-body">
-                <p className="text-right">
-                    <CsvDownloadButton csv={() => interactions2csv(interactions)}>
-                        Download as csv
-                    </CsvDownloadButton>
-                </p>
-            </div>
             <div className="card-body">
                 <Pagination offset={offset} total={interactions.length} limit={limit} update={setOffset} />
             </div>
