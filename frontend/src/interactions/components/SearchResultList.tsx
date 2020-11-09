@@ -1,9 +1,8 @@
 import React, { RefObject, useState, useEffect } from 'react'
 
-import { Resource } from 'app/cache'
 import { ProgressBar } from 'partials'
 
-import { SearchResult } from '../types'
+import { Resource, SearchResult } from '../types'
 
 type SearchResultListProps = {
     input: RefObject<HTMLInputElement>

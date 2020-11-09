@@ -1,3 +1,7 @@
+export type Resource<T> = {
+    read: () => T
+}
+
 export type Protein = {
     id: number
     type: 'h' | 'v'

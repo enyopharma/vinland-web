@@ -1,6 +1,6 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
-import { cache } from 'app/cache'
+import { cache } from 'utils/cache'
 
 import { Protein, Isoform, Interactor } from './types'
 

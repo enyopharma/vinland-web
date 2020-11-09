@@ -6,6 +6,10 @@ export type SearchState = ReturnType<typeof store.getState>
 
 export type SearchDispatch = typeof store.dispatch
 
+export type Resource<T> = {
+    read: () => T
+}
+
 export type SearchResult<T> = {
     label: string
     value: T

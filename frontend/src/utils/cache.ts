@@ -1,11 +1,11 @@
-export type Resource<T> = {
-    read: () => T
-}
-
 enum ResourceStatuses { PENDING, SUCCESS, FAILURE }
 
 type Cache<T> = {
     resource: (key: number | string, factory: () => Promise<T>, delay?: number) => Resource<T>
+}
+
+type Resource<T> = {
+    read: () => T
 }
 
 export const cache = <T>(): Cache<T> => {

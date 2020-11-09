@@ -1,9 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 
-import { Resource } from 'app/cache'
-
 import { resources } from '../api'
-import { SearchResult, Annotation } from '../types'
+import { Resource, SearchResult, Annotation } from '../types'
 
 import { SearchOverlay } from './SearchOverlay'
 import { SearchResultList } from './SearchResultList'

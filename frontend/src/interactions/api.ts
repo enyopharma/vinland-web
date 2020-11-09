@@ -1,10 +1,8 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
-import { cache } from 'app/cache'
+import { cache } from 'utils/cache'
 
-import { Resource } from 'app/cache'
-
-import { SearchResult, Annotation, Taxon, Name, RelatedTaxa, Query, QueryResult, QueryResultStatuses } from './types'
+import { Resource, SearchResult, Annotation, Taxon, Name, RelatedTaxa, Query, QueryResult, QueryResultStatuses } from './types'
 
 const annotations = cache<SearchResult<Annotation>[]>()
 const taxa = cache<SearchResult<Taxon>[]>()

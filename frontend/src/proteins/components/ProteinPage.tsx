@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Resource } from 'app/cache'
 import { Timeout, PleaseWait } from 'partials'
 
 import { resources } from '../api'
-import { Protein, Isoform } from '../types'
+import { Resource, Protein, Isoform } from '../types'
 
 const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
 

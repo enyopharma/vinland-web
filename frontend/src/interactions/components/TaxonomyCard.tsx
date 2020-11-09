@@ -1,12 +1,11 @@
 import React, { useRef, useState } from 'react'
 
-import { Resource } from 'app/cache'
 import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
 import { useActionCreator } from '../hooks'
 import { actions } from '../reducers/taxonomy'
-import { SearchResult, Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
+import { Resource, SearchResult, Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
 
 import { SearchOverlay } from './SearchOverlay'
 import { SearchResultList } from './SearchResultList'
