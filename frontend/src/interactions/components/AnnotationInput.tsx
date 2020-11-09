@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react'
 
 import { Resource } from 'app/cache'
-import { SearchResult, SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
-import { Annotation } from '../types'
+import { SearchResult, Annotation } from '../types'
+
+import { SearchOverlay } from './SearchOverlay'
+import { SearchResultList } from './SearchResultList'
 
 const sources = [
     { value: 'GObp', label: 'GObp' },
@@ -56,14 +58,14 @@ export const AnnotationInput: React.FC<AnnotationInputProps> = ({ select }) => {
                     onChange={e => update(source, e.target.value)}
                 />
             </div>
-            <Overlay input={input}>
+            <SearchOverlay input={input}>
                 <SearchResultList
                     input={input}
                     query={query}
                     resource={resource}
                     select={selectAndReset}
                 />
-            </Overlay>
+            </SearchOverlay>
         </div>
     )
 }

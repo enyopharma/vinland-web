@@ -2,12 +2,14 @@ import React, { useRef, useState } from 'react'
 
 import { Resource } from 'app/cache'
 import { ProgressBar } from 'app/partials'
-import { SearchResult, SearchResultList, Overlay } from 'app/search'
 
 import { resources } from '../api'
 import { useActionCreator } from '../hooks'
 import { actions } from '../reducers/taxonomy'
-import { Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
+import { SearchResult, Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
+
+import { SearchOverlay } from './SearchOverlay'
+import { SearchResultList } from './SearchResultList'
 
 type TaxonomyCardProps = {
     taxonomy: Taxonomy
@@ -65,14 +67,14 @@ const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ sel
                             onChange={e => update(e.target.value)}
                         />
                     </div>
-                    <Overlay input={input}>
+                    <SearchOverlay input={input}>
                         <SearchResultList
                             input={input}
                             query={query}
                             resource={resource}
                             select={select}
                         />
-                    </Overlay>
+                    </SearchOverlay>
                 </div>
             </div>
         </div>

@@ -1,12 +1,12 @@
 import React, { RefObject, useState, useEffect } from 'react'
 
-type OverlayProps = {
+type SearchOverlayProps = {
     input: RefObject<HTMLInputElement>
 }
 
 const isQueryNotEmpty = (query: string | undefined) => !!query && query.trim().length > 0
 
-export const Overlay: React.FC<OverlayProps> = ({ input, children }) => {
+export const SearchOverlay: React.FC<SearchOverlayProps> = ({ input, children }) => {
     const [display, setDisplay] = useState<boolean>(false)
 
     useEffect(() => {
