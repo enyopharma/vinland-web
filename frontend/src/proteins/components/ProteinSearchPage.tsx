@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { Resource } from 'app/cache'
-import { ProgressBar } from 'app/partials'
+import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
 import { Protein } from '../types'

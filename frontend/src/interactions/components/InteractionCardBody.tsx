@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Pagination, ProteinLink, InteractionLink } from 'app/partials'
+import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
 import { Interaction } from '../types'
 import { CsvDownloadButton } from './CsvDownloadButton'

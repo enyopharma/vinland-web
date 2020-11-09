@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
 import { Resource } from 'app/cache'
-import { ProgressBar } from 'app/partials'
+import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
 import { useActionCreator } from '../hooks'

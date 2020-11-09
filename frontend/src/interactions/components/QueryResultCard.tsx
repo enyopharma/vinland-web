@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { Timeout, PleaseWait } from 'app/partials'
+import { Timeout, PleaseWait } from 'partials'
 
 import { cache } from '../cache'
 import { config } from '../config'

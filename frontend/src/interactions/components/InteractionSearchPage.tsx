@@ -2,7 +2,7 @@ import md5 from 'md5'
 import React from 'react'
 
 import { Resource } from 'app/cache'
-import { Timeout, PleaseWait } from 'app/partials'
+import { Timeout, PleaseWait } from 'partials'
 
 import { resources } from '../api'
 import { useSelector } from '../hooks'

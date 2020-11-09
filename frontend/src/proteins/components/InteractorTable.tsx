@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Pagination, ProteinLink, InteractionLink } from 'app/partials'
+import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
 import { Interactor, Interaction, Protein, Mapping } from '../types'
 

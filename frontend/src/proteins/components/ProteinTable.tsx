@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ProteinLink } from 'app/partials'
+import { ProteinLink } from 'partials'
 
 import { Protein } from '../types'
 

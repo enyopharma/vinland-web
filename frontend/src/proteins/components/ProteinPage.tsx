@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { Resource } from 'app/cache'
-import { Timeout, PleaseWait } from 'app/partials'
+import { Timeout, PleaseWait } from 'partials'
 
 import { resources } from '../api'
 import { Protein, Isoform } from '../types'

@@ -1,7 +1,7 @@
 import React, { RefObject, useState, useEffect } from 'react'
 
 import { Resource } from 'app/cache'
-import { ProgressBar } from 'app/partials'
+import { ProgressBar } from 'partials'
 
 import { SearchResult } from '../types'
 
