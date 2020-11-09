@@ -2,13 +2,14 @@ import md5 from 'md5'
 import React from 'react'
 
 import { Resource } from 'app/cache'
-import { ToastContainer } from 'app/toast'
 import { Timeout, PleaseWait } from 'app/partials'
 
 import { resources } from '../api'
 import { useSelector } from '../hooks'
+import { ToastContainer } from '../toast'
 import { SearchState, QueryResult } from '../types'
 import { parse as parseIdentifiers } from '../utils'
+
 import { TaxonomyCard } from './TaxonomyCard'
 import { IdentifierCard } from './IdentifierCard'
 import { DisplayOptionsCard } from './DisplayOptionsCard'
