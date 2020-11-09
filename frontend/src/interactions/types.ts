@@ -1,5 +1,3 @@
-import { Resource } from 'app/cache'
-
 import { cache } from './cache'
 import { network } from './network'
 
