@@ -43,32 +43,14 @@ final class IndexEndpoint
             return false;
         }
 
-        return is_null($isoform_id)
-            ? $this->canonical($type, $protein_id)
-            : $this->isoform($type, $protein_id, (int) $isoform_id);
-    }
+        $isoform = is_null($isoform_id)
+            ? $this->isoforms->canonical($protein_id)->fetch()
+            : $this->isoforms->id($protein_id, (int) $isoform_id)->fetch();
 
-    /**
-     * @return false|iterable
-     */
-    private function canonical(string $type, int $protein_id)
-    {
-        if (!$canonical = $this->isoforms->canonical($protein_id)->fetch()) {
+        if (!$isoform) {
             return false;
         }
 
-        return $this->interactors->all($type, $protein_id, $canonical['id']);
-    }
-
-    /**
-     * @return false|iterable
-     */
-    private function isoform(string $type, int $protein_id, int $isoform_id)
-    {
-        if (!$this->isoforms->id($protein_id, $isoform_id)->fetch()) {
-            return false;
-        }
-
-        return $this->interactors->all($type, $protein_id, $isoform_id);
+        return $this->interactors->all($type, $protein_id, $isoform['id']);
     }
 }
