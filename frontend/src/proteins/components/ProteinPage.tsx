@@ -107,13 +107,32 @@ type InteractorTableFetcherProps = {
 const InteractorTableFetcher: React.FC<InteractorTableFetcherProps> = ({ type, protein, isoform }) => {
     const interactors = resources.interactors(type, protein.id, isoform.id).read()
 
+    return interactors.length === 0
+        ? <EmptyTable type={type} />
+        : (
+            <InteractorTable
+                source={protein}
+                interactors={interactors}
+                width={isoform.sequence.length}
+            />
+        )
+}
+
+type EmptyTableProps = {
+    type: 'h' | 'v'
+}
+
+const EmptyTable: React.FC<EmptyTableProps> = ({ type }) => {
     return (
-        <InteractorTable
-            source={protein}
-            interactors={interactors}
-            width={isoform.sequence.length}
-        />
+        <p className="text-center">
+            {empty[type]}
+        </p>
     )
+}
+
+const empty = {
+    'h': 'No human interactor',
+    'v': 'No viral interactor',
 }
 
 const canonicalIndex = (isoforms: Isoform[]) => {

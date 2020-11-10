@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
@@ -14,6 +14,8 @@ type InteractorTableProps = {
 
 export const InteractorTable: React.FC<InteractorTableProps> = ({ source, interactors, width }) => {
     const [offset, setOffset] = useState<number>(0)
+
+    useEffect(() => setOffset(0), [interactors])
 
     const slice = interactors.sort(sorti).slice(offset, offset + limit)
 
