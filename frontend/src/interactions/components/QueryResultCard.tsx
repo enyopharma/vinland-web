@@ -35,8 +35,8 @@ const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ c
     const resetInteractionsOffset = useActionCreator(actions.resetInteractionsOffset)
     const resetProteinsOffsets = useActionCreator(actions.resetProteinsOffsets)
 
-    useEffect(() => resetInteractionsOffset(), [cache])
-    useEffect(() => resetProteinsOffsets(), [cache])
+    useEffect(() => resetInteractionsOffset(), [cache, resetInteractionsOffset])
+    useEffect(() => resetProteinsOffsets(), [cache, resetProteinsOffsets])
 
     return (
         <div className="card">

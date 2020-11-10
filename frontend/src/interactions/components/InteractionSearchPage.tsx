@@ -6,7 +6,7 @@ import { Timeout, PleaseWait } from 'partials'
 import { resources } from '../api'
 import { useSelector } from '../hooks'
 import { ToastContainer } from '../toast'
-import { SearchState, Resource, QueryResult } from '../types'
+import { PageState, Resource, QueryResult } from '../types'
 import { parse as parseIdentifiers } from '../utils'
 
 import { TaxonomyCard } from './TaxonomyCard'
@@ -73,7 +73,7 @@ const QueryResultCardFetcher: React.FC<QueryResultCardFetcherProps> = ({ resourc
  * Caution: Array.sort() mutates the array which is not allowed.
  * Need to clone identifiers and names (parseIdentifiers() or Array.slice()) before sorting.
  */
-export const state2resource = (state: SearchState) => {
+export const state2resource = (state: PageState) => {
     const identifiers = parseIdentifiers(state.identifiers)
     const names = state.taxonomy.names.slice()
     const ncbi_taxon_id = state.taxonomy.taxon !== null

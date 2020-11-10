@@ -1,10 +1,8 @@
-import { store } from './store'
+import { AppState } from 'app/store'
 import { cache } from './cache'
 import { network } from './network'
 
-export type SearchState = ReturnType<typeof store.getState>
-
-export type SearchDispatch = typeof store.dispatch
+export type PageState = AppState['interactions']
 
 export type Resource<T> = {
     read: () => T

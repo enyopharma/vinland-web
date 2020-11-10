@@ -1,6 +1,6 @@
 import qs from 'querystring'
 import fetch from 'cross-fetch'
-import { cache } from 'utils/cache'
+import { cache } from 'app/cache'
 
 import { Resource, SearchResult, Annotation, Taxon, Name, RelatedTaxa, Query, QueryResult, QueryResultStatuses } from './types'
 

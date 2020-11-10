@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
 
+import { store } from 'app/store'
 import { Navbar, Timeout, PleaseWait } from 'partials'
-import { store as interactions } from 'interactions/store'
 
 const HomePage = React.lazy(() => import('home').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('proteins').then(module => ({ default: module.ProteinPage })))
@@ -12,21 +12,21 @@ const InteractionPage = React.lazy(() => import('interactions').then(module => (
 const InteractionSearchPage = React.lazy(() => import('interactions').then(module => ({ default: module.InteractionSearchPage })))
 
 export const App: React.FC = () => (
-    <BrowserRouter basename="/">
-        <ScrollToTop />
-        <Navbar />
-        <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-            <Switch>
-                <Route exact path="/" component={HomePage} />
-                <Route exact path="/proteins" component={ProteinSearchPage} />
-                <Route exact path="/proteins/:id" component={ProteinPage} />
-                <Provider store={interactions}>
+    <Provider store={store}>
+        <BrowserRouter basename="/">
+            <ScrollToTop />
+            <Navbar />
+            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
+                <Switch>
+                    <Route exact path="/" component={HomePage} />
+                    <Route exact path="/proteins" component={ProteinSearchPage} />
+                    <Route exact path="/proteins/:id" component={ProteinPage} />
                     <Route exact path="/interactions" component={InteractionSearchPage} />
                     <Route exact path="/interactions/:id" component={InteractionPage} />
-                </Provider>
-            </Switch>
-        </React.Suspense>
-    </BrowserRouter>
+                </Switch>
+            </React.Suspense>
+        </BrowserRouter>
+    </Provider>
 )
 
 const ScrollToTop: React.FC = () => {

@@ -1,3 +1,12 @@
+import { AppState } from 'app/store'
+
+export type PageState = AppState['proteins']
+
+export type SearchState = {
+    type: '' | 'h' | 'v'
+    query: string
+}
+
 export type Resource<T> = {
     read: () => T
 }

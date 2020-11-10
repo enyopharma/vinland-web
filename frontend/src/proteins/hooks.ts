@@ -5,7 +5,7 @@ import { AppState, AppDispatch } from 'app/store'
 import { PageState } from './types'
 
 export const useSelector: TypedUseSelectorHook<PageState> = <T>(f: (state: PageState) => T): T => {
-    return useSelectorRaw<AppState, T>(state => f(state.interactions))
+    return useSelectorRaw<AppState, T>(state => f(state.proteins))
 }
 
 export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T) => {

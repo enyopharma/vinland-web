@@ -4,14 +4,18 @@ import { useHistory } from 'react-router-dom'
 import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
+import { actions } from '../reducers/search'
 import { Resource, Protein } from '../types'
+import { useSelector, useActionCreator } from '../hooks'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 
 export const ProteinSearchPage: React.FC = () => {
     const ref = useRef<HTMLInputElement>(null)
-    const [type, setType] = useState<string>('')
-    const [query, setQuery] = useState<string>('')
+    const type = useSelector(state => state.search.type)
+    const query = useSelector(state => state.search.query)
+    const setType = useActionCreator(actions.setType)
+    const setQuery = useActionCreator(actions.setQuery)
     const [resource, setResource] = useState<Resource<Protein[]>>(resources.proteins(type, query))
 
     const isTypeEmpty = type.length === 0
@@ -19,7 +23,8 @@ export const ProteinSearchPage: React.FC = () => {
 
     useEffect(() => { if (!isTypeEmpty) ref.current?.focus() }, [isTypeEmpty])
 
-    const update = (type: string, query: string) => {
+    const update = (typestr: string, query: string) => {
+        const type = typestr as '' | 'h' | 'v'
         setType(type)
         setQuery(query)
         setResource(resources.proteins(type, query))

@@ -145,7 +145,7 @@ type ProteinTrProps = {
 const ProteinTr: React.FC<ProteinTrProps> = ({ protein }) => (
     <tr>
         <td className="text-center">
-            <ProteinLink {...protein}>
+            <ProteinLink {...protein} target="_blank">
                 <img
                     src={`/img/${protein.type}.png`}
                     alt={`${protein.type.toUpperCase()} protein`}
