@@ -43,13 +43,12 @@ final class InteractorViewSql implements InteractorViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT DISTINCT e.interaction_id, m.start, m.stop, m.identity, m.sequence
+        SELECT DISTINCT e.interaction_id, m.sequence_id, m.start, m.stop, m.identity, m.sequence
         FROM proteins AS p, edges AS e, mappings AS m
         WHERE p.type = ?
         AND p.id = e.target_id
         AND e.id = m.edge_id
         AND e.source_id = ?
-        AND m.sequence_id = ?
     SQL;
 
     public function __construct(\PDO $pdo)
@@ -57,7 +56,7 @@ final class InteractorViewSql implements InteractorViewInterface
         $this->pdo = $pdo;
     }
 
-    public function all(string $type, int $protein_id, int $isoform_id): Statement
+    public function all(string $type, int $protein_id): Statement
     {
         $select_interactors_sth = $type == 'h'
             ? $this->pdo->prepare(self::SELECT_H_INTERACTORS_SQL)
@@ -67,7 +66,7 @@ final class InteractorViewSql implements InteractorViewInterface
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
-        $select_mappings_sth->execute([$type, $protein_id, $isoform_id]);
+        $select_mappings_sth->execute([$type, $protein_id]);
 
         $mappings = $select_mappings_sth->fetchAll();
 

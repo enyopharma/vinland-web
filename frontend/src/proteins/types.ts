@@ -22,6 +22,7 @@ export type Protein = {
 
 export type Isoform = {
     id: number
+    protein_id: number
     accession: string
     is_canonical: boolean
     is_mature: boolean
@@ -43,6 +44,7 @@ export type Interactor = {
 }
 
 export type Mapping = {
+    sequence_id: number
     start: number
     stop: number
     identity: number

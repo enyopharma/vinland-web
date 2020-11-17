@@ -27,8 +27,8 @@ export const resources = {
         return proteins.resource(`${type}:${query}`, () => fetchProteins(type, query), 300)
     },
 
-    interactors: (type: 'h' | 'v', protein_id: number, isoform_id: number) => {
-        return interactors.resource(`${type}:${protein_id}:${isoform_id}`, () => fetchInteractors(type, protein_id, isoform_id))
+    interactors: (protein_id: number, type: 'h' | 'v') => {
+        return interactors.resource(`${protein_id}:${type}`, () => fetchInteractors(protein_id, type))
     },
 }
 
@@ -72,11 +72,10 @@ const fetchIsoforms = async (protein_id: number): Promise<Isoform[]> => {
     return json.data
 }
 
-const fetchInteractors = async (type: 'h' | 'v', protein_id: number, isoform_id: number): Promise<Interactor[]> => {
-    const querystr = qs.encode({ isoform_id })
+const fetchInteractors = async (protein_id: number, type: 'h' | 'v'): Promise<Interactor[]> => {
     const params = { headers: { accept: 'application/json' } }
 
-    const response = await fetch(`/api/proteins/${protein_id}/interactors/${type}?${querystr}`, params)
+    const response = await fetch(`/api/proteins/${protein_id}/interactors/${type}`, params)
     const json = await response.json()
 
     if (!json.success) {

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { Timeout, PleaseWait } from 'partials'
 
 import { resources } from '../api'
-import { Resource, Protein, Isoform } from '../types'
+import { Resource, Protein, Isoform, Interactor } from '../types'
 
 const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
 
@@ -16,7 +16,7 @@ export const ProteinPage: React.FC = () => {
     return (
         <div className="container">
             <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-                <ProteinSection resource={resource} />
+                <ProteinSection key={id} resource={resource} />
             </React.Suspense>
         </div>
     )
@@ -26,62 +26,143 @@ type ProteinSectionProps = {
     resource: Resource<[Protein, Isoform[]]>
 }
 
-export const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
+const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
     const [protein, isoforms] = resource.read()
 
-    const index = canonicalIndex(isoforms)
+    const [selected, setSelected] = useState(canonicalIndex(isoforms))
 
-    const [selected, setSelected] = useState<number>(index)
+    switch (protein.type) {
+        case 'h':
+            const r1 = resources.interactors(protein.id, 'h')
+            const r2 = resources.interactors(protein.id, 'v')
 
-    useEffect(() => setSelected(index), [isoforms, index])
+            return (
+                <ProteinHSection
+                    protein={protein}
+                    isoforms={isoforms}
+                    resource1={r1}
+                    resource2={r2}
+                    selected={selected}
+                    update={setSelected}
+                />
+            )
+        case 'v':
+            const r = resources.interactors(protein.id, 'h')
 
+            return (
+                <ProteinVSection
+                    protein={protein}
+                    isoforms={isoforms}
+                    resource={r}
+                    selected={selected}
+                    update={setSelected}
+                />
+            )
+    }
+}
+
+type ProteinHSectionProps = {
+    protein: Protein
+    isoforms: Isoform[]
+    resource1: Resource<Interactor[]>
+    resource2: Resource<Interactor[]>
+    selected: number
+    update: (index: number) => void
+}
+
+const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, resource1, resource2, selected, update }) => {
     const isoform = isoforms[selected]
+    const interactors1 = resource1.read()
+    const interactors2 = resource2.read()
 
     return (
         <React.Fragment>
-            <h1>
-                Protein ID Card - {protein.accession}/{protein.name}
-            </h1>
-            <p>
-                {protein.taxon} - {protein.description}
-            </p>
-            <div className="form-group">
-                <select
-                    className="form-control"
-                    value={selected}
-                    onChange={e => { setSelected(parseInt(e.target.value)) }}
-                    disabled={isoforms.length === 1}
-                >
-                    {isoforms.map((isoform, i) => <IsoformOption key={i} value={i} isoform={isoform} />)}
-                </select>
-            </div>
+            <ProteinInfoSection protein={protein} isoforms={isoforms} selected={selected} update={update} />
             <hr />
             <ul>
                 <li><a href="#sequence">Sequence</a></li>
                 <li><a href="#vh">VH interactions</a></li>
-                {protein.type === 'h' && <li><a href="#hh">HH interactions</a></li>}
+                <li><a href="#hh">HH interactions</a></li>
             </ul>
             <hr />
+            <SequenceSection isoform={isoform} />
             <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
                 <div className="float-right">[<a href="#top">top</a>]</div>
-                <h2 id="sequence">Sequence - {isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
-                <div className="form-group">
-                    <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
-                </div>
-                <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="vh">VH interactions</h2>
-                <InteractorTableFetcher type={protein.type === 'h' ? 'v' : 'h'} protein={protein} isoform={isoform} />
-                {protein.type === 'h' && (
-                    <React.Fragment>
-                        <div className="float-right">[<a href="#top">top</a>]</div>
-                        <h2 id="hh">HH interactions</h2>
-                        <InteractorTableFetcher type="h" protein={protein} isoform={isoform} />
-                    </React.Fragment>
-                )}
+                {interactors1.length === 0
+                    ? <EmptyTable type="v" />
+                    : <InteractorTable key={protein.id} type="h" isoform={isoform} interactors={interactors1} />
+                }
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="hh">HH interactions</h2>
+                {interactors2.length === 0
+                    ? <EmptyTable type="h" />
+                    : <InteractorTable key={protein.id} type="h" isoform={isoform} interactors={interactors2} />
+                }
             </React.Suspense>
         </React.Fragment>
     )
 }
+
+type ProteinVSectionProps = {
+    protein: Protein
+    isoforms: Isoform[]
+    resource: Resource<Interactor[]>
+    selected: number
+    update: (index: number) => void
+}
+
+const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, resource, selected, update }) => {
+    const isoform = isoforms[selected]
+    const interactors = resource.read()
+
+    return (
+        <React.Fragment>
+            <ProteinInfoSection protein={protein} isoforms={isoforms} selected={selected} update={update} />
+            <hr />
+            <ul>
+                <li><a href="#sequence">Sequence</a></li>
+                <li><a href="#vh">VH interactions</a></li>
+            </ul>
+            <hr />
+            <SequenceSection isoform={isoforms[selected]} />
+            <div className="float-right">[<a href="#top">top</a>]</div>
+            <h2 id="vh">VH interactions</h2>
+            {interactors.length === 0
+                ? <EmptyTable type="h" />
+                : <InteractorTable type="v" isoform={isoform} interactors={interactors} />
+            }
+        </React.Fragment >
+    )
+}
+
+type ProteinInfoSection = {
+    protein: Protein
+    isoforms: Isoform[]
+    selected: number
+    update: (index: number) => void
+}
+
+const ProteinInfoSection: React.FC<ProteinInfoSection> = ({ protein, isoforms, selected, update }) => (
+    <React.Fragment>
+        <h1>
+            Protein ID Card - {protein.accession}/{protein.name}
+        </h1>
+        <p>
+            {protein.taxon} - {protein.description}
+        </p>
+        <div className="form-group">
+            <select
+                className="form-control"
+                value={selected}
+                onChange={e => { update(parseInt(e.target.value)) }}
+                disabled={isoforms.length === 1}
+            >
+                {isoforms.map((isoform, i) => <IsoformOption key={i} value={i} isoform={isoform} />)}
+            </select>
+        </div>
+    </React.Fragment>
+)
 
 type IsoformOptionProps = {
     value: number
@@ -98,37 +179,29 @@ const IsoformOption: React.FC<IsoformOptionProps> = ({ value, isoform }) => {
     return <option value={value}>{label}</option>
 }
 
-type InteractorTableFetcherProps = {
-    type: 'h' | 'v'
-    protein: Protein
+type SequenceSectionProps = {
     isoform: Isoform
 }
 
-const InteractorTableFetcher: React.FC<InteractorTableFetcherProps> = ({ type, protein, isoform }) => {
-    const interactors = resources.interactors(type, protein.id, isoform.id).read()
-
-    return interactors.length === 0
-        ? <EmptyTable type={type} />
-        : (
-            <InteractorTable
-                source={protein}
-                interactors={interactors}
-                width={isoform.sequence.length}
-            />
-        )
-}
+const SequenceSection: React.FC<SequenceSectionProps> = ({ isoform }) => (
+    <React.Fragment>
+        <div className="float-right">[<a href="#top">top</a>]</div>
+        <h2 id="sequence">Sequence - {isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
+        <div className="form-group">
+            <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
+        </div>
+    </React.Fragment>
+)
 
 type EmptyTableProps = {
     type: 'h' | 'v'
 }
 
-const EmptyTable: React.FC<EmptyTableProps> = ({ type }) => {
-    return (
-        <p className="text-center">
-            {empty[type]}
-        </p>
-    )
-}
+const EmptyTable: React.FC<EmptyTableProps> = ({ type }) => (
+    <p className="text-center">
+        {empty[type]}
+    </p>
+)
 
 const empty = {
     'h': 'No human interactor',

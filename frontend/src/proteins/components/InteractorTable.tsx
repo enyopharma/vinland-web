@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import { Pagination, ProteinLink, InteractionLink } from 'partials'
 
-import { Interactor, Interaction, Protein, Mapping } from '../types'
+import { Interactor, Interaction, Protein, Isoform, Mapping } from '../types'
 
 const limit = 10
 
 type InteractorTableProps = {
-    source: Protein
+    type: 'h' | 'v'
+    isoform: Isoform
     interactors: Interactor[]
-    width: number
 }
 
-export const InteractorTable: React.FC<InteractorTableProps> = ({ source, interactors, width }) => {
-    const [offset, setOffset] = useState<number>(0)
+export const InteractorTable: React.FC<InteractorTableProps> = ({ isoform, ...props }) => (
+    <InteractorTableRaw key={isoform.protein_id} isoform={isoform} {...props} />
+)
 
-    useEffect(() => setOffset(0), [interactors])
+type InteractorTableRawProps = {
+    type: 'h' | 'v'
+    isoform: Isoform
+    interactors: Interactor[]
+}
+
+const InteractorTableRaw: React.FC<InteractorTableRawProps> = ({ type, isoform, interactors }) => {
+    const [offset, setOffset] = useState<number>(0)
 
     const slice = interactors.sort(sorti).slice(offset, offset + limit)
 
@@ -39,7 +47,7 @@ export const InteractorTable: React.FC<InteractorTableProps> = ({ source, intera
                 </thead>
                 <tbody>
                     {[...Array(limit)].map((_, i) => slice[i]
-                        ? <InteractionTr key={i} source={source} interactor={slice[i]} width={width} />
+                        ? <InteractionTr key={i} type={type} isoform={isoform} interactor={slice[i]} />
                         : <SkeletonTr key={i} />
                     )}
                 </tbody>
@@ -65,14 +73,15 @@ const SkeletonTr: React.FC = () => (
 )
 
 type InteractionTrProps = {
-    source: Protein
+    type: 'h' | 'v'
+    isoform: Isoform
     interactor: Interactor
-    width: number
 }
 
-const InteractionTr: React.FC<InteractionTrProps> = ({ source, interactor, width }) => {
-    const clx = clusters(interactor.mappings)
-
+const InteractionTr: React.FC<InteractionTrProps> = ({ type, isoform, interactor }) => {
+    const width = isoform.sequence.length
+    const mappings = interactor.mappings.filter(m => isoform.id === m.sequence_id)
+    const clx = clusters(mappings)
     const rowspan = clx.length > 1 ? clx.length : undefined
 
     return (
@@ -100,13 +109,13 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ source, interactor, width
                     </span>
                 </td>
                 <td className="text-center">
-                    {clx.length > 0 && <MappingImg source={source} mappings={clx[0]} width={width} />}
+                    {clx.length === 0 ? '-' : <MappingImg type={type} width={width} mappings={clx[0]} />}
                 </td>
             </tr>
             {clx.slice(1).map((mappings, m) => (
                 <tr key={m + 1}>
                     <td className="text-center">
-                        <MappingImg source={source} mappings={mappings} width={width} />
+                        <MappingImg type={type} width={width} mappings={mappings} />
                     </td>
                 </tr>
             ))}
@@ -171,26 +180,26 @@ const ProteinLinkName: React.FC<ProteinLinkNameProps> = ({ protein }) => {
 }
 
 type MappingImgProps = {
-    source: Protein
-    mappings: Mapping[]
+    type: 'h' | 'v'
     width: number
+    mappings: Mapping[]
 }
 
-const MappingImg: React.FC<MappingImgProps> = ({ source, mappings, width }) => (
+const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappings }) => (
     <svg width="100%" height="30">
         <rect width="100%" y="14" height="2" style={{ fill: '#eee', strokeWidth: 0 }} />
-        {mappings.map((mapping, i) => <MappingRect key={i} source={source} mapping={mapping} width={width} />)}
+        {mappings.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
     </svg>
 )
 
 type MappingRectProps = {
-    source: Protein
-    mapping: Mapping
+    type: 'h' | 'v'
     width: number
+    mapping: Mapping
 }
 
-const MappingRect: React.FC<MappingRectProps> = ({ source, mapping, width }) => {
-    const color = source.type === 'h' ? '#6CC3D5' : '#FF7851'
+const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
+    const color = type === 'h' ? '#6CC3D5' : '#FF7851'
     const startp = ((mapping.start / width) * 100) + '%'
     const stopp = ((mapping.stop / width) * 100) + '%'
     const widthp = (((mapping.stop - mapping.start + 1) / width) * 100) + '%'
@@ -209,19 +218,16 @@ const MappingRect: React.FC<MappingRectProps> = ({ source, mapping, width }) => 
 }
 
 const sorti = (a: Interactor, b: Interactor) => {
-    // 1. whether one interaction has mapping on at least one isoform and not the other
-    //    -> prevents from changing order form an isoform to another
-    if (a.nb_mappings > 0 && b.nb_mappings === 0) return -1;
-    if (a.nb_mappings === 0 && b.nb_mappings > 0) return +1;
+    // 1. min interaction id when no interaction has mapping
+    if (a.mappings.length === 0 && b.mappings.length === 0) {
+        return a.interaction.id - b.interaction.id
+    }
 
-    // 2. min interaction id when no interaction has mapping
-    if (a.mappings.length === 0 && b.mappings.length === 0) return a.interaction.id - b.interaction.id
-
-    // 3. whether one interaction has mapping on the current isoform and not the other
+    // 2. whether one interaction has mapping and not the other
     if (a.mappings.length > 0 && b.mappings.length === 0) return -1
     if (a.mappings.length === 0 && b.mappings.length > 0) return +1
 
-    // 4. when both interaction has mapping the order is:
+    // 3. when both interaction has mapping the order is:
     //    - min start
     //    - max density
     //    - min interaction id

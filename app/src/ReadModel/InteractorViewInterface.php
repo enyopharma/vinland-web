@@ -6,5 +6,5 @@ namespace App\ReadModel;
 
 interface InteractorViewInterface
 {
-    public function all(string $type, int $protein_id, int $isoform_id): Statement;
+    public function all(string $type, int $protein_id): Statement;
 }

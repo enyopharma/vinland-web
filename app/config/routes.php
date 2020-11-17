@@ -50,7 +50,6 @@ return function (ContainerInterface $container): array {
 
         'GET /proteins/{protein_id:\d+}/interactors/{type:h|v}' => new App\Endpoints\Interactors\IndexEndpoint(
             $container->get(App\ReadModel\ProteinViewInterface::class),
-            $container->get(App\ReadModel\IsoformViewInterface::class),
             $container->get(App\ReadModel\InteractorViewInterface::class),
         ),
 
