@@ -1,8 +1,16 @@
-import { AppState } from 'app/store'
 import { cache } from './cache'
 import { network } from './network'
 
-export type PageState = AppState['interactions']
+export type PageState = {
+    key: string
+    identifiers: {
+        lists: IdentifierList[]
+        parsed: string[]
+    }
+    taxonomy: Taxonomy
+    options: DisplayOptions
+    nav: ResultNav
+}
 
 export type Resource<T> = {
     read: () => T

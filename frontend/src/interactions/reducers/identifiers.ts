@@ -48,5 +48,5 @@ export const { reducer, actions } = createSlice({
                     : [list, ...state];
             },
         },
-    }
+    },
 })

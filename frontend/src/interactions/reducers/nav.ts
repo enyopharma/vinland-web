@@ -67,5 +67,5 @@ export const { reducer, actions } = createSlice({
                 state.network.labels = action.payload.labels
             },
         },
-    }
+    },
 })

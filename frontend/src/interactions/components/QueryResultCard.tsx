@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { Timeout, PleaseWait } from 'partials'
 
@@ -31,40 +31,32 @@ type SuccessfulQueryResultCardProps = {
     cache: QueryResultCache
 }
 
-const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ cache }) => {
-    const resetInteractionsOffset = useActionCreator(actions.resetInteractionsOffset)
-    const resetProteinsOffsets = useActionCreator(actions.resetProteinsOffsets)
-
-    useEffect(() => resetInteractionsOffset(), [cache, resetInteractionsOffset])
-    useEffect(() => resetProteinsOffsets(), [cache, resetProteinsOffsets])
-
-    return (
-        <div className="card">
-            <div className="card-header pb-0">
-                <ul className="nav nav-tabs card-header-tabs">
-                    <li className="nav-item">
-                        <ResultTabLink tab="interactions">
-                            Interactions
+const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ cache }) => (
+    <div className="card">
+        <div className="card-header pb-0">
+            <ul className="nav nav-tabs card-header-tabs">
+                <li className="nav-item">
+                    <ResultTabLink tab="interactions">
+                        Interactions
                         </ResultTabLink>
-                    </li>
-                    <li className="nav-item">
-                        <ResultTabLink tab="proteins">
-                            Proteins
+                </li>
+                <li className="nav-item">
+                    <ResultTabLink tab="proteins">
+                        Proteins
                         </ResultTabLink>
-                    </li>
-                    <li className="nav-item">
-                        <ResultTabLink tab="network">
-                            Network
+                </li>
+                <li className="nav-item">
+                    <ResultTabLink tab="network">
+                        Network
                         </ResultTabLink>
-                    </li>
-                </ul>
-            </div>
-            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-                <SuccessfulQueryResultCardBody cache={cache} />
-            </React.Suspense>
+                </li>
+            </ul>
         </div>
-    )
-}
+        <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
+            <SuccessfulQueryResultCardBody cache={cache} />
+        </React.Suspense>
+    </div>
+)
 
 type ResultTabLinkProps = {
     tab: ResultTab

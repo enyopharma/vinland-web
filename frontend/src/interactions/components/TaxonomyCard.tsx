@@ -3,36 +3,26 @@ import React, { useRef, useState } from 'react'
 import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
-import { useActionCreator } from '../hooks'
+import { useSelector, useActionCreator } from '../hooks'
 import { actions } from '../reducers/taxonomy'
-import { Resource, SearchResult, Taxonomy, Taxon, RelatedTaxa, Name } from '../types'
+import { Resource, SearchResult, Taxon, RelatedTaxa, Name } from '../types'
 
 import { SearchOverlay } from './SearchOverlay'
 import { SearchResultList } from './SearchResultList'
 
-type TaxonomyCardProps = {
-    taxonomy: Taxonomy
-}
-
-export const TaxonomyCard: React.FC<TaxonomyCardProps> = ({ taxonomy }) => {
+export const TaxonomyCard: React.FC = () => {
+    const taxon = useSelector(state => state.taxonomy.taxon)
+    const [resource, setResource] = useState<Resource<[RelatedTaxa, Name[]]>>(resources.taxon(taxon?.ncbi_taxon_id ?? 0))
     const select = useActionCreator(actions.select)
-    const [resource, setResource] = useState<Resource<[RelatedTaxa, Name[]]>>(resources.taxon(taxonomy.taxon?.ncbi_taxon_id ?? 0))
 
     const update = (taxon: Taxon) => {
         select(taxon)
         setResource(resources.taxon(taxon.ncbi_taxon_id))
     }
 
-    return taxonomy.taxon === null
+    return taxon === null
         ? <CardWithoutSelectedTaxon select={update} />
-        : (
-            <CardWithSelectedTaxon
-                taxon={taxonomy.taxon}
-                names={taxonomy.names}
-                resource={resource}
-                select={update}
-            />
-        )
+        : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={update} />
 }
 
 type CardWithoutSelectedTaxonProps = {
@@ -82,12 +72,11 @@ const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ sel
 
 type CardWithSelectedTaxonProps = {
     taxon: Taxon
-    names: Name[]
     resource: Resource<[RelatedTaxa, Name[]]>
     select: (taxon: Taxon) => void
 }
 
-const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, names, select, resource }) => {
+const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, select, resource }) => {
     const unselect = useActionCreator(actions.unselect)
 
     return (
@@ -103,7 +92,7 @@ const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, na
                     <h4>Browse taxonomy:</h4>
                     <RelatedFormRow resource={resource} select={select} />
                     <h4>Only protein tagged with:</h4>
-                    <NameList resource={resource} selected={names} />
+                    <NameList resource={resource} />
                 </React.Suspense>
             </div>
         </div>
@@ -118,9 +107,13 @@ type RelatedFormRowProps = {
 const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource, select }) => {
     const { parent, children } = resource.read()[0]
 
-    const selectParent = () => parent && select(parent)
+    const selectParent = () => {
+        if (parent) select(parent)
+    }
 
-    const selectChild = (value: string) => value.length > 0 && select(children[parseInt(value)])
+    const selectChild = (value: string) => {
+        if (value.length > 0) select(children[parseInt(value)])
+    }
 
     return (
         <div className="form-row">
@@ -141,7 +134,7 @@ const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource, select }) => 
                     className="btn btn-block btn-danger"
                     title={parent === null ? undefined : parent.name}
                     disabled={parent === null}
-                    onClick={e => selectParent()}
+                    onClick={() => selectParent()}
                 >
                     Parent
                 </button>
@@ -152,11 +145,12 @@ const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource, select }) => 
 
 type NameListProps = {
     resource: Resource<[RelatedTaxa, Name[]]>
-    selected: Name[]
 }
 
-const NameList: React.FC<NameListProps> = ({ resource, selected }) => {
+const NameList: React.FC<NameListProps> = ({ resource }) => {
     const names = resource.read()[1]
+
+    const selected = useSelector(state => state.taxonomy.names)
 
     const buttons = names.length === 0
         ? 'no interactor associated to this taxon'
@@ -182,7 +176,7 @@ const NameButton: React.FC<NameButtonProps> = ({ name, selected }) => {
         : [...selected, name]
 
     return (
-        <button className={classes} onClick={e => update(names)}>
+        <button className={classes} onClick={() => update(names)}>
             {name}
         </button>
     )

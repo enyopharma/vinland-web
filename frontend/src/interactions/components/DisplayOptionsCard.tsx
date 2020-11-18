@@ -1,121 +1,180 @@
 import React from 'react'
 
-import { DisplayOptions } from '../types'
-import { useActionCreator } from '../hooks'
 import { actions } from '../reducers/options'
+import { useSelector, useActionCreator } from '../hooks'
 
-type DisplayOptionsCardProps = {
-    options: DisplayOptions
-}
-
-export const DisplayOptionsCard: React.FC<DisplayOptionsCardProps> = ({ options }) => (
+export const DisplayOptionsCard: React.FC = () => (
     <div className="card">
         <div className="card-body">
-            <DisplayOptionsRow {...options} />
-            <FilterOptionsRow {...options} />
+            <div className="row">
+                <div className="col">
+                    <div className="form-check form-check-inline">
+                        <HHCheckbox id="hh" />
+                        <label className="form-check-label" htmlFor="hh">
+                            Show HH ppi
+                        </label>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="form-check form-check-inline">
+                        <VHCheckbox id="vh" />
+                        <label className="form-check-label" htmlFor="vh">
+                            Show VH ppi
+                            </label>
+                    </div>
+                </div>
+                <div className="col-6">
+                    <div className="form-check form-check-inline">
+                        <NeighborsCheckbox id="neighbors" />
+                        <label className="form-check-label" htmlFor="neighbors">
+                            Include human neighbors
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col">
+                    <PublicationsLabel id="publications" />
+                    <PublicationsRange id="publications" />
+                </div>
+                <div className="col">
+                    <MethodsLabel id="methods" />
+                    <MethodsRange id="methods" />
+                </div>
+            </div>
         </div>
     </div>
 )
 
-type DisplayOptionsRowProps = {
-    hh: boolean
-    vh: boolean
-    neighbors: boolean
+type HHCheckboxProps = {
+    id: string
 }
 
-const DisplayOptionsRow: React.FC<DisplayOptionsRowProps> = ({ hh, vh, neighbors }) => {
-    const setHH = useActionCreator(actions.setHH)
-    const setVH = useActionCreator(actions.setVH)
-    const setNeighbors = useActionCreator(actions.setNeighbors)
+const HHCheckbox: React.FC<HHCheckboxProps> = ({ id }) => {
+    const checked = useSelector(state => state.options.hh)
+    const update = useActionCreator(actions.setHH)
 
     return (
-        <div className="row">
-            <div className="col">
-                <div className="form-check form-check-inline">
-                    <input
-                        id="hh"
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={hh}
-                        onChange={e => setHH(e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor="hh">
-                        Show HH ppi
-                    </label>
-                </div>
-            </div>
-            <div className="col">
-                <div className="form-check form-check-inline">
-                    <input
-                        id="vh"
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={vh}
-                        onChange={e => setVH(e.target.checked)}
-                    />
-                    <label className="form-check-label" htmlFor="vh">
-                        Show VH ppi
-                    </label>
-                </div>
-            </div>
-            <div className="col-6">
-                <div className="form-check form-check-inline">
-                    <input
-                        id="neighbors"
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={hh && neighbors}
-                        onChange={e => setNeighbors(e.target.checked)}
-                        disabled={!hh}
-                    />
-                    <label className="form-check-label" htmlFor="neighbors">
-                        Include human neighbors
-                    </label>
-                </div>
-            </div>
-        </div>
+        <input
+            id={id}
+            type="checkbox"
+            className="form-check-input"
+            checked={checked}
+            onChange={e => update(e.target.checked)}
+        />
     )
 }
 
-type FilterOptionsRowProps = {
-    publications: number
-    methods: number
+type VHCheckboxProps = {
+    id: string
 }
 
-const FilterOptionsRow: React.FC<FilterOptionsRowProps> = ({ publications, methods }) => {
-    const setPublications = useActionCreator(actions.setPublications)
-    const setMethods = useActionCreator(actions.setMethods)
+const VHCheckbox: React.FC<VHCheckboxProps> = ({ id }) => {
+    const checked = useSelector(state => state.options.vh)
+    const update = useActionCreator(actions.setVH)
 
     return (
-        <div className="row">
-            <div className="col">
-                <label htmlFor="publications">
-                    {`At least ${publications} ${publications === 1 ? 'publication' : 'publications'} describing PPIs`}
-                </label>
-                <input
-                    id="publications"
-                    type="range"
-                    className="custom-range"
-                    value={publications}
-                    min="1"
-                    max="10"
-                    onChange={e => setPublications(parseInt(e.target.value))}
-                />
-            </div>
-            <div className="col">
-                <label htmlFor="publications">
-                    {`At least ${methods} ${methods === 1 ? 'method' : 'methods'} describing PPIs`}
-                </label>
-                <input
-                    id="publications"
-                    type="range"
-                    className="custom-range"
-                    value={methods}
-                    min="1"
-                    max="10"
-                    onChange={e => setMethods(parseInt(e.target.value))}
-                />
-            </div>
-        </div>
+        <input
+            id={id}
+            type="checkbox"
+            className="form-check-input"
+            checked={checked}
+            onChange={e => update(e.target.checked)}
+        />
+    )
+}
+
+type NeighborsCheckboxProps = {
+    id: string
+}
+
+const NeighborsCheckbox: React.FC<NeighborsCheckboxProps> = ({ id }) => {
+    const checked = useSelector(state => state.options.neighbors)
+    const disabled = useSelector(state => !state.options.hh)
+    const update = useActionCreator(actions.setNeighbors)
+
+    return (
+        <input
+            id={id}
+            type="checkbox"
+            className="form-check-input"
+            checked={checked}
+            disabled={disabled}
+            onChange={e => update(e.target.checked)}
+        />
+    )
+}
+
+type PublicationsLabelProps = {
+    id: string
+}
+
+const PublicationsLabel: React.FC<PublicationsLabelProps> = ({ id }) => {
+    const publications = useSelector(state => state.options.publications)
+
+    const message = publications === 0
+        ? 'At least 1 publication describing PPIs'
+        : `At least ${publications} publications describing PPIs`
+
+    return <label htmlFor={id}>{message}</label>
+}
+
+type PublicationsRangeProps = {
+    id: string
+    min?: number
+    max?: number
+}
+
+const PublicationsRange: React.FC<PublicationsRangeProps> = ({ id, min = 1, max = 10 }) => {
+    const value = useSelector(state => state.options.publications)
+    const update = useActionCreator(actions.setPublications)
+
+    return (
+        <input
+            id={id}
+            type="range"
+            className="custom-range"
+            value={value}
+            min={min}
+            max={max}
+            onChange={e => update(parseInt(e.target.value))}
+        />
+    )
+}
+
+type MethodsLabelProps = {
+    id: string
+}
+
+const MethodsLabel: React.FC<MethodsLabelProps> = ({ id }) => {
+    const methods = useSelector(state => state.options.methods)
+
+    const message = methods === 0
+        ? 'At least 1 method describing PPIs'
+        : `At least ${methods} methods describing PPIs`
+
+    return <label htmlFor={id}>{message}</label>
+}
+
+type MethodsRangeProps = {
+    id: string
+    min?: number
+    max?: number
+}
+
+const MethodsRange: React.FC<MethodsRangeProps> = ({ id, min = 1, max = 10 }) => {
+    const value = useSelector(state => state.options.methods)
+    const update = useActionCreator(actions.setMethods)
+
+    return (
+        <input
+            id={id}
+            type="range"
+            className="custom-range"
+            value={value}
+            min={min}
+            max={max}
+            onChange={e => update(parseInt(e.target.value))}
+        />
     )
 }

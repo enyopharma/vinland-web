@@ -31,5 +31,5 @@ export const { reducer, actions } = createSlice({
                 state.names = action.payload.names
             },
         },
-    }
+    },
 })

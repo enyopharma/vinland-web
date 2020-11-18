@@ -50,5 +50,5 @@ export const { reducer, actions } = createSlice({
         [taxonomy.select.toString()]: (state) => {
             state.vh = true
         }
-    }
+    },
 })
