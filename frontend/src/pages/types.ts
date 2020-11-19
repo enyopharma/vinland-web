@@ -31,16 +31,31 @@ export type Isoform = {
     stop: number
 }
 
-export type Interaction = {
-    id: number
-    type: 'hh' | 'vh'
-}
-
 export type Interactor = {
     interaction: Interaction
     protein: Protein
     mappings: Mapping[]
     nb_mappings: number
+}
+
+export type Interaction = {
+    id: number
+    type: 'hh' | 'vh'
+    protein1_id: number
+    protein2_id: number
+}
+
+export type Description = {
+    id: number
+    publication: {
+        pmid: number
+        title: string
+    }
+    method: {
+        psimi_id: string
+        name: string
+    }
+    mappings: Mapping[]
 }
 
 export type Mapping = {
