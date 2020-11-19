@@ -8,57 +8,49 @@ type NetworkCardBodyProps = {
     network: Network
 }
 
-export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => {
-    const ratio = useSelector(state => state.nav.network.ratio)
-    const labels = useSelector(state => state.nav.network.labels)
-    const setRatio = useActionCreator(actions.setNetworkRatio)
-    const setLabels = useActionCreator(actions.setNetworkLabels)
-
-    return (
-        <React.Fragment>
-            <div className="card-body">
-                <div className="row">
-                    <div className="col">
-                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
-                            Save image
+export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => (
+    <React.Fragment>
+        <div className="card-body">
+            <div className="row">
+                <div className="col">
+                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
+                        Save image
                         </button>
-                    </div>
-                    <div className="col">
-                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.selectNeighbors()}>
-                            Select neighbors
-                        </button>
-                    </div>
-                    <div className="col-2">
-                        <LabelsButton network={network} labels={labels} update={setLabels}>
-                            {labels ? 'Hide labels' : 'Show labels'}
-                        </LabelsButton>
-                    </div>
                 </div>
-                <div className="row">
-                    <div className="col">
-                        <RatioRange network={network} ratio={ratio} update={setRatio} />
-                    </div>
-                    <div className="col-2">
-                        <button type="button" className="btn btn-block btn-primary" onClick={() => network.stop()}>
-                            Stop layout
+                <div className="col">
+                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.selectNeighbors()}>
+                        Select neighbors
                         </button>
-                    </div>
+                </div>
+                <div className="col-2">
+                    <LabelsButton network={network} />
                 </div>
             </div>
-            <div className="card-body">
-                <NetworkContainer network={network} />
+            <div className="row">
+                <div className="col">
+                    <RatioRange network={network} />
+                </div>
+                <div className="col-2">
+                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.stop()}>
+                        Stop layout
+                        </button>
+                </div>
             </div>
-        </React.Fragment>
-    )
-}
+        </div>
+        <div className="card-body">
+            <NetworkContainer network={network} />
+        </div>
+    </React.Fragment>
+)
 
 type LabelsButtonProps = {
     network: Network
-    labels: boolean
-    update: (labels: boolean) => void
 }
 
-const LabelsButton: React.FC<LabelsButtonProps> = ({ network, labels, update, children }) => {
+const LabelsButton: React.FC<LabelsButtonProps> = ({ network, children }) => {
+    const labels = useSelector(state => state.nav.network.labels)
+    const setLabels = useActionCreator(actions.setNetworkLabels)
+
     // prevents from changing labels too many times quickly
     useEffect(() => {
         const timeout = setTimeout(() => network.setLabels(labels), 100)
@@ -67,19 +59,20 @@ const LabelsButton: React.FC<LabelsButtonProps> = ({ network, labels, update, ch
     }, [network, labels])
 
     return (
-        <button type="button" className="btn btn-block btn-primary" onClick={() => update(!labels)}>
-            {children}
+        <button type="button" className="btn btn-block btn-primary" onClick={() => setLabels(!labels)}>
+            {labels ? 'Hide labels' : 'Show labels'}
         </button>
     )
 }
 
 type RatioRangeProps = {
     network: Network
-    ratio: number
-    update: (ratio: number) => void
 }
 
-const RatioRange: React.FC<RatioRangeProps> = ({ network, ratio, update }) => {
+const RatioRange: React.FC<RatioRangeProps> = ({ network }) => {
+    const ratio = useSelector(state => state.nav.network.ratio)
+    const setRatio = useActionCreator(actions.setNetworkRatio)
+
     // prevents from changing ratio too many times quickly
     useEffect(() => {
         const timeout = setTimeout(() => network.setRatio(ratio), 100)
@@ -94,7 +87,7 @@ const RatioRange: React.FC<RatioRangeProps> = ({ network, ratio, update }) => {
             max={1000}
             value={ratio}
             className="custom-range"
-            onChange={e => update(parseInt(e.target.value))}
+            onChange={e => setRatio(parseInt(e.target.value))}
         />
     )
 }
