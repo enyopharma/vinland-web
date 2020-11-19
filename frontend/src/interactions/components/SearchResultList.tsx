@@ -11,9 +11,9 @@ type SearchResultListProps = {
     select: (value: any) => void
 }
 
-export const SearchResultList: React.FC<SearchResultListProps> = (props) => (
+export const SearchResultList: React.FC<SearchResultListProps> = ({ query, ...props }) => (
     <React.Suspense fallback={<FallbackList />}>
-        <List {...props} />
+        <List key={query} query={query} {...props} />
     </React.Suspense>
 )
 
@@ -56,8 +56,6 @@ const List: React.FC<ListProps> = ({ input, query, resource, select, children })
             select(results[active2].value)
         }
     }
-
-    useEffect(() => setActive(0), [results])
 
     useEffect(() => {
         const elem = input.current

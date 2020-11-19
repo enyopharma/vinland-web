@@ -29,7 +29,7 @@ type ProteinSectionProps = {
 const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
     const [protein, isoforms] = resource.read()
 
-    const [selected, setSelected] = useState(canonicalIndex(isoforms))
+    const [selected, setSelected] = useState<number>(canonicalIndex(isoforms))
 
     switch (protein.type) {
         case 'h':
@@ -91,13 +91,13 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
                 <h2 id="vh">VH interactions</h2>
                 {interactors1.length === 0
                     ? <EmptyTable type="v" />
-                    : <InteractorTable type="h" isoform={isoform} interactors={interactors1} />
+                    : <InteractorTable protein={protein} isoform={isoform} interactors={interactors1} />
                 }
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="hh">HH interactions</h2>
                 {interactors2.length === 0
                     ? <EmptyTable type="h" />
-                    : <InteractorTable type="h" isoform={isoform} interactors={interactors2} />
+                    : <InteractorTable protein={protein} isoform={isoform} interactors={interactors2} />
                 }
             </React.Suspense>
         </React.Fragment>
@@ -130,7 +130,7 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
             <h2 id="vh">VH interactions</h2>
             {interactors.length === 0
                 ? <EmptyTable type="h" />
-                : <InteractorTable type="v" isoform={isoform} interactors={interactors} />
+                : <InteractorTable protein={protein} isoform={isoform} interactors={interactors} />
             }
         </React.Fragment >
     )

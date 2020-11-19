@@ -7,13 +7,13 @@ import { Interactor, Interaction, Protein, Isoform, Mapping } from '../types'
 const limit = 10
 
 type InteractorTableProps = {
-    type: 'h' | 'v'
+    protein: Protein
     isoform: Isoform
     interactors: Interactor[]
 }
 
-export const InteractorTable: React.FC<InteractorTableProps> = ({ isoform, ...props }) => (
-    <InteractorTableRaw key={isoform.protein_id} isoform={isoform} {...props} />
+export const InteractorTable: React.FC<InteractorTableProps> = ({ protein, ...props }) => (
+    <InteractorTableRaw key={protein.id} type={protein.type} {...props} />
 )
 
 type InteractorTableRawProps = {
