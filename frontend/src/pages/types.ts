@@ -35,7 +35,6 @@ export type Interactor = {
     interaction: Interaction
     protein: Protein
     mappings: Mapping[]
-    nb_mappings: number
 }
 
 export type Interaction = {

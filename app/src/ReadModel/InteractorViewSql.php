@@ -9,37 +9,25 @@ final class InteractorViewSql implements InteractorViewInterface
     private \PDO $pdo;
 
     const SELECT_H_INTERACTORS_SQL = <<<SQL
-        SELECT
-            i.id, i.type,
-            p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            'Homo sapiens' AS taxon, COUNT(m.id) AS nb_mappings
-        FROM
-            interactions AS i,
-            edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
-            proteins AS p
+        SELECT i.id, i.type, p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description, 'Homo sapiens' AS taxon
+        FROM interactions AS i, edges AS e, proteins AS p
         WHERE p.type = 'h'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
         AND e.source_id = ?
-        GROUP BY i.id, p.id
     SQL;
 
     const SELECT_V_INTERACTORS_SQL = <<<SQL
         SELECT
             i.id, i.type,
             p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description,
-            t.name AS taxon, COUNT(m.id) AS nb_mappings
-        FROM
-            interactions AS i,
-            edges AS e LEFT JOIN mappings AS m ON e.id = m.edge_id,
-            proteins AS p,
-            taxonomy AS t
+            t.name AS taxon
+        FROM interactions AS i, edges AS e, proteins AS p, taxonomy AS t
         WHERE p.type = 'v'
         AND i.id = e.interaction_id
         AND p.id = e.target_id
         AND p.ncbi_taxon_id = t.ncbi_taxon_id
         AND e.source_id = ?
-        GROUP BY i.id, p.id, t.taxon_id
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
