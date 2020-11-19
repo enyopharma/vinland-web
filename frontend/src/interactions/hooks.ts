@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
-import { TypedUseSelectorHook, useSelector as useSelectorRaw, useDispatch } from 'react-redux'
+import { useSelector as useSelectorRaw, useDispatch } from 'react-redux'
 import { AnyAction, ActionCreator } from '@reduxjs/toolkit'
 import { AppState, AppDispatch } from 'app/store'
 import { PageState } from './types'
 
-export const useSelector: TypedUseSelectorHook<PageState> = <T>(f: (state: PageState) => T): T => {
-    return useSelectorRaw<AppState, T>(state => f(state.interactions))
+export const useSelector = <T>(f: (state: PageState) => T, equalityFn?: (left: T, right: T) => boolean): T => {
+    return useSelectorRaw<AppState, T>(state => f(state.interactions), equalityFn)
 }
 
 export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T) => {
