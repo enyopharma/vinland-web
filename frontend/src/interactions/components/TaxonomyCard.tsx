@@ -3,41 +3,49 @@ import React, { useRef, useState } from 'react'
 import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
-import { useSelector, useActionCreator } from '../hooks'
 import { actions } from '../reducers/taxonomy'
+import { useSelector, useActionCreator } from '../hooks'
 import { Resource, SearchResult, Taxon, RelatedTaxa, Name } from '../types'
 
 import { SearchOverlay } from './SearchOverlay'
 import { SearchResultList } from './SearchResultList'
 
-export const TaxonomyCard: React.FC = () => {
+const useTaxon = (): [Taxon | null, Resource<[RelatedTaxa, Name[]]>, (taxon: Taxon) => void] => {
     const taxon = useSelector(state => state.taxonomy.taxon)
     const [resource, setResource] = useState<Resource<[RelatedTaxa, Name[]]>>(resources.taxon(taxon?.ncbi_taxon_id ?? 0))
     const select = useActionCreator(actions.select)
 
-    const update = (taxon: Taxon) => {
+    return [taxon, resource, (taxon: Taxon) => {
         select(taxon)
         setResource(resources.taxon(taxon.ncbi_taxon_id))
-    }
+    }]
+}
+
+export const TaxonomyCard: React.FC = () => {
+    const [taxon, resource, setTaxon] = useTaxon()
 
     return taxon === null
-        ? <CardWithoutSelectedTaxon select={update} />
-        : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={update} />
+        ? <CardWithoutSelectedTaxon select={setTaxon} />
+        : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={setTaxon} />
 }
 
 type CardWithoutSelectedTaxonProps = {
     select: (taxon: Taxon) => void
 }
 
-const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ select }) => {
-    const input = useRef<HTMLInputElement>(null)
-    const [query, setQuery] = useState<string>('')
+const useQuery = (init: string = ''): [string, Resource<SearchResult<Taxon>[]>, (query: string) => void] => {
+    const [query, setQuery] = useState<string>(init)
     const [resource, setResource] = useState<Resource<SearchResult<Taxon>[]>>(resources.taxa(query))
 
-    const update = (query: string) => {
+    return [query, resource, (query: string) => {
         setQuery(query)
         setResource(resources.taxa(query))
-    }
+    }]
+}
+
+const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ select }) => {
+    const input = useRef<HTMLInputElement>(null)
+    const [query, resource, setQuery] = useQuery('')
 
     return (
         <div className="card">
@@ -53,7 +61,7 @@ const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ sel
                             className="form-control form-control-lg"
                             placeholder="Search for a viral species"
                             value={query}
-                            onChange={e => update(e.target.value)}
+                            onChange={e => setQuery(e.target.value)}
                         />
                     </div>
                     <SearchOverlay input={input}>
