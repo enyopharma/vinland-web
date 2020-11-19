@@ -10,25 +10,37 @@ import { useSelector, useActionCreator } from '../hooks'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 
-export const ProteinSearchPage: React.FC = () => {
-    const ref = useRef<HTMLInputElement>(null)
+const useSearch = (): [string, string, Resource<Protein[]>, (t: string) => void, (q: string) => void] => {
     const type = useSelector(state => state.search.type)
     const query = useSelector(state => state.search.query)
     const setType = useActionCreator(actions.setType)
     const setQuery = useActionCreator(actions.setQuery)
     const [resource, setResource] = useState<Resource<Protein[]>>(resources.proteins(type, query))
 
+    return [
+        type,
+        query,
+        resource,
+        (typestr: string) => {
+            const type = typestr as '' | 'h' | 'v'
+            setType(type)
+            setResource(resources.proteins(type, query))
+        },
+        (query: string) => {
+            setQuery(query)
+            setResource(resources.proteins(type, query))
+        }
+    ]
+}
+
+export const ProteinSearchPage: React.FC = () => {
+    const input = useRef<HTMLInputElement>(null)
+    const [type, query, resource, setType, setQuery] = useSearch()
+
     const isTypeEmpty = type.length === 0
     const isQueryEmpty = query.trim().length === 0
 
-    useEffect(() => { if (!isTypeEmpty) ref.current?.focus() }, [isTypeEmpty])
-
-    const update = (typestr: string, query: string) => {
-        const type = typestr as '' | 'h' | 'v'
-        setType(type)
-        setQuery(query)
-        setResource(resources.proteins(type, query))
-    }
+    useEffect(() => { if (!isTypeEmpty) input.current?.focus() }, [isTypeEmpty])
 
     return (
         <div className="container">
@@ -44,20 +56,20 @@ export const ProteinSearchPage: React.FC = () => {
                                 <select
                                     value={type}
                                     className="form-control form-control-lg col-2"
-                                    onChange={e => { update(e.target.value, query) }}
+                                    onChange={e => { setType(e.target.value) }}
                                 >
                                     <option value="">Type</option>
                                     <option value="h">Human</option>
                                     <option value="v">Virus</option>
                                 </select>
                                 <input
-                                    ref={ref}
+                                    ref={input}
                                     type="text"
                                     className="form-control form-control-lg"
                                     placeholder="Search for a protein accession number, name or description"
                                     value={query}
                                     disabled={isTypeEmpty}
-                                    onChange={e => update(type, e.target.value)}
+                                    onChange={e => setQuery(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -70,7 +82,7 @@ export const ProteinSearchPage: React.FC = () => {
                     {!isQueryEmpty && (
                         <div className="card-body">
                             <React.Suspense fallback={<ProgressBar />}>
-                                <ProteinTableFetcher input={ref} resource={resource} />
+                                <ProteinTableFetcher input={input} resource={resource} />
                             </React.Suspense>
                         </div>
                     )}
