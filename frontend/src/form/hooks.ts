@@ -5,7 +5,7 @@ import { AppState, AppDispatch } from 'app/store'
 import { PageState } from './types'
 
 export const useSelector = <T>(f: (state: PageState) => T, equalityFn?: (left: T, right: T) => boolean): T => {
-    return useSelectorRaw<AppState, T>(state => f(state.interactions), equalityFn)
+    return useSelectorRaw<AppState, T>(state => f(state.form), equalityFn)
 }
 
 export const useActionCreator = <T extends ActionCreator<AnyAction>>(creator: T) => {

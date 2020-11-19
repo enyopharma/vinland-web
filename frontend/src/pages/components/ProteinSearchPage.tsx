@@ -4,15 +4,15 @@ import { useHistory } from 'react-router-dom'
 import { ProgressBar } from 'partials'
 
 import { resources } from '../api'
-import { actions } from '../reducers/search'
+import { actions } from '../reducers/proteins'
 import { Resource, Protein } from '../types'
 import { useSelector, useActionCreator } from '../hooks'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 
 const useSearch = (): [string, string, Resource<Protein[]>, (t: string) => void, (q: string) => void] => {
-    const type = useSelector(state => state.search.type)
-    const query = useSelector(state => state.search.query)
+    const type = useSelector(state => state.proteins.type)
+    const query = useSelector(state => state.proteins.query)
     const setType = useActionCreator(actions.setType)
     const setQuery = useActionCreator(actions.setQuery)
     const [resource, setResource] = useState<Resource<Protein[]>>(resources.proteins(type, query))

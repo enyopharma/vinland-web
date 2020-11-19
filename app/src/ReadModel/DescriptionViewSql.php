@@ -15,11 +15,10 @@ final class DescriptionViewSql implements DescriptionViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT DISTINCT m.description_id, m.start, m.stop, m.identity, m.sequence
+        SELECT DISTINCT m.description_id, m.sequence_id, m.start, m.stop, m.identity, m.sequence
         FROM edges AS e, mappings AS m
         WHERE e.id = m.edge_id
         AND e.interaction_id = ?
-        AND m.sequence_id = ?
     SQL;
 
     private \PDO $pdo;
@@ -29,29 +28,26 @@ final class DescriptionViewSql implements DescriptionViewInterface
         $this->pdo = $pdo;
     }
 
-    public function all(int $interaction_id, int $isoform1_id, int $isoform2_id): Statement
+    public function all(int $interaction_id): Statement
     {
         $select_descriptions_sth = $this->pdo->prepare(self::SELECT_DESCRIPTIONS_SQL);
-        $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
         $select_descriptions_sth->execute([$interaction_id]);
 
-        $select_mappings_sth->execute([$interaction_id, $isoform1_id]);
+        $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
-        $mappings1 = $select_mappings_sth->fetchAll();
+        $select_mappings_sth->execute([$interaction_id]);
 
-        $select_mappings_sth->execute([$interaction_id, $isoform2_id]);
+        $mappings = $select_mappings_sth->fetchAll();
 
-        $mappings2 = $select_mappings_sth->fetchAll();
-
-        if ($mappings1 === false || $mappings2 === false) {
+        if ($mappings === false) {
             throw new \LogicException;
         }
 
-        return Statement::from($this->generator($select_descriptions_sth, $mappings1, $mappings2));
+        return Statement::from($this->generator($select_descriptions_sth, $mappings));
     }
 
-    private function generator(iterable $rows, array $mappings1, array $mappings2): \Generator
+    private function generator(iterable $rows, array $mappings): \Generator
     {
         foreach ($rows as $row) {
             yield [
@@ -63,10 +59,7 @@ final class DescriptionViewSql implements DescriptionViewInterface
                 'method' => [
                     'psimi_id' => $row['psimi_id'],
                 ],
-                'mappings1' => array_values(array_filter($mappings1, function (array $mapping) use ($row) {
-                    return $row['id'] == $mapping['description_id'];
-                })),
-                'mappings2' => array_values(array_filter($mappings2, function (array $mapping) use ($row) {
+                'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
                     return $row['id'] == $mapping['description_id'];
                 })),
             ];

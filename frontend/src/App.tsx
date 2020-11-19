@@ -6,10 +6,10 @@ import { store } from 'app/store'
 import { Navbar, Timeout, PleaseWait } from 'partials'
 
 const HomePage = React.lazy(() => import('home').then(module => ({ default: module.HomePage })))
-const ProteinPage = React.lazy(() => import('proteins').then(module => ({ default: module.ProteinPage })))
-const ProteinSearchPage = React.lazy(() => import('proteins').then(module => ({ default: module.ProteinSearchPage })))
-const InteractionPage = React.lazy(() => import('interactions').then(module => ({ default: module.InteractionPage })))
-const InteractionSearchPage = React.lazy(() => import('interactions').then(module => ({ default: module.InteractionSearchPage })))
+const ProteinPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinPage })))
+const ProteinSearchPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinSearchPage })))
+const InteractionPage = React.lazy(() => import('pages').then(module => ({ default: module.InteractionPage })))
+const InteractionSearchPage = React.lazy(() => import('form').then(module => ({ default: module.InteractionSearchPage })))
 
 export const App: React.FC = () => (
     <Provider store={store}>

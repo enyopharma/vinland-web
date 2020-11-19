@@ -1,6 +1,6 @@
 import { AppState } from 'app/store'
 
-export type PageState = AppState['proteins']
+export type PageState = AppState['pages']
 
 export type SearchState = {
     type: '' | 'h' | 'v'

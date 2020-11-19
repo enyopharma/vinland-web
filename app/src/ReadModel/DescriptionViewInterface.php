@@ -6,5 +6,5 @@ namespace App\ReadModel;
 
 interface DescriptionViewInterface
 {
-    public function all(int $interaction_id, int $isoform1_id, int $isoform2_id): Statement;
+    public function all(int $interaction_id): Statement;
 }

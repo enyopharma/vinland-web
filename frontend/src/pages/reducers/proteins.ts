@@ -8,7 +8,7 @@ const initialState: SearchState = {
 }
 
 export const { reducer, actions } = createSlice({
-    name: 'search',
+    name: 'proteins',
     initialState: initialState,
     reducers: {
         setType: {
