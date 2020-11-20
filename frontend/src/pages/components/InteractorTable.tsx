@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 
 import { Pagination, ProteinLinkImg, ProteinLinkColor, InteractionLinkImg } from 'partials'
 
-import { Interactor, Protein, Isoform, Mapping } from '../types'
+import { clusters } from '../utils'
+import { Interactor, Protein, Isoform } from '../types'
 
 import { MappingImg } from './MappingImg'
 
@@ -149,26 +150,4 @@ const sorti = (a: Interactor, b: Interactor) => {
     const densityb = b.mappings.reduce((acc, m) => acc + m.stop - m.start + 1, 0)
 
     return starta - startb || densityb - densitya || a.interaction.id - b.interaction.id
-}
-
-const clusters = (mappings: Mapping[]): Array<Mapping[]> => {
-    if (mappings.length === 0) return []
-
-    const curr = []
-    const rest = []
-
-    const sorted = mappings.sort((a, b) => a.start - b.start)
-
-    let laststop = 0
-
-    for (let i = 0; i < mappings.length; i++) {
-        if (sorted[i].start > laststop) {
-            curr.push(sorted[i])
-            laststop = sorted[i].stop
-        } else {
-            rest.push(sorted[i])
-        }
-    }
-
-    return rest.length > 0 ? [curr].concat(clusters(rest)) : [curr]
 }

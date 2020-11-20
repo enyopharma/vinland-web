@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { Isoform, Description, Mapping } from '../types'
+import { clusters } from '../utils'
+import { Isoform, Description } from '../types'
 
 import { MappingImg } from './MappingImg'
 
@@ -13,7 +14,7 @@ type DescriptionTableProps = {
 }
 
 export const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions, ...props }) => (
-    <table className="table">
+    <table className="table" style={{ lineHeight: '30px' }}>
         <thead>
             <tr>
                 <th className="col-2 text-center">pmid</th>
@@ -39,29 +40,43 @@ type DescriptionTr = {
 const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isoform2, description }) => {
     const width1 = isoform1.sequence.length
     const width2 = isoform2.sequence.length
-    const mappings1 = description.mappings.filter(m => isoform1.id === m.sequence_id).sort((a: Mapping, b: Mapping) => a.start - b.start)
-    const mappings2 = description.mappings.filter(m => isoform2.id === m.sequence_id).sort((a: Mapping, b: Mapping) => a.start - b.start)
-
+    const mappings1 = description.mappings.filter(m => isoform1.id === m.sequence_id)
+    const mappings2 = description.mappings.filter(m => isoform2.id === m.sequence_id)
+    const clx1 = clusters(mappings1)
+    const clx2 = clusters(mappings2)
+    const maxclx = Math.max(clx1.length, clx2.length)
+    const rowspan = maxclx > 1 ? maxclx : undefined
+    console.log(maxclx)
     return (
         <React.Fragment>
             <tr key={0}>
-                <td className="text-center">
+                <td className="text-center" rowSpan={rowspan}>
                     <span title={`${description.publication.year} - ${description.publication.title}`}>
                         {description.publication.pmid}
                     </span>
                 </td>
-                <td className="text-center">
+                <td className="text-center" rowSpan={rowspan}>
                     <span title={description.method.name}>
                         {description.method.psimi_id}
                     </span>
                 </td>
                 <td className="text-center">
-                    {mappings1.length === 0 ? '-' : <MappingImg type={type1} width={width1} mappings={mappings1} />}
+                    {clx1.length === 0 ? '-' : <MappingImg type={type1} width={width1} mappings={clx1[0]} />}
                 </td>
                 <td className="text-center">
-                    {mappings2.length === 0 ? '-' : <MappingImg type={type2} width={width2} mappings={mappings2} />}
+                    {clx2.length === 0 ? '-' : <MappingImg type={type2} width={width2} mappings={clx2[0]} />}
                 </td>
             </tr>
+            {maxclx > 0 && [...Array(maxclx - 1)].map((_, i) => (
+                <tr key={i + 1}>
+                    <td className="text-center">
+                        {clx1[i + 1] && <MappingImg type={type1} width={width1} mappings={clx1[i + 1]} />}
+                    </td>
+                    <td className="text-center">
+                        {clx2[i + 1] && <MappingImg type={type2} width={width2} mappings={clx2[i + 1]} />}
+                    </td>
+                </tr>
+            ))}
         </React.Fragment>
     )
 }
