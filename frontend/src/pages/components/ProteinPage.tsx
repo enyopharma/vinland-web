@@ -7,11 +7,29 @@ import { resources } from '../api'
 import { Resource, Protein, Isoform, Interactor } from '../types'
 
 const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
+const IsoformSelectbox = React.lazy(() => import('./IsoformSelectbox').then(module => ({ default: module.IsoformSelectbox })))
+
+type RemoteData = {
+    protein: Protein
+    isoforms: Isoform[]
+}
+
+const getRemoteDataResource = (id: number): Resource<RemoteData> => {
+    const protein = resources.protein(id)
+    const isoforms = resources.isoforms(id)
+
+    return {
+        read: () => ({
+            protein: protein.read(),
+            isoforms: isoforms.read(),
+        })
+    }
+}
 
 export const ProteinPage: React.FC = () => {
     const { id } = useParams<{ id: string }>()
 
-    const resource = resources.protein(parseInt(id))
+    const resource = getRemoteDataResource(parseInt(id))
 
     return (
         <div className="container">
@@ -23,11 +41,11 @@ export const ProteinPage: React.FC = () => {
 }
 
 type ProteinSectionProps = {
-    resource: Resource<[Protein, Isoform[]]>
+    resource: Resource<RemoteData>
 }
 
 const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
-    const [protein, isoforms] = resource.read()
+    const { protein, isoforms } = resource.read()
 
     const [selected, setSelected] = useState<number>(canonicalIndex(isoforms))
 
@@ -132,7 +150,7 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
                 ? <EmptyTable type="h" />
                 : <InteractorTable protein={protein} isoform={isoform} interactors={interactors} />
             }
-        </React.Fragment >
+        </React.Fragment>
     )
 }
 
@@ -152,32 +170,10 @@ const ProteinInfoSection: React.FC<ProteinInfoSection> = ({ protein, isoforms, s
             {protein.taxon} - {protein.description}
         </p>
         <div className="form-group">
-            <select
-                className="form-control"
-                value={selected}
-                onChange={e => { update(parseInt(e.target.value)) }}
-                disabled={isoforms.length === 1}
-            >
-                {isoforms.map((isoform, i) => <IsoformOption key={i} value={i} isoform={isoform} />)}
-            </select>
+            <IsoformSelectbox isoforms={isoforms} selected={selected} update={update} />
         </div>
     </React.Fragment>
 )
-
-type IsoformOptionProps = {
-    value: number
-    isoform: Isoform
-}
-
-const IsoformOption: React.FC<IsoformOptionProps> = ({ value, isoform }) => {
-    const { accession, is_canonical, is_mature, start, stop } = isoform
-
-    const label = is_mature
-        ? `Mature protein from ${accession} [${start}, ${stop}]`
-        : is_canonical ? `${accession} (canonical)` : accession
-
-    return <option value={value}>{label}</option>
-}
 
 type SequenceSectionProps = {
     isoform: Isoform

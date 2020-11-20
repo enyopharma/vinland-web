@@ -53,6 +53,10 @@ return function (ContainerInterface $container): array {
             $container->get(App\ReadModel\InteractorViewInterface::class),
         ),
 
+        'GET /interactions/{interaction_id:\d+}' => new App\Endpoints\Interactions\ShowEndpoint(
+            $container->get(App\ReadModel\InteractionViewInterface::class),
+        ),
+
         'GET /interactions/{interaction_id:\d+}/descriptions' => new App\Endpoints\Descriptions\IndexEndpoint(
             $container->get(App\ReadModel\InteractionViewInterface::class),
             $container->get(App\ReadModel\DescriptionViewInterface::class),

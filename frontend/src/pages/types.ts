@@ -49,6 +49,7 @@ export type Description = {
     publication: {
         pmid: number
         title: string
+        year: number
     }
     method: {
         psimi_id: string
