@@ -3,29 +3,19 @@ import React, { useState } from 'react'
 import { Pagination, ProteinLinkImg, ProteinLinkColor, InteractionLinkImg } from 'partials'
 
 import { clusters } from '../utils'
-import { Interactor, Protein, Isoform } from '../types'
+import { Interactor, Isoform } from '../types'
 
 import { MappingImg } from './MappingImg'
 
 const limit = 10
 
 type InteractorTableProps = {
-    protein: Protein
-    isoform: Isoform
-    interactors: Interactor[]
-}
-
-export const InteractorTable: React.FC<InteractorTableProps> = ({ protein, ...props }) => (
-    <InteractorTableRaw key={protein.id} type={protein.type} {...props} />
-)
-
-type InteractorTableRawProps = {
     type: 'h' | 'v'
     isoform: Isoform
     interactors: Interactor[]
 }
 
-const InteractorTableRaw: React.FC<InteractorTableRawProps> = ({ type, isoform, interactors }) => {
+export const InteractorTable: React.FC<InteractorTableProps> = ({ type, isoform, interactors }) => {
     const [offset, setOffset] = useState<number>(0)
 
     const slice = interactors.sort(sorti).slice(offset, offset + limit)

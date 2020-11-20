@@ -110,13 +110,13 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
                 <h2 id="vh">VH interactions</h2>
                 {interactors1.length === 0
                     ? <EmptyTable type="v" />
-                    : <InteractorTable protein={protein} isoform={isoform} interactors={interactors1} />
+                    : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors1} />
                 }
                 <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2 id="hh">HH interactions</h2>
                 {interactors2.length === 0
                     ? <EmptyTable type="h" />
-                    : <InteractorTable protein={protein} isoform={isoform} interactors={interactors2} />
+                    : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors2} />
                 }
             </React.Suspense>
         </React.Fragment>
@@ -149,7 +149,7 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
             <h2 id="vh">VH interactions</h2>
             {interactors.length === 0
                 ? <EmptyTable type="h" />
-                : <InteractorTable protein={protein} isoform={isoform} interactors={interactors} />
+                : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors} />
             }
         </React.Fragment>
     )
