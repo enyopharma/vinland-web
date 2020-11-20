@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Timeout, PleaseWait } from 'partials'
+import { Timeout, PleaseWait, ProteinLinkImg } from 'partials'
 
 import { resources } from '../api'
+import { canonicalIndex } from '../utils'
 import { Resource, Interaction, Description, Protein, Isoform } from '../types'
 
 const IsoformSelectbox = React.lazy(() => import('./IsoformSelectbox').then(module => ({ default: module.IsoformSelectbox })))
+const DescriptionTable = React.lazy(() => import('./DescriptionTable').then(module => ({ default: module.DescriptionTable })))
 
 type RemoteData = {
     interaction: Interaction
@@ -63,12 +65,15 @@ type InteractionSectionProps = {
 const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => {
     const data = resource.read()
 
-    const [selected1, setSelected1] = useState<number>(0)
-    const [selected2, setSelected2] = useState<number>(0)
-
     const { interaction, descriptions } = data
     const { protein1, isoforms1 } = data
     const { protein2, isoforms2 } = data
+
+    const [selected1, setSelected1] = useState<number>(canonicalIndex(isoforms1))
+    const [selected2, setSelected2] = useState<number>(canonicalIndex(isoforms2))
+
+    const isoform1 = isoforms1[selected1]
+    const isoform2 = isoforms2[selected2]
 
     return (
         <React.Fragment>
@@ -83,7 +88,13 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                     <ProteinSection protein={protein2} isoforms={isoforms2} selected={selected2} update={setSelected2} />
                 </div>
             </div>
-            <DescriptionTable descriptions={descriptions} />
+            <DescriptionTable
+                type1={protein1.type}
+                type2={protein2.type}
+                isoform1={isoform1}
+                isoform2={isoform2}
+                descriptions={descriptions}
+            />
         </React.Fragment>
     )
 }
@@ -95,48 +106,20 @@ type ProteinSectionProps = {
     update: (i: number) => void
 }
 
-const ProteinSection: React.FC<ProteinSectionProps> = ({ protein, isoforms, selected, update }) => (
-    <React.Fragment>
-        <h2>
-            {protein.accession}/{protein.name}
-        </h2>
-        <div className="form-group">
-            <IsoformSelectbox isoforms={isoforms} selected={selected} update={update} />
-        </div>
-    </React.Fragment>
-)
+const ProteinSection: React.FC<ProteinSectionProps> = ({ protein, isoforms, selected, update }) => {
+    const isoform = isoforms[selected]
 
-type DescriptionTableProps = {
-    descriptions: Description[]
+    return (
+        <React.Fragment>
+            <h2>
+                <ProteinLinkImg {...protein} /> {protein.accession}/{protein.name}
+            </h2>
+            <div className="form-group">
+                <IsoformSelectbox isoforms={isoforms} selected={selected} update={update} />
+            </div>
+            <div className="form-group">
+                <textarea className="form-control" value={isoform.sequence} rows={3} readOnly={true} />
+            </div>
+        </React.Fragment>
+    )
 }
-
-const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions }) => (
-    <table className="table">
-        <thead>
-            <tr>
-                <th className="col-2 text-center">pmid</th>
-                <th className="col-2 text-center">psimi id</th>
-                <th className="col-4 text-center">Mapping 1</th>
-                <th className="col-4 text-center">Mapping 2</th>
-            </tr>
-        </thead>
-        <tbody>
-            {descriptions.map((description, i) => (
-                <tr>
-                    <td className="text-center">
-                        <span title={`${description.publication.year} - ${description.publication.title}`}>
-                            {description.publication.pmid}
-                        </span>
-                    </td>
-                    <td className="text-center">
-                        <span title={description.method.name}>
-                            {description.method.psimi_id}
-                        </span>
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            ))}
-        </tbody>
-    </table>
-)

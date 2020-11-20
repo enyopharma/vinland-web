@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Timeout, PleaseWait } from 'partials'
 
 import { resources } from '../api'
+import { canonicalIndex } from '../utils'
 import { Resource, Protein, Isoform, Interactor } from '../types'
 
 const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
@@ -202,12 +203,4 @@ const EmptyTable: React.FC<EmptyTableProps> = ({ type }) => (
 const empty = {
     'h': 'No human interactor',
     'v': 'No viral interactor',
-}
-
-const canonicalIndex = (isoforms: Isoform[]) => {
-    for (let i = 0; i < isoforms.length; i++) {
-        if (isoforms[i].is_canonical) return i
-    }
-
-    throw new Error('canonical isoform id error')
 }

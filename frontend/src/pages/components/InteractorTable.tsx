@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 
-import { Pagination, ProteinLink, InteractionLink } from 'partials'
+import { Pagination, ProteinLinkImg, ProteinLinkColor, InteractionLinkImg } from 'partials'
 
-import { Interactor, Interaction, Protein, Isoform, Mapping } from '../types'
+import { Interactor, Protein, Isoform, Mapping } from '../types'
+
+import { MappingImg } from './MappingImg'
 
 const limit = 10
 
@@ -88,15 +90,19 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ type, isoform, interactor
         <React.Fragment>
             <tr key={0}>
                 <td className="text-center" rowSpan={rowspan}>
-                    <InteractionLinkImg interaction={interactor.interaction} />
+                    <InteractionLinkImg {...interactor.interaction} />
                     &nbsp;
-                    <ProteinLinkImg protein={interactor.protein} />
+                    <ProteinLinkImg {...interactor.protein} />
                 </td>
                 <td className="text-center" rowSpan={rowspan}>
-                    <ProteinLinkAccession protein={interactor.protein} />
+                    <ProteinLinkColor {...interactor.protein}>
+                        {interactor.protein.accession}
+                    </ProteinLinkColor>
                 </td>
                 <td className="text-center" rowSpan={rowspan}>
-                    <ProteinLinkName protein={interactor.protein} />
+                    <ProteinLinkColor {...interactor.protein}>
+                        {interactor.protein.name}
+                    </ProteinLinkColor>
                 </td>
                 <td className="text-center ellipsis" rowSpan={rowspan}>
                     <span title={interactor.protein.taxon}>
@@ -119,100 +125,6 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ type, isoform, interactor
                     </td>
                 </tr>
             ))}
-        </React.Fragment>
-    )
-}
-
-type InteractionLinkImgProps = {
-    interaction: Interaction
-}
-
-const InteractionLinkImg: React.FC<InteractionLinkImgProps> = ({ interaction }) => (
-    <InteractionLink {...interaction}>
-        <img
-            src={`/img/${interaction.type}.png`}
-            alt={`${interaction.type.toUpperCase()} interaction`}
-            style={{ maxWidth: '1em' }}
-        />
-    </InteractionLink>
-)
-
-type ProteinLinkImgProps = {
-    protein: Protein
-}
-
-const ProteinLinkImg: React.FC<ProteinLinkImgProps> = ({ protein }) => (
-    <ProteinLink {...protein}>
-        <img
-            src={`/img/${protein.type}.png`}
-            alt={`${protein.accession} - ${protein.name}`}
-            style={{ maxWidth: '1em' }}
-        />
-    </ProteinLink>
-)
-
-type ProteinLinkAccessionProps = {
-    protein: Protein
-}
-
-const ProteinLinkAccession: React.FC<ProteinLinkAccessionProps> = ({ protein }) => {
-    const classes = protein.type === 'h' ? 'text-info' : 'text-danger'
-
-    return (
-        <ProteinLink {...protein}>
-            <span className={classes}>{protein.accession}</span>
-        </ProteinLink>
-    )
-}
-
-type ProteinLinkNameProps = {
-    protein: Protein
-}
-
-const ProteinLinkName: React.FC<ProteinLinkNameProps> = ({ protein }) => {
-    const classes = protein.type === 'h' ? 'text-info' : 'text-danger'
-
-    return (
-        <ProteinLink {...protein}>
-            <span className={classes}>{protein.name}</span>
-        </ProteinLink>
-    )
-}
-
-type MappingImgProps = {
-    type: 'h' | 'v'
-    width: number
-    mappings: Mapping[]
-}
-
-const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappings }) => (
-    <svg width="100%" height="30">
-        <rect width="100%" y="14" height="2" style={{ fill: '#eee', strokeWidth: 0 }} />
-        {mappings.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
-    </svg>
-)
-
-type MappingRectProps = {
-    type: 'h' | 'v'
-    width: number
-    mapping: Mapping
-}
-
-const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
-    const color = type === 'h' ? '#6CC3D5' : '#FF7851'
-    const startp = ((mapping.start / width) * 100) + '%'
-    const stopp = ((mapping.stop / width) * 100) + '%'
-    const widthp = (((mapping.stop - mapping.start + 1) / width) * 100) + '%'
-
-    return (
-        <React.Fragment>
-            <text x={startp} y="10" textAnchor="start" style={{ fontSize: '10px' }}>
-                {mapping.start}
-            </text>
-            <text x={stopp} y="30" textAnchor="end" style={{ fontSize: '10px' }}>
-                {mapping.stop}
-            </text>
-            <rect width={widthp} x={startp} y="13" height="4" style={{ fill: color, strokeWidth: 0 }} />
         </React.Fragment>
     )
 }
