@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Timeout, PleaseWait, ProteinLinkImg } from 'partials'
+import { Timeout, PleaseWait, InteractionLinkImg, ProteinLinkImg } from 'partials'
 
 import { resources } from '../api'
 import { canonicalIndex } from '../utils'
@@ -78,7 +78,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
     return (
         <React.Fragment>
             <h1>
-                {interaction.type.toUpperCase()} Interaction
+                <InteractionLinkImg {...interaction} /> {interaction.type.toUpperCase()} Interaction ID card
             </h1>
             <div className="row">
                 <div className="col offset-4">

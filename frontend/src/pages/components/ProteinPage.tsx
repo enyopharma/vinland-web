@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Timeout, PleaseWait } from 'partials'
+import { Timeout, PleaseWait, ProteinLinkImg } from 'partials'
 
 import { resources } from '../api'
 import { canonicalIndex } from '../utils'
@@ -165,7 +165,7 @@ type ProteinInfoSection = {
 const ProteinInfoSection: React.FC<ProteinInfoSection> = ({ protein, isoforms, selected, update }) => (
     <React.Fragment>
         <h1>
-            Protein ID Card - {protein.accession}/{protein.name}
+            <ProteinLinkImg {...protein} /> Protein ID Card - {protein.accession}/{protein.name}
         </h1>
         <p>
             {protein.taxon} - {protein.description}
