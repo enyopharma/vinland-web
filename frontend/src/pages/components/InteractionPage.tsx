@@ -117,6 +117,7 @@ const ProteinSection: React.FC<ProteinSectionProps> = ({ protein, isoforms, sele
             <div className="form-group">
                 <IsoformSelectbox isoforms={isoforms} selected={selected} update={update} />
             </div>
+            <h3>{isoform.accession} [{isoform.start} - {isoform.stop}]</h3>
             <div className="form-group">
                 <textarea className="form-control" value={isoform.sequence} rows={3} readOnly={true} />
             </div>

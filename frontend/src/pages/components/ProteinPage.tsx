@@ -183,7 +183,7 @@ type SequenceSectionProps = {
 const SequenceSection: React.FC<SequenceSectionProps> = ({ isoform }) => (
     <React.Fragment>
         <div className="float-right">[<a href="#top">top</a>]</div>
-        <h2 id="sequence">Sequence - {isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
+        <h2 id="sequence">{isoform.accession} [{isoform.start} - {isoform.stop}]</h2>
         <div className="form-group">
             <textarea className="form-control" value={isoform.sequence} rows={6} readOnly={true} />
         </div>
