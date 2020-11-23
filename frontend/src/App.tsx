@@ -5,7 +5,7 @@ import { BrowserRouter, Switch, Route, useLocation } from 'react-router-dom';
 import { store } from 'app/store'
 import { Navbar, Timeout, PleaseWait } from 'partials'
 
-const HomePage = React.lazy(() => import('home').then(module => ({ default: module.HomePage })))
+const HomePage = React.lazy(() => import('pages').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinPage })))
 const ProteinSearchPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinSearchPage })))
 const InteractionPage = React.lazy(() => import('pages').then(module => ({ default: module.InteractionPage })))
