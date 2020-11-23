@@ -33,6 +33,7 @@
     "node-sass": "^4.14.1",
     "popper.js": "^1.16.1",
     "react": "^16.14.0",
+    "react-bootstrap4-modal": "^1.7.5",
     "react-cytoscapejs": "^1.2.1",
     "react-dom": "^16.14.0",
     "react-konva": "^16.12.0-0",
