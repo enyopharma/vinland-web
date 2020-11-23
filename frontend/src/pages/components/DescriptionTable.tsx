@@ -60,7 +60,7 @@ const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isofor
                     </a>
                 </td>
                 <td className="text-center ellipsis" rowSpan={rowspan}>
-                    <span title={description.method.name}>
+                    <span title={`${description.method.psimi_id}: ${description.method.name}`}>
                         {description.method.psimi_id}: {description.method.name}
                     </span>
                 </td>
