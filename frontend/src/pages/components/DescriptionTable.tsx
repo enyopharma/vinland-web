@@ -55,6 +55,7 @@ const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isofor
                         href={`https://pubmed.ncbi.nlm.nih.gov/${description.publication.pmid}/`}
                         title={`${description.publication.year} - ${description.publication.title}`}
                         target="_blank"
+                        rel="noopener noreferrer"
                     >
                         {description.publication.pmid}
                     </a>
