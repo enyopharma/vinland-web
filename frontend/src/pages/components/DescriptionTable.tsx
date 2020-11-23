@@ -17,8 +17,8 @@ export const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions
     <table className="table" style={{ lineHeight: '30px' }}>
         <thead>
             <tr>
-                <th className="col-2 text-center">pmid</th>
-                <th className="col-2 text-center">psimi id</th>
+                <th className="col-1 text-center">Publication</th>
+                <th className="col-3 text-center">Method</th>
                 <th className="col-4 text-center">Mapping 1</th>
                 <th className="col-4 text-center">Mapping 2</th>
             </tr>
@@ -51,13 +51,17 @@ const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isofor
         <React.Fragment>
             <tr key={0}>
                 <td className="text-center" rowSpan={rowspan}>
-                    <span title={`${description.publication.year} - ${description.publication.title}`}>
+                    <a
+                        href={`https://pubmed.ncbi.nlm.nih.gov/${description.publication.pmid}/`}
+                        title={`${description.publication.year} - ${description.publication.title}`}
+                        target="_blank"
+                    >
                         {description.publication.pmid}
-                    </span>
+                    </a>
                 </td>
-                <td className="text-center" rowSpan={rowspan}>
+                <td className="text-center ellipsis" rowSpan={rowspan}>
                     <span title={description.method.name}>
-                        {description.method.psimi_id}
+                        {description.method.psimi_id}: {description.method.name}
                     </span>
                 </td>
                 <td className="text-center">

@@ -82,10 +82,48 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
             </h1>
             <div className="row">
                 <div className="col offset-4">
-                    <ProteinSection protein={protein1} isoforms={isoforms1} selected={selected1} update={setSelected1} />
+                    <h2>
+                        <ProteinLinkImg {...protein1} /> {protein1.accession}/{protein1.name}
+                    </h2>
                 </div>
                 <div className="col">
-                    <ProteinSection protein={protein2} isoforms={isoforms2} selected={selected2} update={setSelected2} />
+                    <h2>
+                        <ProteinLinkImg {...protein2} /> {protein2.accession}/{protein2.name}
+                    </h2>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col offset-4">
+                    <p>
+                        {protein1.taxon} - {protein1.description}
+                    </p>
+                </div>
+                <div className="col">
+                    <p>
+                        {protein2.taxon} - {protein2.description}
+                    </p>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col offset-4">
+                    <IsoformSelectbox isoforms={isoforms1} selected={selected1} update={setSelected1} />
+                </div>
+                <div className="col">
+                    <IsoformSelectbox isoforms={isoforms2} selected={selected2} update={setSelected2} />
+                </div>
+            </div>
+            <div className="row">
+                <div className="col offset-4">
+                    <h3>{isoform1.accession} [{isoform1.start} - {isoform1.stop}]</h3>
+                    <div className="form-group">
+                        <textarea className="form-control" value={isoform1.sequence} rows={3} readOnly={true} />
+                    </div>
+                </div>
+                <div className="col">
+                    <h3>{isoform2.accession} [{isoform2.start} - {isoform2.stop}]</h3>
+                    <div className="form-group">
+                        <textarea className="form-control" value={isoform2.sequence} rows={3} readOnly={true} />
+                    </div>
                 </div>
             </div>
             <DescriptionTable
@@ -95,32 +133,6 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                 isoform2={isoform2}
                 descriptions={descriptions}
             />
-        </React.Fragment>
-    )
-}
-
-type ProteinSectionProps = {
-    protein: Protein
-    isoforms: Isoform[]
-    selected: number
-    update: (i: number) => void
-}
-
-const ProteinSection: React.FC<ProteinSectionProps> = ({ protein, isoforms, selected, update }) => {
-    const isoform = isoforms[selected]
-
-    return (
-        <React.Fragment>
-            <h2>
-                <ProteinLinkImg {...protein} /> {protein.accession}/{protein.name}
-            </h2>
-            <div className="form-group">
-                <IsoformSelectbox isoforms={isoforms} selected={selected} update={update} />
-            </div>
-            <h3>{isoform.accession} [{isoform.start} - {isoform.stop}]</h3>
-            <div className="form-group">
-                <textarea className="form-control" value={isoform.sequence} rows={3} readOnly={true} />
-            </div>
         </React.Fragment>
     )
 }
