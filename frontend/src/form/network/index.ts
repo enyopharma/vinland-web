@@ -152,11 +152,12 @@ export const network = (interactions: Interaction[]) => {
         setRatio: simulation.setRatio,
         setLabels: ui.labels.setVisibility,
         selectNeighbors: ui.selection.selectNeighbors,
+        species: ui.selection.species,
         stop: simulation.stop,
         resize: (width: number) => {
             if (ref === null) return
             ref.width(width)
-            ref.height(width * 2 / 3)
+            ref.height(width * 1 / 2)
             ref.batchDraw()
         },
         save: () => {
@@ -174,9 +175,9 @@ export const network = (interactions: Interaction[]) => {
             const stage = new Konva.Stage({
                 container: container,
                 width: width,
-                height: width * 2 / 3,
+                height: width * 1 / 2,
                 x: posX ?? (width / 2),
-                y: posY ?? (width / 3),
+                y: posY ?? (width / 4),
                 scaleX: scale,
                 scaleY: scale,
                 draggable: true,

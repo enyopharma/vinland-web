@@ -1,6 +1,7 @@
+import { Taxon } from '../types'
 import { Node, Link } from './types'
 
-export const getSelection = ({ links }: { links: Link[] }) => {
+export const getSelection = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
     let current = 0
     let selected: Node[] = []
     let listener: (() => any) | null = null
@@ -44,10 +45,19 @@ export const getSelection = ({ links }: { links: Link[] }) => {
         trigger()
     }
 
+    const selectSpecies = (ncbi_taxon_id: number) => {
+        selected = []
+
+        nodes.forEach(n => {
+            if (n.data.species.ncbi_taxon_id === ncbi_taxon_id) selected.push(n)
+        })
+
+        trigger()
+    }
+
     const selectNeighbors = () => {
-        links.forEach((l) => {
-            if (l.source.selection.neighborhood === current) selected.push(l.source)
-            if (l.target.selection.neighborhood === current) selected.push(l.target)
+        nodes.forEach(n => {
+            if (n.selection.neighborhood === current) selected.push(n)
         })
 
         trigger()
@@ -80,9 +90,25 @@ export const getSelection = ({ links }: { links: Link[] }) => {
 
     const register = (fn: () => any) => listener = fn
 
+    // build the species from the node
+    const map: Record<number, { species: Taxon, color: string, select: () => void }> = {}
+
+    nodes.forEach(n => {
+        if (!map[n.data.species.ncbi_taxon_id]) {
+            map[n.data.species.ncbi_taxon_id] = {
+                species: n.data.species,
+                color: n.data.color,
+                select: () => selectSpecies(n.data.species.ncbi_taxon_id),
+            }
+        }
+    })
+
+    const species = Object.values(map).sort((a, b) => a.species.ncbi_taxon_id - b.species.ncbi_taxon_id)
+
     return {
         toggle,
         clear,
+        species,
         selectNeighbors,
         isNodeSelected,
         isNodeInNeighborhood,

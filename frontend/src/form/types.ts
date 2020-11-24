@@ -42,7 +42,6 @@ export type Taxonomy = {
 export type Taxon = {
     ncbi_taxon_id: number
     name: string
-    nb_interactions: number
 }
 
 export type Name = string
@@ -134,14 +133,8 @@ export type Protein = {
     accession: string
     name: string
     description: string
-    taxon: {
-        ncbi_taxon_id: number
-        name: string
-    }
-    species: {
-        ncbi_taxon_id: number
-        name: string
-    }
+    taxon: Taxon
+    species: Taxon
 }
 
 export type Network = ReturnType<typeof network>

@@ -3,55 +3,52 @@ import { schemeSpectral } from 'd3-scale-chromatic'
 import { Node, Link } from './types'
 import { Interaction, Protein } from '../types'
 
-const getColorPicker = () => {
-    const scale = scaleOrdinal(schemeSpectral[11])
+const scale = scaleOrdinal(schemeSpectral[11])
 
-    let first_viral_species: number | null = null
+let first_viral_species: number | null = null
 
-    return (protein: Protein) => {
-        if (protein.type === 'h') {
-            return 'blue'
-        }
-
-        if (first_viral_species === null) {
-            first_viral_species = protein.species.ncbi_taxon_id
-        }
-
-        if (protein.species.ncbi_taxon_id === first_viral_species) {
-            return 'red'
-        }
-
-        return scale(protein.species.ncbi_taxon_id.toString())
+const color = (protein: Protein) => {
+    if (protein.type === 'h') {
+        return 'blue'
     }
+
+    if (first_viral_species === null) {
+        first_viral_species = protein.species.ncbi_taxon_id
+    }
+
+    if (protein.species.ncbi_taxon_id === first_viral_species) {
+        return 'red'
+    }
+
+    return scale(protein.species.ncbi_taxon_id.toString())
 }
 
 export const getNetwork = (interactions: Interaction[]) => {
-    const nodes: Node[] = []
     const links: Link[] = []
     const map: Record<string, Node> = {}
     const associations: string[] = []
-    const color = getColorPicker()
 
     const registerNode = (protein: Protein) => {
         const nodeid = `${protein.species.ncbi_taxon_id}:${protein.name}`
-        const proteinid = `${protein.accession}:${protein.name}`
 
         let node = map[nodeid] ?? null
 
-        if (node === null) nodes.push(node = map[nodeid] = {
-            id: nodeid,
-            data: {
-                type: protein.type,
-                name: protein.name,
-                color: color(protein),
-                species: protein.species.name,
-                proteins: {},
-            },
-            selection: {},
-        })
+        if (node === null) {
+            node = map[nodeid] = {
+                id: nodeid,
+                data: {
+                    type: protein.type,
+                    name: protein.name,
+                    color: color(protein),
+                    species: protein.species,
+                    proteins: {},
+                },
+                selection: {},
+            }
+        }
 
-        if (!node.data.proteins[proteinid]) {
-            node.data.proteins[proteinid] = protein
+        if (!node.data.proteins[protein.id]) {
+            node.data.proteins[protein.id] = protein
         }
 
         return node
@@ -69,5 +66,5 @@ export const getNetwork = (interactions: Interaction[]) => {
         }
     })
 
-    return { nodes, links }
+    return { nodes: Object.values(map), links }
 }

@@ -1,5 +1,5 @@
 import { SimulationNodeDatum, SimulationLinkDatum } from 'd3-force'
-import { Protein } from '../types'
+import { Protein, Taxon } from '../types'
 
 export interface Node extends SimulationNodeDatum {
     id: string,
@@ -7,7 +7,7 @@ export interface Node extends SimulationNodeDatum {
         type: Protein['type']
         name: string
         color: string
-        species: string
+        species: Taxon
         proteins: Record<string, Protein>
     },
     selection: {

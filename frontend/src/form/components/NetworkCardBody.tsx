@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 
-import { Network } from '../types'
 import { actions } from '../reducers/nav'
+import { Network, Taxon } from '../types'
 import { useSelector, useActionCreator } from '../hooks'
 
 type NetworkCardBodyProps = {
@@ -11,16 +11,19 @@ type NetworkCardBodyProps = {
 export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => (
     <React.Fragment>
         <div className="card-body">
+            <NetworkContainer network={network} />
+        </div>
+        <div className="card-body">
             <div className="row">
                 <div className="col">
                     <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
                         Save image
-                        </button>
+                    </button>
                 </div>
                 <div className="col">
                     <button type="button" className="btn btn-block btn-primary" onClick={() => network.selectNeighbors()}>
                         Select neighbors
-                        </button>
+                    </button>
                 </div>
                 <div className="col-2">
                     <LabelsButton network={network} />
@@ -33,12 +36,14 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
                 <div className="col-2">
                     <button type="button" className="btn btn-block btn-primary" onClick={() => network.stop()}>
                         Stop layout
-                        </button>
+                    </button>
                 </div>
             </div>
-        </div>
-        <div className="card-body">
-            <NetworkContainer network={network} />
+            <div className="row">
+                <div className="col">
+                    {network.species.map(species => <SpeciesButton {...species} />)}
+                </div>
+            </div>
         </div>
     </React.Fragment>
 )
@@ -91,6 +96,18 @@ const RatioRange: React.FC<RatioRangeProps> = ({ network }) => {
         />
     )
 }
+
+type SpeciesButtonProps = {
+    species: Taxon
+    color: string
+    select: () => void
+}
+
+const SpeciesButton: React.FC<SpeciesButtonProps> = ({ species, color, select }) => (
+    <button type="button" className="m-1 btn btn-sm btn-outline-primary" onClick={() => { select() }}>
+        <span style={{ color }}>&#11044;</span> {species.name}
+    </button>
+)
 
 type NetworkContainerProps = {
     network: Network
