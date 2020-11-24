@@ -151,8 +151,10 @@ export const network = (interactions: Interaction[]) => {
     return {
         setRatio: simulation.setRatio,
         setLabels: ui.labels.setVisibility,
-        selectNeighbors: ui.selection.selectNeighbors,
         species: ui.selection.species,
+        onSelection: ui.selection.onSelection,
+        getSelection: ui.selection.getSelection,
+        selectNeighbors: ui.selection.selectNeighbors,
         stop: simulation.stop,
         resize: (width: number) => {
             if (ref === null) return

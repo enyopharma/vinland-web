@@ -138,3 +138,9 @@ export type Protein = {
 }
 
 export type Network = ReturnType<typeof network>
+
+export type Selection = {
+    species: Taxon
+    name: string
+    proteins: Protein[]
+}

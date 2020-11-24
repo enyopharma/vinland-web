@@ -8,7 +8,7 @@ export interface Node extends SimulationNodeDatum {
         name: string
         color: string
         species: Taxon
-        proteins: Record<string, Protein>
+        proteins: Record<number, Protein>
     },
     selection: {
         current?: number

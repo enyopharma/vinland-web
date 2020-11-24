@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
 import { actions } from '../reducers/nav'
-import { Network, Taxon } from '../types'
+import { Network, Selection, Taxon } from '../types'
 import { useSelector, useActionCreator } from '../hooks'
+import { ProteinLink } from 'partials'
 
 type NetworkCardBodyProps = {
     network: Network
@@ -41,7 +42,14 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
             </div>
             <div className="row">
                 <div className="col">
+                    <h3>Viral species on the network</h3>
                     {network.species.map(species => <SpeciesButton {...species} />)}
+                </div>
+            </div>
+            <div className="row">
+                <div className="col">
+                    <h3>Viral protein selection</h3>
+                    <SelectionList network={network} />
                 </div>
             </div>
         </div>
@@ -108,6 +116,32 @@ const SpeciesButton: React.FC<SpeciesButtonProps> = ({ species, color, select })
         <span style={{ color }}>&#11044;</span> {species.name}
     </button>
 )
+
+type SelectionListProps = {
+    network: Network
+}
+
+const SelectionList: React.FC<SelectionListProps> = ({ network }) => {
+    const [selection, setSelection] = useState<Selection[]>([])
+
+    useEffect(() => setSelection(network.getSelection()), [network])
+
+    useEffect(() => network.onSelection(() => setSelection(network.getSelection())), [network])
+
+    return selection.length === 0
+        ? <p>No viral protein selected</p>
+        : (
+            <ul>
+                {selection.map((entry, i) => (
+                    <li key={i}>
+                        {entry.name} ({entry.species.name}) =&gt; { entry.proteins
+                            .map<React.ReactNode>((protein, p) => <ProteinLink key={p} {...protein} target="_blank">{protein.accession}</ProteinLink>)
+                            .reduce((prev, curr) => [prev, ', ', curr])}
+                    </li>
+                ))}
+            </ul>
+        )
+}
 
 type NetworkContainerProps = {
     network: Network
