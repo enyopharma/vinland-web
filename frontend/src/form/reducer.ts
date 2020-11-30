@@ -51,7 +51,7 @@ const makeKey = (parsed: string[], taxonomy: Taxonomy, options: DisplayOptions) 
     parts.push(options.publications.toString())
     parts.push(options.methods.toString())
     parts.push(ncbi_taxon_id.toString())
-    parts.push(...taxonomy.names.sort((a: string, b: string) => a.localeCompare(b)))
+    parts.push(...[...taxonomy.names].sort((a: string, b: string) => a.localeCompare(b))) // sort is mutating the readonly array
     parts.push(...parsed.sort((a: string, b: string) => a.localeCompare(b)))
 
     return md5(parts.join(':'))
