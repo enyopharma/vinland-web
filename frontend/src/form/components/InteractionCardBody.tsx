@@ -56,10 +56,10 @@ const InteractionTable: React.FC<InteractionTableProps> = ({ interactions }) => 
             <table className="table card-table table-stripped table-hover">
                 <thead>
                     <tr>
-                        <th className="col-1 text-center" colSpan={1}>-</th>
-                        <th className="col-3 text-center" colSpan={2}>Protein 1</th>
-                        <th className="col-3 text-center" colSpan={2}>Protein 2</th>
-                        <th className="col-5 text-center" colSpan={1}>Taxon</th>
+                        <th className="text-center" colSpan={1}>-</th>
+                        <th className="text-center" colSpan={2} style={{ width: '24%' }}>Protein 1</th>
+                        <th className="text-center" colSpan={2} style={{ width: '24%' }}>Protein 2</th>
+                        <th className="text-center" colSpan={1} style={{ width: '40%' }}>Taxon</th>
                     </tr>
                 </thead>
                 <tbody>

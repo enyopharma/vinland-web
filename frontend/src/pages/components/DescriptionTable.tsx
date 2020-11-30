@@ -17,10 +17,10 @@ export const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions
     <table className="table" style={{ lineHeight: '30px' }}>
         <thead>
             <tr>
-                <th className="col-1 text-center">Publication</th>
-                <th className="col-3 text-center">Method</th>
-                <th className="col-4 text-center">Mapping 1</th>
-                <th className="col-4 text-center">Mapping 2</th>
+                <th className="text-center">Publication</th>
+                <th className="text-center" style={{ width: '24%' }}>Method</th>
+                <th className="text-center" style={{ width: '32%' }}>Mapping 1</th>
+                <th className="text-center" style={{ width: '32%' }}>Mapping 2</th>
             </tr>
         </thead>
         <tbody>
@@ -46,7 +46,7 @@ const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isofor
     const clx2 = clusters(mappings2)
     const maxclx = Math.max(clx1.length, clx2.length)
     const rowspan = maxclx > 1 ? maxclx : undefined
-    console.log(maxclx)
+
     return (
         <React.Fragment>
             <tr key={0}>

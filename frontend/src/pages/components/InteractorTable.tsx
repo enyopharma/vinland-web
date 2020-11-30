@@ -30,12 +30,12 @@ export const InteractorTable: React.FC<InteractorTableProps> = ({ type, isoform,
             <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
-                        <th className="col-1 text-center">-</th>
-                        <th className="col-1 text-center">Accession</th>
-                        <th className="col-1 text-center">Name</th>
-                        <th className="col-2 text-center">Taxon</th>
-                        <th className="col-3 text-center">Description</th>
-                        <th className="col-4 text-center">Mapping</th>
+                        <th className="text-center">-</th>
+                        <th className="text-center">Accession</th>
+                        <th className="text-center">Name</th>
+                        <th className="text-center" style={{ width: '16%' }}>Taxon</th>
+                        <th className="text-center" style={{ width: '24%' }}>Description</th>
+                        <th className="text-center" style={{ width: '32%' }}>Mapping</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -12,11 +12,11 @@ export const ProteinTable: React.FC<ProteinTableProps> = ({ proteins }) => (
     <table className="table card-table table-striped table-hover">
         <thead>
             <tr>
-                <th className="col-1 text-center">-</th>
-                <th className="col-2 text-center">Accession</th>
-                <th className="col-2 text-center">Name</th>
-                <th className="col-3 text-center">Taxon</th>
-                <th className="col-4 text-center">Description</th>
+                <th className="text-center">-</th>
+                <th className="text-center" style={{ width: '16%' }}>Accession</th>
+                <th className="text-center" style={{ width: '16%' }}>Name</th>
+                <th className="text-center" style={{ width: '24%' }}>Taxon</th>
+                <th className="text-center" style={{ width: '32%' }}>Description</th>
             </tr>
         </thead>
         <tbody>
