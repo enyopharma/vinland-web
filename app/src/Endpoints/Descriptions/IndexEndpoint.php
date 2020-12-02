@@ -10,20 +10,12 @@ use App\ReadModel\IsoformViewInterface;
 
 final class IndexEndpoint
 {
-    private InteractionViewInterface $interactions;
+    public function __construct(
+        private InteractionViewInterface $interactions,
+        private DescriptionViewInterface $descriptions,
+    ) {}
 
-    private DescriptionViewInterface $descriptions;
-
-    public function __construct(InteractionViewInterface $interactions, DescriptionViewInterface $descriptions)
-    {
-        $this->interactions = $interactions;
-        $this->descriptions = $descriptions;
-    }
-
-    /**
-     * @return false|iterable
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): iterable|false
     {
         $interaction_id = (int) $input('interaction_id');
 

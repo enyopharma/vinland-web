@@ -8,17 +8,11 @@ use App\ReadModel\ProteinViewInterface;
 
 final class ShowEndpoint
 {
-    private ProteinViewInterface $proteins;
+    public function __construct(
+        private ProteinViewInterface $proteins,
+    ) {}
 
-    public function __construct(ProteinViewInterface $proteins)
-    {
-        $this->proteins = $proteins;
-    }
-
-    /**
-     * @return false|array
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): array|false
     {
         $protein_id = (int) $input('protein_id');
 

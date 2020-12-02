@@ -13,22 +13,10 @@ use Quanta\Http\RouterInterface;
 
 final class FastRouteRouter implements RouterInterface
 {
-    /**
-     * @var \FastRoute\Dispatcher
-     */
-    private $dispatcher;
+    public function __construct(
+        private Dispatcher $dispatcher,
+    ) {}
 
-    /**
-     * @param \FastRoute\Dispatcher $dispatcher
-     */
-    public function __construct(Dispatcher $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function dispatch(ServerRequestInterface $request): RoutingResult
     {
         $info = $this->dispatcher->dispatch(
@@ -36,14 +24,10 @@ final class FastRouteRouter implements RouterInterface
             $request->getUri()->getPath(),
         );
 
-        if ($info[0] == Dispatcher::NOT_FOUND) {
-            return RoutingResult::notFound();
-        }
-
-        if ($info[0] == Dispatcher::METHOD_NOT_ALLOWED) {
-            return RoutingResult::notAllowed(...$info[1]);
-        }
-
-        return RoutingResult::found($info[1], $info[2]);
+        return match ($info[0]) {
+            Dispatcher::NOT_FOUND => RoutingResult::notFound(),
+            Dispatcher::METHOD_NOT_ALLOWED => RoutingResult::notAllowed(...$info[1]),
+            default => RoutingResult::found($info[1], $info[2])
+        };
     }
 }

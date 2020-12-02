@@ -6,8 +6,6 @@ namespace App\ReadModel;
 
 final class TaxonViewSql implements TaxonViewInterface
 {
-    private \PDO $pdo;
-
     const SELECT_TAXON_SQL = <<<SQL
         SELECT * FROM taxonomy WHERE ncbi_taxon_id = ?
     SQL;
@@ -38,14 +36,15 @@ final class TaxonViewSql implements TaxonViewInterface
         AND t.right_value <= ?
     SQL;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function id(int $ncbi_taxon_id, string ...$with): Statement
     {
         $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
+
+        if ($select_taxon_sth === false) throw new \Exception;
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
@@ -74,6 +73,8 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxa_sth = $this->pdo->prepare(self::SELECT_TAXA_SQL);
 
+        if ($select_taxa_sth === false) throw new \Exception;
+
         $select_taxa_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_taxa_sth);
@@ -82,6 +83,8 @@ final class TaxonViewSql implements TaxonViewInterface
     private function parent(int $taxon_id): ?array
     {
         $select_parent_sth = $this->pdo->prepare(self::SELECT_PARENT_SQL);
+
+        if ($select_parent_sth === false) throw new \Exception;
 
         $select_parent_sth->execute([$taxon_id]);
 
@@ -94,29 +97,21 @@ final class TaxonViewSql implements TaxonViewInterface
     {
         $select_children_sth = $this->pdo->prepare(self::SELECT_CHILDREN_SQL);
 
+        if ($select_children_sth === false) throw new \Exception;
+
         $select_children_sth->execute([$taxon_id]);
 
-        $children = $select_children_sth->fetchAll();
-
-        if ($children === false) {
-            throw new \LogicException;
-        }
-
-        return $children;
+        return $select_children_sth->fetchAll();
     }
 
     private function names(int $left_value, int $right_value): array
     {
         $select_names_sth = $this->pdo->prepare(self::SELECT_NAMES_SQL);
 
+        if ($select_names_sth === false) throw new \Exception;
+
         $select_names_sth->execute([$left_value, $right_value]);
 
-        $names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
-
-        if ($names === false) {
-            throw new \LogicException;
-        }
-
-        return $names;
+        return $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
     }
 }

@@ -8,17 +8,11 @@ use App\ReadModel\ProteinViewInterface;
 
 final class IndexEndpoint
 {
-    private ProteinViewInterface $proteins;
+    public function __construct(
+        private ProteinViewInterface $proteins,
+    ) {}
 
-    public function __construct(ProteinViewInterface $proteins)
-    {
-        $this->proteins = $proteins;
-    }
-
-    /**
-     * @return iterable
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): iterable
     {
         $type = $input('type', '');
         $query = $input('query', '');

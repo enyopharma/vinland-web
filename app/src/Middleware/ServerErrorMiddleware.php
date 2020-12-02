@@ -12,15 +12,10 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 final class ServerErrorMiddleware implements MiddlewareInterface
 {
-    private ResponseFactoryInterface $factory;
-
-    private bool $debug;
-
-    public function __construct(ResponseFactoryInterface $factory, bool $debug)
-    {
-        $this->factory = $factory;
-        $this->debug = $debug;
-    }
+    public function __construct(
+        private ResponseFactoryInterface $factory,
+        private bool $debug
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

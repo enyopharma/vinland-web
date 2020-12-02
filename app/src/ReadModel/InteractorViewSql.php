@@ -6,8 +6,6 @@ namespace App\ReadModel;
 
 final class InteractorViewSql implements InteractorViewInterface
 {
-    private \PDO $pdo;
-
     const SELECT_H_INTERACTORS_SQL = <<<SQL
         SELECT i.id, i.type, p.id AS protein_id, p.type AS protein_type, p.accession, p.name, p.description, 'Homo sapiens' AS taxon
         FROM interactions AS i, edges AS e, proteins AS p
@@ -39,10 +37,9 @@ final class InteractorViewSql implements InteractorViewInterface
         AND e.source_id = ?
     SQL;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function all(string $type, int $protein_id): Statement
     {
@@ -50,17 +47,17 @@ final class InteractorViewSql implements InteractorViewInterface
             ? $this->pdo->prepare(self::SELECT_H_INTERACTORS_SQL)
             : $this->pdo->prepare(self::SELECT_V_INTERACTORS_SQL);
 
+        if ($select_interactors_sth === false) throw new \Exception;
+
         $select_interactors_sth->execute([$protein_id]);
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
+        if ($select_mappings_sth === false) throw new \Exception;
+
         $select_mappings_sth->execute([$type, $protein_id]);
 
         $mappings = $select_mappings_sth->fetchAll();
-
-        if ($mappings === false) {
-            throw new \LogicException;
-        }
 
         return Statement::from($this->generator($select_interactors_sth, $mappings));
     }
@@ -81,7 +78,6 @@ final class InteractorViewSql implements InteractorViewInterface
                     'description' => $row['description'],
                     'taxon' => $row['taxon'],
                 ],
-                'nb_mappings' => $row['nb_mappings'],
                 'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
                     return $row['id'] == $mapping['interaction_id'];
                 })),

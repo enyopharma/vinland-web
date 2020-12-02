@@ -9,19 +9,12 @@ use App\ReadModel\IsoformViewInterface;
 
 final class ShowEndpoint
 {
-    private ProteinViewInterface $proteins;
+    public function __construct(
+        private ProteinViewInterface $proteins,
+        private IsoformViewInterface $isoforms,
+    ) {}
 
-    private IsoformViewInterface $isoforms;
-
-    public function __construct(ProteinViewInterface $proteins, IsoformViewInterface $isoforms)
-    {
-        $this->proteins = $proteins;
-        $this->isoforms = $isoforms;
-    }
-    /**
-     * @return false|array
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): array|false
     {
         $protein_id = (int) $input('protein_id');
         $isoform_id = (int) $input('isoform_id');

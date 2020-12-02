@@ -8,17 +8,11 @@ use App\ReadModel\InteractionViewInterface;
 
 final class ShowEndpoint
 {
-    private InteractionViewInterface $interactions;
+    public function __construct(
+        private InteractionViewInterface $interactions,
+    ) {}
 
-    public function __construct(InteractionViewInterface $interactions)
-    {
-        $this->interactions = $interactions;
-    }
-
-    /**
-     * @return false|array
-     */
-    public function __invoke(callable $input, callable $responder)
+    public function __invoke(callable $input, callable $responder): array|false
     {
         $interaction_id = (int) $input('interaction_id');
 

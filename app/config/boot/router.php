@@ -6,9 +6,6 @@ use Psr\Container\ContainerInterface;
 
 /**
  * Populate the router.
- *
- * @param Psr\Container\ContainerInterface $container
- * @return void
  */
 return function (ContainerInterface $container): void {
     $collector = $container->get(FastRoute\RouteCollector::class);

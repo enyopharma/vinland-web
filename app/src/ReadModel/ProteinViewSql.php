@@ -6,8 +6,6 @@ namespace App\ReadModel;
 
 final class ProteinViewSql implements ProteinViewInterface
 {
-    private \PDO $pdo;
-
     const SELECT_PROTEIN_SQL = <<<SQL
         SELECT p.id, p.type, p.ncbi_taxon_id, p.accession, p.name, p.description, COALESCE(t.name, 'Homo sapiens') AS taxon
         FROM proteins AS p LEFT JOIN taxonomy AS t ON p.ncbi_taxon_id = t.ncbi_taxon_id
@@ -35,14 +33,15 @@ final class ProteinViewSql implements ProteinViewInterface
         LIMIT ?
     SQL;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function id(int $id): Statement
     {
         $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
+
+        if ($select_protein_sth === false) throw new \Exception;
 
         $select_protein_sth->execute([$id]);
 
@@ -65,6 +64,8 @@ final class ProteinViewSql implements ProteinViewInterface
         $select_proteins_sth = $type == 'h'
             ? $this->pdo->prepare(self::SELECT_HUMAN_PROTEINS_SQL)
             : $this->pdo->prepare(self::SELECT_VIRAL_PROTEINS_SQL);
+
+        if ($select_proteins_sth === false) throw new \Exception;
 
         $select_proteins_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 

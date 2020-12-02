@@ -14,16 +14,6 @@ final class InteractionQueryInput
 
     private const MAX_ID_THRESHOLD = 500;
 
-    private string $key;
-    private array $identifiers;
-    private int $ncbi_taxon_id;
-    private array $names;
-    private bool $hh;
-    private bool $vh;
-    private bool $neighbors;
-    private int $publications;
-    private int $methods;
-
     public static function factory(): callable
     {
         $is_bln = OfType::guard('boolean');
@@ -44,7 +34,7 @@ final class InteractionQueryInput
         );
     }
 
-    public function from(
+    public static function from(
         string $key,
         array $identifiers,
         int $ncbi_taxon_id,
@@ -53,7 +43,7 @@ final class InteractionQueryInput
         bool $vh,
         bool $neighbors,
         int $publications,
-        int $methods
+        int $methods,
     ): self {
         $sanitized_ids = array_unique(array_map('strtoupper', array_filter($identifiers, 'is_string')));
         $sanitized_names = array_unique(array_filter($names, 'is_string'));
@@ -70,26 +60,16 @@ final class InteractionQueryInput
     }
 
     private function __construct(
-        string $key,
-        array $identifiers,
-        int $ncbi_taxon_id,
-        array $names,
-        bool $hh,
-        bool $vh,
-        bool $neighbors,
-        int $publications,
-        int $methods
-    ) {
-        $this->key = $key;
-        $this->identifiers = $identifiers;
-        $this->ncbi_taxon_id = $ncbi_taxon_id;
-        $this->names = $names;
-        $this->hh = $hh;
-        $this->vh = $vh;
-        $this->neighbors = $neighbors;
-        $this->publications = $publications;
-        $this->methods = $methods;
-    }
+        private string $key,
+        private array $identifiers,
+        private int $ncbi_taxon_id,
+        private array $names,
+        private bool $hh,
+        private bool $vh,
+        private bool $neighbors,
+        private int $publications,
+        private int $methods,
+    ) {}
 
     public function key(): string
     {

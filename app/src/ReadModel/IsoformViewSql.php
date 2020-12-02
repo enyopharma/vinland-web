@@ -6,8 +6,6 @@ namespace App\ReadModel;
 
 final class IsoformViewSql implements IsoformViewInterface
 {
-    private \PDO $pdo;
-
     const SELECT_ISOFORM_SQL = <<<SQL
         SELECT * FROM sequences WHERE protein_id = ? AND id = ?
     SQL;
@@ -20,14 +18,15 @@ final class IsoformViewSql implements IsoformViewInterface
         SELECT * FROM sequences WHERE protein_id = ? AND is_canonical IS TRUE
     SQL;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function id(int $protein_id, int $id): Statement
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_ISOFORM_SQL);
+
+        if ($select_isoform_sth === false) throw new \Exception;
 
         $select_isoform_sth->execute([$protein_id, $id]);
 
@@ -38,6 +37,8 @@ final class IsoformViewSql implements IsoformViewInterface
     {
         $select_isoforms_sth = $this->pdo->prepare(self::SELECT_ISOFORMS_SQL);
 
+        if ($select_isoforms_sth === false) throw new \Exception;
+
         $select_isoforms_sth->execute([$protein_id]);
 
         return Statement::from($select_isoforms_sth);
@@ -46,6 +47,8 @@ final class IsoformViewSql implements IsoformViewInterface
     public function canonical(int $protein_id): Statement
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_CANONICAL_SQL);
+
+        if ($select_isoform_sth === false) throw new \Exception;
 
         $select_isoform_sth->execute([$protein_id]);
 

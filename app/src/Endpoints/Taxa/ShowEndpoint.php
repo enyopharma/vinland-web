@@ -8,17 +8,11 @@ use App\ReadModel\TaxonViewInterface;
 
 final class ShowEndpoint
 {
-    private TaxonViewInterface $taxa;
+    public function __construct(
+        private TaxonViewInterface $taxa,
+    ) {}
 
-    public function __construct(TaxonViewInterface $taxa)
-    {
-        $this->taxa = $taxa;
-    }
-
-    /**
-     * @return false|array
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): array|false
     {
         $ncbi_taxon_id = (int) $input('ncbi_taxon_id');
         $option = $input('option', null);

@@ -21,28 +21,25 @@ final class DescriptionViewSql implements DescriptionViewInterface
         AND e.interaction_id = ?
     SQL;
 
-    private \PDO $pdo;
-
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function all(int $interaction_id): Statement
     {
         $select_descriptions_sth = $this->pdo->prepare(self::SELECT_DESCRIPTIONS_SQL);
 
+        if ($select_descriptions_sth === false) throw new \Exception;
+
         $select_descriptions_sth->execute([$interaction_id]);
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
+        if ($select_mappings_sth === false) throw new \Exception;
+
         $select_mappings_sth->execute([$interaction_id]);
 
         $mappings = $select_mappings_sth->fetchAll();
-
-        if ($mappings === false) {
-            throw new \LogicException;
-        }
 
         return Statement::from($this->generator($select_descriptions_sth, $mappings));
     }

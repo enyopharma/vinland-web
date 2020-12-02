@@ -9,19 +9,10 @@ namespace App\ReadModel;
  */
 final class Statement implements \IteratorAggregate
 {
-    /**
-     * @var int
-     */
     private int $i;
 
     /**
-     * @var \Iterator<array>
-     */
-    private \Iterator $iterator;
-
-    /**
      * @param iterable<array> $iterable
-     * @return \App\ReadModel\Statement
      */
     public static function from(iterable $iterable): self
     {
@@ -39,14 +30,14 @@ final class Statement implements \IteratorAggregate
     /**
      * @param \Iterator<array> $iterator
      */
-    private function __construct(\Iterator $iterator)
-    {
+    private function __construct(
+        private \Iterator $iterator,
+    ) {
         $this->i = 0;
-        $this->iterator = $iterator;
     }
 
     /**
-     * @return array|false
+     * @return array|false phpstan bug :/
      */
     public function fetch()
     {
@@ -63,17 +54,11 @@ final class Statement implements \IteratorAggregate
         return false;
     }
 
-    /**
-     * @return array[]
-     */
     public function fetchAll(): array
     {
         return iterator_to_array($this->iterator);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getIterator()
     {
         return $this->iterator;

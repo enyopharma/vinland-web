@@ -8,17 +8,11 @@ use App\ReadModel\AnnotationViewInterface;
 
 final class IndexEndpoint
 {
-    private AnnotationViewInterface $annotations;
+    public function __construct(
+        private AnnotationViewInterface $annotations
+    ) {}
 
-    public function __construct(AnnotationViewInterface $annotations)
-    {
-        $this->annotations = $annotations;
-    }
-
-    /**
-     * @return iterable
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): iterable
     {
         $source = $input('source', '');
         $query = $input('query', '');

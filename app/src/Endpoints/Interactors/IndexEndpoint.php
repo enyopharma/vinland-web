@@ -10,20 +10,12 @@ use App\ReadModel\InteractorViewInterface;
 
 final class IndexEndpoint
 {
-    private ProteinViewInterface $proteins;
+    public function __construct(
+        private ProteinViewInterface $proteins,
+        private InteractorViewInterface $interactors,
+    ) {}
 
-    private InteractorViewInterface $interactors;
-
-    public function __construct(ProteinViewInterface $proteins, InteractorViewInterface $interactors)
-    {
-        $this->proteins = $proteins;
-        $this->interactors = $interactors;
-    }
-
-    /**
-     * @return false|iterable
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): iterable|false
     {
         $type = $input('type');
         $protein_id = (int) $input('protein_id');

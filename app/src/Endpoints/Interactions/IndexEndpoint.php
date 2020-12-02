@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Endpoints\Interactions;
 
+use Psr\Http\Message\ResponseInterface;
+
 use App\Input\InteractionQueryInput;
 use App\ReadModel\InteractionViewInterface;
 
@@ -12,17 +14,11 @@ final class IndexEndpoint
     const INCOMPLETE = 'incomplete';
     const SUCCESS = 'success';
 
-    private InteractionViewInterface $interactions;
+    public function __construct(
+        private InteractionViewInterface $interactions,
+    ) {}
 
-    public function __construct(InteractionViewInterface $interactions)
-    {
-        $this->interactions = $interactions;
-    }
-
-    /**
-     * @return iterable|\Psr\Http\Message\ResponseInterface
-     */
-    public function __invoke(callable $input, callable $responder)
+    public function __invoke(callable $input, callable $responder): ResponseInterface|iterable
     {
         $query = $input('input');
 

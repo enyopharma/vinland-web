@@ -6,16 +6,13 @@ namespace App\ReadModel;
 
 final class AnnotationViewSql implements AnnotationViewInterface
 {
-    private \PDO $pdo;
-
     const SELECT_ANNOTATIONS_SQL = <<<SQL
         SELECT * FROM annotations WHERE source = ? AND search ILIKE ALL (?::text[]) LIMIT ?
     SQL;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        private \PDO $pdo,
+    ) {}
 
     public function all(string $source, string $query, int $limit): Statement
     {
@@ -29,6 +26,8 @@ final class AnnotationViewSql implements AnnotationViewInterface
         }
 
         $select_annotations_sth = $this->pdo->prepare(self::SELECT_ANNOTATIONS_SQL);
+
+        if ($select_annotations_sth === false) throw new \Exception;
 
         $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
 

@@ -15,23 +15,17 @@ use Quanta\Validation\InvalidDataException;
 
 final class InputValidationMiddleware implements MiddlewareInterface
 {
-    private ResponseFactoryInterface $factory;
-
     /**
      * @var callable(array $data): mixed
      */
     private $validation;
 
-    private string $attribute;
-
     public function __construct(
-        ResponseFactoryInterface $factory,
+        private ResponseFactoryInterface $factory,
         callable $validation,
-        string $attribute = 'input'
+        private string $attribute = 'input',
     ) {
-        $this->factory = $factory;
         $this->validation = $validation;
-        $this->attribute = $attribute;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

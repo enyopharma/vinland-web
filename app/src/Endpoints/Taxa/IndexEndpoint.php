@@ -8,17 +8,11 @@ use App\ReadModel\TaxonViewInterface;
 
 final class IndexEndpoint
 {
-    private TaxonViewInterface $taxa;
+    public function __construct(
+        private TaxonViewInterface $taxa,
+    ) {}
 
-    public function __construct(TaxonViewInterface $taxa)
-    {
-        $this->taxa = $taxa;
-    }
-
-    /**
-     * @return iterable
-     */
-    public function __invoke(callable $input)
+    public function __invoke(callable $input): iterable
     {
         $query = $input('query', '');
         $limit = (int) $input('limit', 5);
