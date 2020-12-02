@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Timeout, PleaseWait, InteractionLinkImg, ProteinLinkImg } from 'partials'
+import { InteractionLinkImg, ProteinLinkImg, Timeout, Dots } from 'partials'
 
 import { resources } from '../api'
 import { canonicalIndex } from '../utils'
@@ -51,12 +51,20 @@ export const InteractionPage: React.FC = () => {
 
     return (
         <div className="container">
-            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
+            <React.Suspense fallback={<Fallback />}>
                 <InteractionSection key={id} resource={resource} />
             </React.Suspense>
         </div>
     )
 }
+
+const Fallback: React.FC = () => (
+    <Timeout>
+        <div className="text-center">
+            Please wait <Dots />
+        </div>
+    </Timeout>
+)
 
 type InteractionSectionProps = {
     resource: Resource<RemoteData>

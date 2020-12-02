@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Timeout, PleaseWait, ProteinLinkImg } from 'partials'
+import { ProteinLinkImg, Timeout, Dots } from 'partials'
 
 import { resources } from '../api'
 import { canonicalIndex } from '../utils'
@@ -34,12 +34,20 @@ export const ProteinPage: React.FC = () => {
 
     return (
         <div className="container">
-            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
+            <React.Suspense fallback={<Fallback />}>
                 <ProteinSection key={id} resource={resource} />
             </React.Suspense>
         </div>
     )
 }
+
+const Fallback: React.FC = () => (
+    <Timeout>
+        <div className="text-center">
+            Please wait <Dots />
+        </div>
+    </Timeout>
+)
 
 type ProteinSectionProps = {
     resource: Resource<RemoteData>
@@ -105,20 +113,18 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
             </ul>
             <hr />
             <SequenceSection isoform={isoform} />
-            <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
-                <div className="float-right">[<a href="#top">top</a>]</div>
-                <h2 id="vh">VH interactions</h2>
-                {interactors1.length === 0
-                    ? <EmptyTable type="v" />
-                    : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors2} />
-                }
-                <div className="float-right">[<a href="#top">top</a>]</div>
-                <h2 id="hh">HH interactions</h2>
-                {interactors2.length === 0
-                    ? <EmptyTable type="h" />
-                    : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors1} />
-                }
-            </React.Suspense>
+            <div className="float-right">[<a href="#top">top</a>]</div>
+            <h2 id="vh">VH interactions</h2>
+            {interactors1.length === 0
+                ? <EmptyTable type="v" />
+                : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors2} />
+            }
+            <div className="float-right">[<a href="#top">top</a>]</div>
+            <h2 id="hh">HH interactions</h2>
+            {interactors2.length === 0
+                ? <EmptyTable type="h" />
+                : <InteractorTable type={protein.type} isoform={isoform} interactors={interactors1} />
+            }
         </React.Fragment>
     )
 }

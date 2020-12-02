@@ -3,7 +3,7 @@ import React from 'react'
 import { resources } from '../api'
 import { useSelector } from '../hooks'
 import { PageState, Resource, QueryResult } from '../types'
-import { Timeout, PleaseWait } from 'partials'
+import { Timeout, Dots } from 'partials'
 
 const QueryResultCard = React.lazy(() => import('./QueryResultCard').then(module => ({ default: module.QueryResultCard })))
 const QueryResultAlert = React.lazy(() => import('./QueryResultAlert').then(module => ({ default: module.QueryResultAlert })))
@@ -12,11 +12,19 @@ export const QueryResultSection: React.FC = () => {
     const { resource } = useSelector(state2resource, (next, prev) => next.key === prev.key)
 
     return (
-        <React.Suspense fallback={<Timeout> <PleaseWait /></Timeout>}>
+        <React.Suspense fallback={<Fallback />}>
             <QueryResultSectionFetcher resource={resource} />
         </React.Suspense>
     )
 }
+
+const Fallback: React.FC = () => (
+    <Timeout>
+        <div className="text-center">
+            Please wait <Dots />
+        </div>
+    </Timeout>
+)
 
 type QueryResultSectionFetcherProps = {
     resource: Resource<QueryResult>

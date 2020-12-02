@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Timeout, PleaseWait } from 'partials'
+import { Timeout, Dots } from 'partials'
 
 import { cache } from '../cache'
 import { ResultTab } from '../types'
@@ -52,10 +52,20 @@ const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ c
                 </li>
             </ul>
         </div>
-        <React.Suspense fallback={<Timeout><PleaseWait /></Timeout>}>
+        <React.Suspense fallback={<Fallback />}>
             <SuccessfulQueryResultCardBody cache={cache} />
         </React.Suspense>
     </div>
+)
+
+const Fallback: React.FC = () => (
+    <Timeout>
+        <div className="card-body">
+            <div className="text-center">
+                Please wait <Dots />
+            </div>
+        </div>
+    </Timeout>
 )
 
 type ResultTabLinkProps = {
