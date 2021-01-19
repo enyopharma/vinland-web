@@ -43,7 +43,7 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
             <div className="row">
                 <div className="col">
                     <h3>Viral species on the network</h3>
-                    {network.species.map(species => <SpeciesButton {...species} />)}
+                    {network.species.map((species, i) => <SpeciesButton key={i} {...species} />)}
                 </div>
             </div>
             <div className="row">
