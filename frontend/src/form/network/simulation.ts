@@ -25,6 +25,11 @@ export const getSimulation = (network: { nodes: Node[], links: Link[] }) => {
     const setRatio = (value: number) => {
         if (value === ratio) return
 
+        network.nodes.forEach(node => {
+            node.fx = null
+            node.fy = null
+        })
+
         ratio = value
 
         forces.links.distance(ratio * 0.01)

@@ -67,20 +67,14 @@ export const network = (interactions: Interaction[]) => {
         ui.selection.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
     })
 
-    nodes.on('dragstart', e => {
-        e.target.getAttr('ref').fx = e.target.attrs.x
-        e.target.getAttr('ref').fy = e.target.attrs.y
-    })
-
     nodes.on('dragmove', e => {
-        simulation.alphaTarget(0.3).restart()
         e.target.getAttr('ref').fx = e.target.attrs.x
         e.target.getAttr('ref').fy = e.target.attrs.y
+        simulation.alphaTarget(0.1).restart()
     })
 
     nodes.on('dragend', e => {
-        e.target.getAttr('ref').fx = null
-        e.target.getAttr('ref').fy = null
+        simulation.stop()
     })
 
     /**
