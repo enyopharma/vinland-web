@@ -6,7 +6,7 @@ import { actions as taxonomy } from './taxonomy'
 const initialState: DisplayOptions = {
     hh: true,
     vh: true,
-    neighbors: true,
+    neighbors: false,
     publications: 1,
     methods: 1,
 }
