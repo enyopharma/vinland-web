@@ -117,7 +117,7 @@ const ProteinTable: React.FC<ProteinTableProps> = ({ proteins }) => {
                 <tbody>
                     {[...Array(limit)].map((_, i) => slice[i]
                         ? <ProteinTr key={i} protein={slice[i]} />
-                        : <SkeletonTr />
+                        : <SkeletonTr key={i} />
                     )}
                 </tbody>
             </table>
