@@ -1,11 +1,10 @@
 import Konva from 'konva'
 import { config } from '../config'
-import { Interaction } from '../types'
 import { Node, Link } from './types'
 import { getLabels } from './labels'
-import { getNetwork } from './factory'
 import { getSelection } from './selection'
 import { getSimulation } from './simulation'
+import { Interaction } from '../types'
 
 const style = {
     nodes: {
@@ -38,11 +37,10 @@ const style = {
 }
 
 export const network = (interactions: Interaction[]) => {
-    const network = getNetwork(interactions)
-    const simulation = getSimulation(network)
-    const ui = { labels: getLabels(), selection: getSelection(network) }
+    const simulation = getSimulation(interactions)
+    const ui = { labels: getLabels(), selection: getSelection(simulation) }
     const listeners: Array<() => void> = []
-
+    console.log('simulation')
     /**
      * Session stage.
      */
