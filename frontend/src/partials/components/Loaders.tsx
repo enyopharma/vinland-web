@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const dots = ['.', '..', '...']
+const dots = ['.&nbsp;&nbsp;', '..&nbsp;', '...']
 
 export const Dots: React.FC = () => {
     const [i, setI] = useState(0)
@@ -11,7 +11,7 @@ export const Dots: React.FC = () => {
         return () => clearTimeout(timeout)
     }, [i])
 
-    return <React.Fragment>{dots[i % 3]}</React.Fragment>
+    return <span dangerouslySetInnerHTML={{ __html: dots[i % 3] }}></span>
 }
 
 type TimeoutProps = {
@@ -29,7 +29,7 @@ export const Timeout: React.FC<TimeoutProps> = ({ ms = 1000, children }) => {
 
     return elapsed
         ? <React.Fragment>{children}</React.Fragment>
-        : null
+        : <div dangerouslySetInnerHTML={{ __html: '&nbsp;' }}></div>
 }
 
 type ProgressBarProps = {

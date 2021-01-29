@@ -61,13 +61,13 @@ type FallbackProps = {
 }
 
 const Fallback: React.FC<FallbackProps> = ({ msg = 'Please wait' }) => (
-    <Timeout>
-        <div className="card-body">
+    <div className="card-body">
+        <Timeout>
             <div className="text-center">
                 {msg} <Dots />
             </div>
-        </div>
-    </Timeout>
+        </Timeout>
+    </div>
 )
 
 type ResultTabLinkProps = {
