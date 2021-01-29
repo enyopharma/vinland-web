@@ -1,8 +1,7 @@
 import Konva from 'konva'
 import { config } from '../config'
 import { Node, Link } from './types'
-import { getLabels } from './labels'
-import { getSelection } from './selection'
+import { getUi } from './ui'
 import { getSimulation } from './simulation'
 import { Interaction } from '../types'
 
@@ -36,13 +35,28 @@ const style = {
     }
 }
 
-export const network = (interactions: Interaction[]) => {
-    const simulation = getSimulation(interactions)
-    const ui = { labels: getLabels(), selection: getSelection(simulation) }
-    const listeners: Array<() => void> = []
-    console.log('simulation')
+export const network = async (interactions: Interaction[]) => {
+    const simulation = await getSimulation(interactions)
+
+    const [nodes, labels, links] = await getData(simulation)
+
+    const ui = getUi(simulation)
+
     /**
-     * Session stage.
+     * Set up the layers, elements and listeners.
+     */
+    const layers = {
+        nodes: new Konva.Layer(),
+        labels: new Konva.FastLayer(),
+        links: new Konva.FastLayer(),
+    }
+
+    layers.nodes.add(...nodes)
+    layers.labels.add(...labels)
+    layers.links.add(...links)
+
+    /**
+     * return public api.
      */
     let ref: Konva.Stage | null = null
 
@@ -53,100 +67,13 @@ export const network = (interactions: Interaction[]) => {
     let posX: number | null = null
     let posY: number | null = null
 
-    /**
-     * Set up the layers.
-     */
-    const nodes = new Konva.Layer()
-    const links = new Konva.FastLayer()
-    const labels = new Konva.FastLayer()
-
-    nodes.on('click', e => {
-        e.cancelBubble = true
-        ui.selection.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
-    })
-
-    nodes.on('dragmove', e => {
-        e.target.getAttr('ref').fx = e.target.attrs.x
-        e.target.getAttr('ref').fy = e.target.attrs.y
-        simulation.alphaTarget(0.1).restart()
-    })
-
-    nodes.on('dragend', e => {
-        simulation.stop()
-    })
-
-    /**
-     * register the nodes.
-     */
-    simulation.nodes.forEach(n => {
-        const node = getNode(n)
-        const label = getLabel(n)
-
-        nodes.add(node)
-        labels.add(label)
-
-        listeners.push(() => {
-            if (n.x && n.y) {
-                const prevstroke = node.stroke()
-                const newstroke = ui.selection.isNodeSelected(n)
-                    ? style.nodes.stroke.color.selected
-                    : style.nodes.stroke.color.default
-                const opacity = ui.selection.isNodeInNeighborhood(n)
-                    ? style.nodes.opacity.max
-                    : style.nodes.opacity.min
-
-                node.x(n.x)
-                node.y(n.y)
-                node.stroke(newstroke)
-                node.opacity(opacity)
-                if (prevstroke !== newstroke) node.cache({ pixelRatio: 2 })
-
-                const visibility = ui.selection.isNodeInNeighborhood(n) && ui.labels.visibility()
-
-                label.x(n.x + config.radius + style.nodes.stroke.width)
-                label.y(n.y - (config.radius / 2))
-                label.visible(visibility)
-            }
-        })
-    })
-
-    /**
-     * register the links.
-     */
-    simulation.links.forEach(l => {
-        const link = getLink(l)
-
-        links.add(link)
-
-        listeners.push(() => {
-            if (l.source.x && l.source.y && l.target.x && l.target.y) {
-                const points = [l.source.x, l.source.y]
-                const tension = l.source === l.target ? 0.5 : 0
-                const opacity = ui.selection.isLinkInNeighborhood(l)
-                    ? style.links.opacity.max
-                    : style.links.opacity.min
-
-                l.source === l.target
-                    ? points.push(l.target.x + 5, l.target.y + 20, l.target.x, l.target.y + 30, l.target.x - 5, l.target.y + 20)
-                    : points.push(l.target.x, l.target.y)
-
-                link.points(points)
-                link.tension(tension)
-                link.opacity(opacity)
-            }
-        })
-    })
-
-    /**
-     * return public api.
-     */
     return {
         setRatio: simulation.setRatio,
-        setLabels: ui.labels.setVisibility,
-        species: ui.selection.species,
-        onSelection: ui.selection.onSelection,
-        getSelection: ui.selection.getSelection,
-        selectNeighbors: ui.selection.selectNeighbors,
+        setLabels: ui.setLabelsVisibility,
+        species: ui.species,
+        onSelection: ui.onSelection,
+        getSelection: ui.getSelection,
+        selectNeighbors: ui.selectNeighbors,
         stop: simulation.stop,
         resize: (width: number) => {
             if (ref === null) return
@@ -177,20 +104,24 @@ export const network = (interactions: Interaction[]) => {
                 draggable: true,
             })
 
-            stage.add(links)
-            stage.add(nodes)
-            stage.add(labels)
+            stage.add(layers.labels)
+            stage.add(layers.links)
+            stage.add(layers.nodes)
 
             const update = () => {
-                listeners.forEach(listener => listener())
+                layers.nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
+                layers.labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
+                layers.links.find<Konva.Line>('Line').each(getDrawLink(ui))
                 stage.batchDraw()
             }
 
-            ui.labels.register(update)
-            ui.selection.register(update)
-            simulation.on('tick', update)
+            ui.register(update)
+            simulation.register(update)
 
-            stage.on('click', ui.selection.clear)
+            /**
+             * listeners on stage.
+             */
+            stage.on('click', ui.clear)
 
             stage.on('dragmove', () => {
                 posX = stage.x()
@@ -219,6 +150,29 @@ export const network = (interactions: Interaction[]) => {
                 stage.batchDraw()
             })
 
+            /**
+             * listeners on nodes layer.
+             */
+            layers.nodes.on('click', e => {
+                e.cancelBubble = true
+                ui.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
+            })
+
+            layers.nodes.on('dragmove', e => {
+                e.target.getAttr('ref').fx = e.target.attrs.x
+                e.target.getAttr('ref').fy = e.target.attrs.y
+                simulation.restart(0.1)
+            })
+
+            layers.nodes.on('dragend', () => {
+                simulation.stop()
+            })
+
+            /**
+             * start the simulation.
+             */
+            simulation.start()
+
             return ref = stage
         }
     }
@@ -242,6 +196,31 @@ const getNode = (n: Node) => {
     return node
 }
 
+const getDrawNode = (ui: { isNodeSelected: (n: Node) => boolean, isNodeInNeighborhood: (n: Node) => boolean }) => {
+    return (node: Konva.Circle) => {
+        const n = node.getAttr('ref')
+
+        if (n.x && n.y) {
+            const prevstroke = node.stroke()
+            const newstroke = ui.isNodeSelected(n)
+                ? style.nodes.stroke.color.selected
+                : style.nodes.stroke.color.default
+            const opacity = ui.isNodeInNeighborhood(n)
+                ? style.nodes.opacity.max
+                : style.nodes.opacity.min
+
+            node.x(n.x)
+            node.y(n.y)
+            node.stroke(newstroke)
+            node.opacity(opacity)
+
+            if (prevstroke !== newstroke) {
+                node.cache({ pixelRatio: 2 })
+            }
+        }
+    }
+}
+
 const getLabel = (n: Node) => {
     const label = new Konva.Text({
         text: n.data.name,
@@ -254,13 +233,28 @@ const getLabel = (n: Node) => {
         visible: false,
     });
 
+    label.setAttr('ref', n)
     label.cache({ pixelRatio: 2 })
 
     return label
 }
 
+const getDrawLabel = (ui: { isNodeInNeighborhood: (n: Node) => boolean, getLabelsVisibility: () => boolean }) => {
+    return (label: Konva.Text) => {
+        const n = label.getAttr('ref')
+
+        if (n.x && n.y) {
+            const visibility = ui.isNodeInNeighborhood(n) && ui.getLabelsVisibility()
+
+            label.x(n.x + config.radius + style.nodes.stroke.width)
+            label.y(n.y - (config.radius / 2))
+            label.visible(visibility)
+        }
+    }
+}
+
 const getLink = (l: Link) => {
-    return new Konva.Line({
+    const link = new Konva.Line({
         stroke: style.links.color,
         strokeWidth: style.links.width,
         points: [],
@@ -270,4 +264,70 @@ const getLink = (l: Link) => {
         perfectDrawEnabled: false,
         closed: l.source === l.target,
     })
+
+    link.setAttr('ref', l)
+
+    return link
+}
+
+const getDrawLink = (ui: { isLinkInNeighborhood: (l: Link) => boolean }) => {
+    return (link: Konva.Line) => {
+        const l = link.getAttr('ref')
+
+        if (l.source.x && l.source.y && l.target.x && l.target.y) {
+            const points = [l.source.x, l.source.y]
+            const tension = l.source === l.target ? 0.5 : 0
+            const opacity = ui.isLinkInNeighborhood(l)
+                ? style.links.opacity.max
+                : style.links.opacity.min
+
+            l.source === l.target
+                ? points.push(l.target.x + 5, l.target.y + 20, l.target.x, l.target.y + 30, l.target.x - 5, l.target.y + 20)
+                : points.push(l.target.x, l.target.y)
+
+            link.points(points)
+            link.tension(tension)
+            link.opacity(opacity)
+        }
+    }
+}
+
+const getData = async (simulation: { nodes: Node[], links: Link[] }): Promise<[Konva.Circle[], Konva.Text[], Konva.Line[]]> => {
+    const addN = new Promise<[Konva.Circle[], Konva.Text[]]>(resolve => {
+        const nodes: Konva.Circle[] = []
+        const labels: Konva.Text[] = []
+
+        const add = (i: number) => setTimeout(() => {
+            if (i === simulation.nodes.length) {
+                resolve([nodes, labels])
+            } else {
+                let k = 0
+                for (let j = i; j < simulation.nodes.length && k < 100; j++, k++) {
+                    nodes.push(getNode(simulation.nodes[j]))
+                    labels.push(getLabel(simulation.nodes[j]))
+                }
+                add(i + k)
+            }
+        })
+        add(0)
+    })
+
+    const addL = new Promise<Konva.Line[]>(resolve => {
+        const links: Konva.Line[] = []
+
+        const add = (i: number) => setTimeout(() => {
+            if (i === simulation.links.length) {
+                resolve(links)
+            } else {
+                let k = 0
+                for (let j = i; j < simulation.links.length && k < 100; j++, k++) {
+                    links.push(getLink(simulation.links[j]))
+                }
+                add(i + k)
+            }
+        })
+        add(0)
+    })
+
+    return Promise.all([addN, addL]).then(values => [values[0][0], values[0][1], values[1]])
 }

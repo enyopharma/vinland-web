@@ -12,12 +12,23 @@ export const cache = (result: SuccessfulQueryResult) => {
 const proteins = (interactions: Interaction[]) => {
     const proteins: Record<string, Protein> = {}
 
-    interactions.forEach(i => {
-        proteins[`${i.protein1.accession}:${i.protein1.name}`] = i.protein1
-        proteins[`${i.protein2.accession}:${i.protein2.name}`] = i.protein2
+    return new Promise<Protein[]>(resolve => {
+        const add = (i: number) => {
+            setTimeout(() => {
+                if (i === interactions.length) {
+                    resolve(Object.values(proteins))
+                } else {
+                    let k = 0;
+                    for (let j = i; j < interactions.length && k < 100; j++, k++) {
+                        proteins[`${interactions[j].protein1.accession}:${interactions[j].protein1.name}`] = interactions[j].protein1
+                        proteins[`${interactions[j].protein2.accession}:${interactions[j].protein2.name}`] = interactions[j].protein2
+                    }
+                    add(i + k)
+                }
+            })
+        }
+        add(0)
     })
-
-    return Object.values(proteins)
 }
 
 const getProteinCache = (interactions: Interaction[]) => {
@@ -25,7 +36,7 @@ const getProteinCache = (interactions: Interaction[]) => {
 
     return () => {
         if (cache === null) {
-            throw new Promise<Protein[]>(resolve => resolve(proteins(interactions))).then(proteins => cache = proteins)
+            throw proteins(interactions).then(proteins => cache = proteins)
         }
 
         return cache
@@ -37,7 +48,7 @@ const getNetworkCache = (interactions: Interaction[]) => {
 
     return () => {
         if (cache === null) {
-            throw new Promise<Network>(resolve => resolve(network(interactions))).then(network => cache = network)
+            throw network(interactions).then(network => cache = network)
         }
 
         return cache

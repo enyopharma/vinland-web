@@ -52,17 +52,19 @@ const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ c
                 </li>
             </ul>
         </div>
-        <React.Suspense fallback={<Fallback />}>
-            <SuccessfulQueryResultCardBody cache={cache} />
-        </React.Suspense>
+        <SuccessfulQueryResultCardBody cache={cache} />
     </div>
 )
 
-const Fallback: React.FC = () => (
+type FallbackProps = {
+    msg?: string
+}
+
+const Fallback: React.FC<FallbackProps> = ({ msg = 'Please wait' }) => (
     <Timeout>
         <div className="card-body">
             <div className="text-center">
-                Please wait <Dots />
+                {msg} <Dots />
             </div>
         </div>
     </Timeout>
@@ -97,9 +99,17 @@ const SuccessfulQueryResultCardBody: React.FC<SuccessfulQueryResultCardBodyProps
         case 'interactions':
             return <InteractionCardBody interactions={cache.interactions} />
         case 'proteins':
-            return <ProteinCardBodyFetcher cache={cache} />
+            return (
+                <React.Suspense fallback={<Fallback msg="Building protein table" />}>
+                    <ProteinCardBodyFetcher cache={cache} />
+                </React.Suspense>
+            )
         case 'network':
-            return <NetworkCardBodyFetcher cache={cache} />
+            return (
+                <React.Suspense fallback={<Fallback msg="Building network" />}>
+                    <NetworkCardBodyFetcher cache={cache} />
+                </React.Suspense>
+            )
     }
 }
 

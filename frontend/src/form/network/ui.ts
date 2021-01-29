@@ -1,7 +1,8 @@
 import { Taxon } from '../types'
 import { Node, Link } from './types'
 
-export const getSelection = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
+export const getUi = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
+    let labels = false
     let current = 0
     let selected: Node[] = []
     let selectionListener: (() => any) | null = null
@@ -126,6 +127,15 @@ export const getSelection = ({ nodes, links }: { nodes: Node[], links: Link[] })
             proteins: Object.values(n.data.proteins).sort((a, b) => a.id - b.id),
         }))
 
+    const getLabelsVisibility = () => labels
+
+    const setLabelsVisibility = (value: boolean) => {
+        if (value === labels) return
+        labels = value
+        if (updateListener === null) return
+        updateListener()
+    }
+
     return {
         toggle,
         clear,
@@ -136,6 +146,8 @@ export const getSelection = ({ nodes, links }: { nodes: Node[], links: Link[] })
         isLinkInNeighborhood,
         onSelection,
         getSelection,
+        getLabelsVisibility,
+        setLabelsVisibility,
         register,
     }
 }

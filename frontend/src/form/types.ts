@@ -137,10 +137,12 @@ export type Protein = {
     species: Taxon
 }
 
-export type Network = ReturnType<typeof network>
+export type Network = Await<ReturnType<typeof network>>
 
 export type Selection = {
     species: Taxon
     name: string
     proteins: Protein[]
 }
+
+type Await<T> = T extends PromiseLike<infer U> ? U : T
