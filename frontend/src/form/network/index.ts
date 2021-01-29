@@ -1,59 +1,40 @@
 import Konva from 'konva'
-import { config } from '../config'
+import { scaleOrdinal } from 'd3-scale'
+import { schemeSpectral } from 'd3-scale-chromatic'
 import { Node, Link } from './types'
 import { getUi } from './ui'
 import { getSimulation } from './simulation'
-import { Interaction } from '../types'
+import { config } from '../config'
+import { Interaction, Protein } from '../types'
 
-const style = {
-    nodes: {
-        radius: config.radius,
-        stroke: {
-            width: 1,
-            color: {
-                default: 'lightgrey',
-                selected: 'gold',
-            },
-        },
-        opacity: {
-            max: 1,
-            min: 0.2,
-        },
-    },
-    links: {
-        width: 1,
-        color: 'grey',
-        opacity: {
-            max: 1,
-            min: 0.2,
-        },
-    },
-    labels: {
-        font: {
-            size: 8,
-        }
-    }
+type Data = {
+    nodes: Node[]
+    links: Link[]
+}
+
+type Display = {
+    nodes: Konva.Circle[]
+    labels: Konva.Text[]
+    links: Konva.Line[]
 }
 
 export const network = async (interactions: Interaction[]) => {
-    const simulation = await getSimulation(interactions)
+    const { data, display } = await parse(interactions)
 
-    const [nodes, labels, links] = await getData(simulation)
+    const simulation = getSimulation(data)
 
-    const ui = getUi(simulation)
+    const ui = getUi(data)
 
     /**
      * Set up the layers, elements and listeners.
      */
-    const layers = {
-        nodes: new Konva.Layer(),
-        labels: new Konva.FastLayer(),
-        links: new Konva.FastLayer(),
-    }
+    const nodes = new Konva.Layer()
+    const labels = new Konva.FastLayer()
+    const links = new Konva.FastLayer()
 
-    layers.nodes.add(...nodes)
-    layers.labels.add(...labels)
-    layers.links.add(...links)
+    nodes.add(...display.nodes)
+    labels.add(...display.labels)
+    links.add(...display.links)
 
     /**
      * return public api.
@@ -104,14 +85,14 @@ export const network = async (interactions: Interaction[]) => {
                 draggable: true,
             })
 
-            stage.add(layers.labels)
-            stage.add(layers.links)
-            stage.add(layers.nodes)
+            stage.add(labels)
+            stage.add(links)
+            stage.add(nodes)
 
             const update = () => {
-                layers.nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
-                layers.labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
-                layers.links.find<Konva.Line>('Line').each(getDrawLink(ui))
+                nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
+                labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
+                links.find<Konva.Line>('Line').each(getDrawLink(ui))
                 stage.batchDraw()
             }
 
@@ -153,18 +134,18 @@ export const network = async (interactions: Interaction[]) => {
             /**
              * listeners on nodes layer.
              */
-            layers.nodes.on('click', e => {
+            nodes.on('click', e => {
                 e.cancelBubble = true
                 ui.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
             })
 
-            layers.nodes.on('dragmove', e => {
+            nodes.on('dragmove', e => {
                 e.target.getAttr('ref').fx = e.target.attrs.x
                 e.target.getAttr('ref').fy = e.target.attrs.y
                 simulation.restart(0.1)
             })
 
-            layers.nodes.on('dragend', () => {
+            nodes.on('dragend', () => {
                 simulation.stop()
             })
 
@@ -178,7 +159,59 @@ export const network = async (interactions: Interaction[]) => {
     }
 }
 
-const getNode = (n: Node) => {
+const style = {
+    nodes: {
+        radius: config.radius,
+        stroke: {
+            width: 1,
+            color: {
+                default: 'lightgrey',
+                selected: 'gold',
+            },
+        },
+        opacity: {
+            max: 1,
+            min: 0.2,
+        },
+    },
+    links: {
+        width: 1,
+        color: 'grey',
+        opacity: {
+            max: 1,
+            min: 0.2,
+        },
+    },
+    labels: {
+        font: {
+            size: 8,
+        }
+    }
+}
+
+const scale = scaleOrdinal(schemeSpectral[11])
+
+const getColorPicker = () => {
+    let first_viral_species: number | null = null
+
+    return (protein: Protein) => {
+        if (protein.type === 'h') {
+            return 'blue'
+        }
+
+        if (first_viral_species === null) {
+            first_viral_species = protein.species.ncbi_taxon_id
+        }
+
+        if (protein.species.ncbi_taxon_id === first_viral_species) {
+            return 'red'
+        }
+
+        return scale(protein.species.ncbi_taxon_id.toString())
+    }
+}
+
+const getNodeCircle = (n: Node) => {
     const node = new Konva.Circle({
         radius: config.radius,
         fill: n.data.color,
@@ -221,7 +254,7 @@ const getDrawNode = (ui: { isNodeSelected: (n: Node) => boolean, isNodeInNeighbo
     }
 }
 
-const getLabel = (n: Node) => {
+const getNodeLabel = (n: Node) => {
     const label = new Konva.Text({
         text: n.data.name,
         fontSize: style.labels.font.size,
@@ -253,7 +286,7 @@ const getDrawLabel = (ui: { isNodeInNeighborhood: (n: Node) => boolean, getLabel
     }
 }
 
-const getLink = (l: Link) => {
+const getLinkLine = (l: Link) => {
     const link = new Konva.Line({
         stroke: style.links.color,
         strokeWidth: style.links.width,
@@ -292,42 +325,73 @@ const getDrawLink = (ui: { isLinkInNeighborhood: (l: Link) => boolean }) => {
     }
 }
 
-const getData = async (simulation: { nodes: Node[], links: Link[] }): Promise<[Konva.Circle[], Konva.Text[], Konva.Line[]]> => {
-    const addN = new Promise<[Konva.Circle[], Konva.Text[]]>(resolve => {
-        const nodes: Konva.Circle[] = []
-        const labels: Konva.Text[] = []
+const parse = (interactions: Interaction[]) => {
+    const circles: Konva.Circle[] = []
+    const labels: Konva.Text[] = []
+    const lines: Konva.Line[] = []
+    const links: Link[] = []
+    const map: Record<string, Node> = {}
+    const associations: Record<string, boolean> = {}
 
-        const add = (i: number) => setTimeout(() => {
-            if (i === simulation.nodes.length) {
-                resolve([nodes, labels])
-            } else {
-                let k = 0
-                for (let j = i; j < simulation.nodes.length && k < 100; j++, k++) {
-                    nodes.push(getNode(simulation.nodes[j]))
-                    labels.push(getLabel(simulation.nodes[j]))
-                }
-                add(i + k)
+    const color = getColorPicker()
+
+    const registerNode = (protein: Protein) => {
+        const nodeid = `${protein.species.ncbi_taxon_id}:${protein.name}`
+
+        let node = map[nodeid] ?? null
+
+        if (node === null) {
+            node = map[nodeid] = {
+                id: nodeid,
+                data: {
+                    type: protein.type,
+                    name: protein.name,
+                    color: color(protein),
+                    species: protein.species,
+                    proteins: {},
+                },
+                selection: {},
             }
-        })
+
+            circles.push(getNodeCircle(node))
+            labels.push(getNodeLabel(node))
+        }
+
+        if (!node.data.proteins[protein.id]) {
+            node.data.proteins[protein.id] = protein
+        }
+
+        return node
+    }
+
+    return new Promise<{ data: Data, display: Display }>(resolve => {
+        const add = (i: number) => {
+            setTimeout(() => {
+                if (i === interactions.length) {
+                    resolve({
+                        data: { nodes: Object.values(map), links },
+                        display: { nodes: circles, labels: labels, links: lines },
+                    })
+                } else {
+                    let k = 0
+                    for (let j = i; j < interactions.length && k < 100; j++, k++) {
+                        const node1 = registerNode(interactions[j].protein1)
+                        const node2 = registerNode(interactions[j].protein2)
+
+                        if (!associations[`${node1.id}:${node2.id}`]) {
+                            const link = { source: node1, target: node2, selection: {} }
+
+                            links.push(link)
+                            lines.push(getLinkLine(link))
+
+                            associations[`${node1.id}:${node2.id}`] = true
+                            associations[`${node2.id}:${node1.id}`] = true
+                        }
+                    }
+                    add(i + k)
+                }
+            })
+        }
         add(0)
     })
-
-    const addL = new Promise<Konva.Line[]>(resolve => {
-        const links: Konva.Line[] = []
-
-        const add = (i: number) => setTimeout(() => {
-            if (i === simulation.links.length) {
-                resolve(links)
-            } else {
-                let k = 0
-                for (let j = i; j < simulation.links.length && k < 100; j++, k++) {
-                    links.push(getLink(simulation.links[j]))
-                }
-                add(i + k)
-            }
-        })
-        add(0)
-    })
-
-    return Promise.all([addN, addL]).then(values => [values[0][0], values[0][1], values[1]])
 }
