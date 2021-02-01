@@ -70,6 +70,7 @@ export type ResultNav = {
         offsets: Record<ProteinTab, number>
     }
     network: {
+        warning: boolean
         ratio: number
         labels: boolean
     }

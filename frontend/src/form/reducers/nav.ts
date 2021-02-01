@@ -14,6 +14,7 @@ const initialState: ResultNav = {
         offsets: { a: 0, h: 0, v: 0 },
     },
     network: {
+        warning: true,
         ratio: config.ratio,
         labels: false,
     }
@@ -35,9 +36,6 @@ export const { reducer, actions } = createSlice({
                 state.interactions.offset = action.payload.offset
             },
         },
-        resetInteractionsOffset: (state) => {
-            state.interactions.offset = 0
-        },
         setProteinsTab: {
             prepare: (tab: ProteinTab) => ({ payload: { tab } }),
             reducer: (state, action: PayloadAction<{ tab: ProteinTab }>) => {
@@ -52,8 +50,8 @@ export const { reducer, actions } = createSlice({
                 state.proteins.offsets[state.proteins.tab] = action.payload.offset
             },
         },
-        resetProteinsOffsets: (state) => {
-            state.proteins.offsets = { a: 0, h: 0, v: 0 }
+        bypassWarning: state => {
+            state.network.warning = false
         },
         setNetworkRatio: {
             prepare: (ratio: number) => ({ payload: { ratio } }),

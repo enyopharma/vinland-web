@@ -24,7 +24,11 @@ export const reducer: Reducer<PageState> = (state: PageState | undefined, action
             current: 0,
             offsets: { a: 0, h: 0, v: 0 },
         },
-        network: rawNav.network,
+        network: {
+            warning: true,
+            ratio: rawNav.network.ratio,
+            labels: rawNav.network.labels,
+        },
     }
 
     return { key, identifiers: { lists, parsed }, taxonomy, options, nav }

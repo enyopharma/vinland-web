@@ -38,17 +38,17 @@ const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ c
                 <li className="nav-item">
                     <ResultTabLink tab="interactions">
                         Interactions
-                        </ResultTabLink>
+                    </ResultTabLink>
                 </li>
                 <li className="nav-item">
                     <ResultTabLink tab="proteins">
                         Proteins
-                        </ResultTabLink>
+                    </ResultTabLink>
                 </li>
                 <li className="nav-item">
                     <ResultTabLink tab="network">
                         Network
-                        </ResultTabLink>
+                    </ResultTabLink>
                 </li>
             </ul>
         </div>
@@ -128,6 +128,20 @@ type NetworkCardBodyFetcherProps = {
 }
 
 const NetworkCardBodyFetcher: React.FC<NetworkCardBodyFetcherProps> = ({ cache }) => {
+    const warning = useSelector(state => state.nav.network.warning)
+    const bypass = useActionCreator(actions.bypassWarning)
+
+    if (cache.interactions.length > 1000 && warning) {
+        return (
+            <div className="card-body">
+                Displaying a network of {cache.interactions.length} interactions can be very slow.
+                <button type="button" className="btn btn-link" onClick={() => bypass()}>
+                    Display anyway.
+                </button>
+            </div>
+        )
+    }
+
     const network = cache.network();
 
     return <NetworkCardBody network={network} />
