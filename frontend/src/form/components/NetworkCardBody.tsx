@@ -170,9 +170,9 @@ const NetworkContainer: React.FC<NetworkContainerProps> = ({ network }) => {
     useEffect(() => {
         if (!ref.current) return
 
-        const stage = network.container(ref.current)
+        network.container(ref.current)
 
-        return () => { stage.remove() }
+        return () => { network.remove() }
     }, [network])
 
     return <div ref={ref}></div>

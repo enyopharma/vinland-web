@@ -18,7 +18,21 @@ type Display = {
     links: Konva.Line[]
 }
 
+let ref: Konva.Stage | null = null
+
 export const network = async (interactions: Interaction[]) => {
+    /**
+     * Destroy the ref when not empty.
+     */
+    if (ref !== null) ref.destroy()
+
+    /**
+     * Prepare the data.
+     */
+    let scale = 1
+    let posX: number | null = null
+    let posY: number | null = null
+
     const { data, display } = await parse(interactions)
 
     const simulation = getSimulation(data)
@@ -26,7 +40,7 @@ export const network = async (interactions: Interaction[]) => {
     const ui = getUi(data)
 
     /**
-     * Set up the layers, elements and listeners.
+     * Create layers and add elements to it.
      */
     const nodes = new Konva.Layer()
     const labels = new Konva.FastLayer()
@@ -37,17 +51,27 @@ export const network = async (interactions: Interaction[]) => {
     links.add(...display.links)
 
     /**
-     * return public api.
+     * Add listener on nodes layer.
      */
-    let ref: Konva.Stage | null = null
+    nodes.on('click', e => {
+        console.log('click', Math.random())
+        e.cancelBubble = true
+        ui.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
+    })
+
+    nodes.on('dragmove', e => {
+        e.target.getAttr('ref').fx = e.target.attrs.x
+        e.target.getAttr('ref').fy = e.target.attrs.y
+        simulation.restart(0.1)
+    })
+
+    nodes.on('dragend', () => {
+        simulation.stop()
+    })
 
     /**
-     * Session scale and pos variables.
+     * return public api.
      */
-    let scale = 1
-    let posX: number | null = null
-    let posY: number | null = null
-
     return {
         setRatio: simulation.setRatio,
         setLabels: ui.setLabelsVisibility,
@@ -68,8 +92,7 @@ export const network = async (interactions: Interaction[]) => {
         },
         remove: () => {
             if (ref === null) return
-            ref.removeChildren()
-            ref.destroy()
+            ref.remove()
         },
         container: (container: HTMLDivElement) => {
             const width = container.clientWidth
@@ -132,29 +155,14 @@ export const network = async (interactions: Interaction[]) => {
             })
 
             /**
-             * listeners on nodes layer.
-             */
-            nodes.on('click', e => {
-                e.cancelBubble = true
-                ui.toggle(e.target.getAttr('ref'), e.evt.shiftKey)
-            })
-
-            nodes.on('dragmove', e => {
-                e.target.getAttr('ref').fx = e.target.attrs.x
-                e.target.getAttr('ref').fy = e.target.attrs.y
-                simulation.restart(0.1)
-            })
-
-            nodes.on('dragend', () => {
-                simulation.stop()
-            })
-
-            /**
              * start the simulation.
              */
             simulation.start()
 
-            return ref = stage
+            /**
+             * assign the stage to the ref
+             */
+            ref = stage
         }
     }
 }
