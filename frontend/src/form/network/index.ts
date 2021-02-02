@@ -108,14 +108,14 @@ export const network = async (interactions: Interaction[]) => {
                 draggable: true,
             })
 
-            stage.add(labels)
             stage.add(links)
             stage.add(nodes)
+            stage.add(labels)
 
             const update = () => {
+                links.find<Konva.Line>('Line').each(getDrawLink(ui))
                 nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
                 labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
-                links.find<Konva.Line>('Line').each(getDrawLink(ui))
                 stage.batchDraw()
             }
 
