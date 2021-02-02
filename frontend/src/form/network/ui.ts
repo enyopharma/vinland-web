@@ -98,6 +98,8 @@ export const getUi = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
         return l.selection.neighborhood === current
     }
 
+    const isLabelVisible = (n: Node) => isNodeInNeighborhood(n) && labels
+
     const onSelection = (fn: () => void) => { selectionListener = fn }
 
     const register = (fn: () => any) => { updateListener = fn }
@@ -127,8 +129,6 @@ export const getUi = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
             proteins: Object.values(n.data.proteins).sort((a, b) => a.id - b.id),
         }))
 
-    const getLabelsVisibility = () => labels
-
     const setLabelsVisibility = (value: boolean) => {
         if (value === labels) return
         labels = value
@@ -144,9 +144,9 @@ export const getUi = ({ nodes, links }: { nodes: Node[], links: Link[] }) => {
         isNodeSelected,
         isNodeInNeighborhood,
         isLinkInNeighborhood,
+        isLabelVisible,
         onSelection,
         getSelection,
-        getLabelsVisibility,
         setLabelsVisibility,
         register,
     }

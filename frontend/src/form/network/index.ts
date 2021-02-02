@@ -112,15 +112,19 @@ export const network = async (interactions: Interaction[]) => {
             stage.add(nodes)
             stage.add(labels)
 
-            const update = () => {
+            ui.register(() => {
                 links.find<Konva.Line>('Line').each(getDrawLink(ui))
                 nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
                 labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
                 stage.batchDraw()
-            }
+            })
 
-            ui.register(update)
-            simulation.register(update)
+            simulation.register(() => {
+                links.find<Konva.Line>('Line').each(moveLink)
+                nodes.find<Konva.Circle>('Circle').each(moveNode)
+                labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
+                stage.batchDraw()
+            })
 
             /**
              * listeners on stage.
@@ -237,27 +241,32 @@ const getNodeCircle = (n: Node) => {
     return node
 }
 
+const moveNode = (node: Konva.Circle) => {
+    const n = node.getAttr('ref')
+
+    if (n.x && n.y) {
+        node.x(n.x)
+        node.y(n.y)
+    }
+}
+
 const getDrawNode = (ui: { isNodeSelected: (n: Node) => boolean, isNodeInNeighborhood: (n: Node) => boolean }) => {
     return (node: Konva.Circle) => {
         const n = node.getAttr('ref')
 
-        if (n.x && n.y) {
-            const prevstroke = node.stroke()
-            const newstroke = ui.isNodeSelected(n)
-                ? style.nodes.stroke.color.selected
-                : style.nodes.stroke.color.default
-            const opacity = ui.isNodeInNeighborhood(n)
-                ? style.nodes.opacity.max
-                : style.nodes.opacity.min
+        const prevstroke = node.stroke()
+        const newstroke = ui.isNodeSelected(n)
+            ? style.nodes.stroke.color.selected
+            : style.nodes.stroke.color.default
+        const opacity = ui.isNodeInNeighborhood(n)
+            ? style.nodes.opacity.max
+            : style.nodes.opacity.min
 
-            node.x(n.x)
-            node.y(n.y)
-            node.stroke(newstroke)
-            node.opacity(opacity)
+        node.stroke(newstroke)
+        node.opacity(opacity)
 
-            if (prevstroke !== newstroke) {
-                node.cache({ pixelRatio: 2 })
-            }
+        if (prevstroke !== newstroke) {
+            node.cache({ pixelRatio: 2 })
         }
     }
 }
@@ -280,17 +289,18 @@ const getNodeLabel = (n: Node) => {
     return label
 }
 
-const getDrawLabel = (ui: { isNodeInNeighborhood: (n: Node) => boolean, getLabelsVisibility: () => boolean }) => {
+const getDrawLabel = (ui: { isLabelVisible: (n: Node) => boolean }) => {
     return (label: Konva.Text) => {
         const n = label.getAttr('ref')
 
-        if (n.x && n.y) {
-            const visibility = ui.isNodeInNeighborhood(n) && ui.getLabelsVisibility()
+        const visible = ui.isLabelVisible(n)
 
+        if (visible && n.x && n.y) {
             label.x(n.x + config.radius + style.nodes.stroke.width)
             label.y(n.y - (config.radius / 2))
-            label.visible(visibility)
         }
+
+        label.visible(visible)
     }
 }
 
@@ -311,25 +321,31 @@ const getLinkLine = (l: Link) => {
     return link
 }
 
+const moveLink = (link: Konva.Line) => {
+    const l = link.getAttr('ref')
+
+    if (l.source.x && l.source.y && l.target.x && l.target.y) {
+        const points = [l.source.x, l.source.y]
+        const tension = l.source === l.target ? 0.5 : 0
+
+        l.source === l.target
+            ? points.push(l.target.x + 5, l.target.y + 20, l.target.x, l.target.y + 30, l.target.x - 5, l.target.y + 20)
+            : points.push(l.target.x, l.target.y)
+
+        link.points(points)
+        link.tension(tension)
+    }
+}
+
 const getDrawLink = (ui: { isLinkInNeighborhood: (l: Link) => boolean }) => {
     return (link: Konva.Line) => {
         const l = link.getAttr('ref')
 
-        if (l.source.x && l.source.y && l.target.x && l.target.y) {
-            const points = [l.source.x, l.source.y]
-            const tension = l.source === l.target ? 0.5 : 0
-            const opacity = ui.isLinkInNeighborhood(l)
-                ? style.links.opacity.max
-                : style.links.opacity.min
+        const opacity = ui.isLinkInNeighborhood(l)
+            ? style.links.opacity.max
+            : style.links.opacity.min
 
-            l.source === l.target
-                ? points.push(l.target.x + 5, l.target.y + 20, l.target.x, l.target.y + 30, l.target.x - 5, l.target.y + 20)
-                : points.push(l.target.x, l.target.y)
-
-            link.points(points)
-            link.tension(tension)
-            link.opacity(opacity)
-        }
+        link.opacity(opacity)
     }
 }
 
