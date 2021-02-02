@@ -17,7 +17,7 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
         <div className="card-body">
             <div className="row">
                 <div className="col">
-                    <button type="button" className="btn btn-block btn-primary" onClick={() => network.save()}>
+                    <button type="button" className="btn btn-block btn-primary" onClick={() => download(network)}>
                         Save image
                     </button>
                 </div>
@@ -53,7 +53,7 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
                 </div>
             </div>
         </div>
-    </React.Fragment>
+    </React.Fragment >
 )
 
 type LabelsButtonProps = {
@@ -176,4 +176,16 @@ const NetworkContainer: React.FC<NetworkContainerProps> = ({ network }) => {
     }, [network])
 
     return <div ref={ref}></div>
+}
+
+const download = (network: Network) => {
+    const data = network.image()
+
+    if (!data) return
+
+    const elem = document.createElement('a')
+    elem.download = 'network.png'
+    elem.href = data
+    elem.target = '_blank';
+    elem.click()
 }

@@ -36,7 +36,7 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins }) =>
                     </div>
                     <div className="col">
                         <p className="text-right">
-                            <CsvDownloadButton csv={() => proteins2csv(filtered)} enabled={filtered.length > 0}>
+                            <CsvDownloadButton name="proteins.tsv" csv={() => proteins2csv(filtered)} enabled={filtered.length > 0}>
                                 Download as csv
                             </CsvDownloadButton>
                         </p>

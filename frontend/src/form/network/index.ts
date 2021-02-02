@@ -86,9 +86,9 @@ export const network = async (interactions: Interaction[]) => {
             ref.height(width * 1 / 2)
             ref.batchDraw()
         },
-        save: () => {
+        image: () => {
             if (ref === null) return
-            window.open(ref.toDataURL({ pixelRatio: 2 }))
+            return ref.toDataURL({ pixelRatio: 2 })
         },
         remove: () => {
             if (ref === null) return

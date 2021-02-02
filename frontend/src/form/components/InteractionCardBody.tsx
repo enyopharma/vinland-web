@@ -18,7 +18,7 @@ export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ intera
     <React.Fragment>
         <div className="card-body">
             <p className="text-right">
-                <CsvDownloadButton csv={() => interactions2csv(interactions)} enabled={interactions.length > 0}>
+                <CsvDownloadButton name="interactions.tsv" csv={() => interactions2csv(interactions)} enabled={interactions.length > 0}>
                     Download as csv
                 </CsvDownloadButton>
             </p>
