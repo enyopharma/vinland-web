@@ -73,8 +73,6 @@ final class InteractionViewSql implements InteractionViewInterface
     {
         $select_interaction_sth = $this->pdo->prepare(self::SELECT_INTERACTION_SQL);
 
-        if ($select_interaction_sth === false) throw new \Exception;
-
         $select_interaction_sth->execute([$id]);
 
         return Statement::from($select_interaction_sth);
@@ -111,11 +109,11 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_proteins_sth = $this->pdo->prepare(self::SELECT_HUMAN_PROTEINS_SQL);
 
-        if ($select_proteins_sth === false) throw new \Exception;
-
         $select_proteins_sth->execute(['{' . implode(',', $identifiers) . '}']);
 
-        return $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
+        return ($proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN))
+            ? $proteins
+            : throw new Exception('fetchall ?');
     }
 
     private function viralProteinIds(int $ncbi_taxon_id, string ...$names): array
@@ -125,8 +123,6 @@ final class InteractionViewSql implements InteractionViewInterface
         }
 
         $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
-
-        if ($select_taxon_sth === false) throw new \Exception;
 
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
@@ -138,8 +134,6 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_proteins_sth = $this->pdo->prepare(self::SELECT_VIRAL_PROTEINS_SQL);
 
-        if ($select_proteins_sth === false) throw new \Exception;
-
         $select_proteins_sth->execute([
             $taxon['left_value'],
             $taxon['right_value'],
@@ -147,7 +141,9 @@ final class InteractionViewSql implements InteractionViewInterface
             '{' . implode(',', ($names)) . '}',
         ]);
 
-        return $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
+        return ($proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN))
+            ? $proteins
+            : throw new Exception('fetchall ?');
     }
 
     private function HHInteractions(array $ids, int $nb_publications, int $nb_methods, bool $neighbors): iterable
@@ -157,8 +153,6 @@ final class InteractionViewSql implements InteractionViewInterface
         }
 
         $select_interactions_sth = $this->pdo->prepare(self::SELECT_HH_INTERACTIONS_SQL);
-
-        if ($select_interactions_sth === false) throw new \Exception;
 
         $select_interactions_sth->execute([
             $nb_publications,
@@ -178,8 +172,6 @@ final class InteractionViewSql implements InteractionViewInterface
         }
 
         $select_interactions_sth = $this->pdo->prepare(self::SELECT_VH_INTERACTIONS_SQL);
-
-        if ($select_interactions_sth === false) throw new \Exception;
 
         $select_interactions_sth->execute([
             $nb_publications,

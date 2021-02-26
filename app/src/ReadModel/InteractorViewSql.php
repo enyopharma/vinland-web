@@ -47,17 +47,15 @@ final class InteractorViewSql implements InteractorViewInterface
             ? $this->pdo->prepare(self::SELECT_H_INTERACTORS_SQL)
             : $this->pdo->prepare(self::SELECT_V_INTERACTORS_SQL);
 
-        if ($select_interactors_sth === false) throw new \Exception;
-
         $select_interactors_sth->execute([$protein_id]);
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
-        if ($select_mappings_sth === false) throw new \Exception;
-
         $select_mappings_sth->execute([$type, $protein_id]);
 
-        $mappings = $select_mappings_sth->fetchAll();
+        $mappings = ($rows = $select_mappings_sth->fetchAll())
+            ? $rows
+            : throw new Exception('fetchall ?');
 
         return Statement::from($this->generator($select_interactors_sth, $mappings));
     }

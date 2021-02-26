@@ -27,8 +27,6 @@ final class AnnotationViewSql implements AnnotationViewInterface
 
         $select_annotations_sth = $this->pdo->prepare(self::SELECT_ANNOTATIONS_SQL);
 
-        if ($select_annotations_sth === false) throw new \Exception;
-
         $select_annotations_sth->execute([$source, '{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($this->generator($select_annotations_sth));

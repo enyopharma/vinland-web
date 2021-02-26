@@ -29,17 +29,15 @@ final class DescriptionViewSql implements DescriptionViewInterface
     {
         $select_descriptions_sth = $this->pdo->prepare(self::SELECT_DESCRIPTIONS_SQL);
 
-        if ($select_descriptions_sth === false) throw new \Exception;
-
         $select_descriptions_sth->execute([$interaction_id]);
 
         $select_mappings_sth = $this->pdo->prepare(self::SELECT_MAPPINGS_SQL);
 
-        if ($select_mappings_sth === false) throw new \Exception;
-
         $select_mappings_sth->execute([$interaction_id]);
 
-        $mappings = $select_mappings_sth->fetchAll();
+        $mappings = ($rows = $select_mappings_sth->fetchAll())
+            ? $rows
+            : throw new Exception('fetchall ?');
 
         return Statement::from($this->generator($select_descriptions_sth, $mappings));
     }

@@ -26,8 +26,6 @@ final class IsoformViewSql implements IsoformViewInterface
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_ISOFORM_SQL);
 
-        if ($select_isoform_sth === false) throw new \Exception;
-
         $select_isoform_sth->execute([$protein_id, $id]);
 
         return Statement::from($select_isoform_sth);
@@ -37,8 +35,6 @@ final class IsoformViewSql implements IsoformViewInterface
     {
         $select_isoforms_sth = $this->pdo->prepare(self::SELECT_ISOFORMS_SQL);
 
-        if ($select_isoforms_sth === false) throw new \Exception;
-
         $select_isoforms_sth->execute([$protein_id]);
 
         return Statement::from($select_isoforms_sth);
@@ -47,8 +43,6 @@ final class IsoformViewSql implements IsoformViewInterface
     public function canonical(int $protein_id): Statement
     {
         $select_isoform_sth = $this->pdo->prepare(self::SELECT_CANONICAL_SQL);
-
-        if ($select_isoform_sth === false) throw new \Exception;
 
         $select_isoform_sth->execute([$protein_id]);
 

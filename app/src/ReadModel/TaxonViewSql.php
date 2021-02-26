@@ -44,8 +44,6 @@ final class TaxonViewSql implements TaxonViewInterface
     {
         $select_taxon_sth = $this->pdo->prepare(self::SELECT_TAXON_SQL);
 
-        if ($select_taxon_sth === false) throw new \Exception;
-
         $select_taxon_sth->execute([$ncbi_taxon_id]);
 
         if (!$taxon = $select_taxon_sth->fetch()) {
@@ -73,8 +71,6 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_taxa_sth = $this->pdo->prepare(self::SELECT_TAXA_SQL);
 
-        if ($select_taxa_sth === false) throw new \Exception;
-
         $select_taxa_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
         return Statement::from($select_taxa_sth);
@@ -83,8 +79,6 @@ final class TaxonViewSql implements TaxonViewInterface
     private function parent(int $taxon_id): ?array
     {
         $select_parent_sth = $this->pdo->prepare(self::SELECT_PARENT_SQL);
-
-        if ($select_parent_sth === false) throw new \Exception;
 
         $select_parent_sth->execute([$taxon_id]);
 
@@ -97,21 +91,21 @@ final class TaxonViewSql implements TaxonViewInterface
     {
         $select_children_sth = $this->pdo->prepare(self::SELECT_CHILDREN_SQL);
 
-        if ($select_children_sth === false) throw new \Exception;
-
         $select_children_sth->execute([$taxon_id]);
 
-        return $select_children_sth->fetchAll();
+        return ($taxa = $select_children_sth->fetchAll())
+            ? $taxa
+            : throw new Exception('fetchall ?');
     }
 
     private function names(int $left_value, int $right_value): array
     {
         $select_names_sth = $this->pdo->prepare(self::SELECT_NAMES_SQL);
 
-        if ($select_names_sth === false) throw new \Exception;
-
         $select_names_sth->execute([$left_value, $right_value]);
 
-        return $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
+        return ($names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN))
+            ? $names
+            : throw new Exception('fetchall ?');
     }
 }

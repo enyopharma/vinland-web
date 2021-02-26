@@ -41,8 +41,6 @@ final class ProteinViewSql implements ProteinViewInterface
     {
         $select_protein_sth = $this->pdo->prepare(self::SELECT_PROTEIN_SQL);
 
-        if ($select_protein_sth === false) throw new \Exception;
-
         $select_protein_sth->execute([$id]);
 
         $proteins = ($protein = $select_protein_sth->fetch()) ? [$protein] : [];
@@ -64,8 +62,6 @@ final class ProteinViewSql implements ProteinViewInterface
         $select_proteins_sth = $type == 'h'
             ? $this->pdo->prepare(self::SELECT_HUMAN_PROTEINS_SQL)
             : $this->pdo->prepare(self::SELECT_VIRAL_PROTEINS_SQL);
-
-        if ($select_proteins_sth === false) throw new \Exception;
 
         $select_proteins_sth->execute(['{' . implode(',', $qs) . '}', $limit]);
 
