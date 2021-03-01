@@ -35,9 +35,11 @@ final class DescriptionViewSql implements DescriptionViewInterface
 
         $select_mappings_sth->execute([$interaction_id]);
 
-        $mappings = ($rows = $select_mappings_sth->fetchAll())
-            ? $rows
-            : throw new Exception('fetchall ?');
+        $mappings = $select_mappings_sth->fetchAll();
+
+        if ($mappings === false) {
+            throw new \Exception('fetchall ?');
+        }
 
         return Statement::from($this->generator($select_descriptions_sth, $mappings));
     }

@@ -111,9 +111,13 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $select_proteins_sth->execute(['{' . implode(',', $identifiers) . '}']);
 
-        return ($proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN))
-            ? $proteins
-            : throw new Exception('fetchall ?');
+        $proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($proteins === false) {
+            throw new \Exception('fetchall ?');
+        }
+
+        return $proteins;
     }
 
     private function viralProteinIds(int $ncbi_taxon_id, string ...$names): array
@@ -141,9 +145,13 @@ final class InteractionViewSql implements InteractionViewInterface
             '{' . implode(',', ($names)) . '}',
         ]);
 
-        return ($proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN))
-            ? $proteins
-            : throw new Exception('fetchall ?');
+        $proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($proteins === false) {
+            throw new \Exception('fetchall ?');
+        }
+
+        return $proteins;
     }
 
     private function HHInteractions(array $ids, int $nb_publications, int $nb_methods, bool $neighbors): iterable

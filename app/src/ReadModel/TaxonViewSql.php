@@ -93,9 +93,13 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_children_sth->execute([$taxon_id]);
 
-        return ($taxa = $select_children_sth->fetchAll())
-            ? $taxa
-            : throw new Exception('fetchall ?');
+        $taxa = $select_children_sth->fetchAll();
+
+        if ($taxa === false) {
+            throw new \Exception('fetchall ?');
+        }
+
+        return $taxa;
     }
 
     private function names(int $left_value, int $right_value): array
@@ -104,8 +108,12 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $select_names_sth->execute([$left_value, $right_value]);
 
-        return ($names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN))
-            ? $names
-            : throw new Exception('fetchall ?');
+        $names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ($names === false) {
+            throw new \Exception('fetchall ?');
+        }
+
+        return $names;
     }
 }
