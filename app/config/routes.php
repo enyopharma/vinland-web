@@ -75,7 +75,6 @@ return function (ContainerInterface $container): array {
         ),
 
         'POST /interactions' => [
-            new Middlewares\JsonPayload,
             new App\Middleware\InputValidationMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
                 App\Input\InteractionQueryInput::factory(),

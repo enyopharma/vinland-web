@@ -65,4 +65,14 @@ return Quanta\Http\Dispatcher::queue(
      * Return a not found response.
      */
     new Quanta\Http\NotFoundMiddleware($factory),
+
+    /**
+     * Parse json payload.
+     */
+    new Middlewares\JsonPayload,
+
+    /**
+     * Actualy handle the request with the matched handler.
+     */
+    new Quanta\Http\RequestHandlerMiddleware,
 );
