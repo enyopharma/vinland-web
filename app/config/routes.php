@@ -11,18 +11,18 @@ use Psr\Container\ContainerInterface;
  * @return \Psr\Http\Server\RequestHandlerInterface[]
  */
 return function (ContainerInterface $container): array {
-    $responder = new Quanta\Http\Responder(
-        $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-    );
+    $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
 
-    $handler = function ($xs) use ($responder) {
-        [$f, $middleware] = is_array($xs) ? [array_shift($xs), $xs] : [$xs, []];
+    $serializer = new Quanta\Http\MetadataSerializer('data', ['code' => 200, 'success' => true]);
+
+    $handler = function ($xs) use ($factory, $serializer) {
+        [$f, $middleware] = is_array($xs) ? [array_pop($xs), $xs] : [$xs, []];
 
         if (!is_callable($f)) {
             throw new \LogicException('invalid endpoint');
         }
 
-        $endpoint = new Quanta\Http\Endpoint($responder, $f);
+        $endpoint = new Quanta\Http\Endpoint($factory, $f, $serializer);
 
         return count($middleware) > 0
             ? Quanta\Http\RequestHandler::queue($endpoint, ...$middleware)
@@ -75,13 +75,13 @@ return function (ContainerInterface $container): array {
         ),
 
         'POST /interactions' => [
-            new App\Endpoints\Interactions\IndexEndpoint(
-                $container->get(App\ReadModel\InteractionViewInterface::class),
-            ),
             new Middlewares\JsonPayload,
             new App\Middleware\InputValidationMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
                 App\Input\InteractionQueryInput::factory(),
+            ),
+            new App\Endpoints\Interactions\IndexEndpoint(
+                $container->get(App\ReadModel\InteractionViewInterface::class),
             ),
         ],
     ]);

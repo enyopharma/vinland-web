@@ -15,12 +15,14 @@ final class IndexEndpoint
         private DescriptionViewInterface $descriptions,
     ) {}
 
-    public function __invoke(callable $input): iterable|false
+    public function __invoke(callable $input): iterable|null
     {
         $interaction_id = (int) $input('interaction_id');
 
-        return $this->interactions->id($interaction_id)->fetch()
-            ? $this->descriptions->all($interaction_id)
-            : false;
+        if (!$this->interactions->id($interaction_id)->fetch()) {
+            return null;
+        }
+
+        return $this->descriptions->all($interaction_id);
     }
 }

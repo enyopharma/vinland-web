@@ -15,17 +15,19 @@ final class IndexEndpoint
         private InteractorViewInterface $interactors,
     ) {}
 
-    public function __invoke(callable $input): iterable|false
+    public function __invoke(callable $input): iterable|null
     {
         $type = $input('type');
         $protein_id = (int) $input('protein_id');
 
         if ($type != 'h' && $type != 'v') {
-            return false;
+            return null;
         }
 
-        return $this->proteins->id($protein_id)->fetch()
-            ? $this->interactors->all($type, $protein_id)
-            : false;
+        if (!$this->proteins->id($protein_id)->fetch()) {
+            return null;
+        }
+
+        return $this->interactors->all($type, $protein_id);
     }
 }

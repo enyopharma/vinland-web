@@ -12,13 +12,17 @@ final class ShowEndpoint
         private TaxonViewInterface $taxa,
     ) {}
 
-    public function __invoke(callable $input): array|false
+    public function __invoke(callable $input): array|null
     {
         $ncbi_taxon_id = (int) $input('ncbi_taxon_id');
         $option = $input('option', null);
 
         $with = is_null($option) ? [] : [$option];
 
-        return $this->taxa->id($ncbi_taxon_id, ...$with)->fetch();
+        if (!$taxon = $this->taxa->id($ncbi_taxon_id, ...$with)->fetch()) {
+            return null;
+        }
+
+        return $taxon;
     }
 }

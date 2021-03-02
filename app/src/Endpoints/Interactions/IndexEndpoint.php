@@ -18,7 +18,7 @@ final class IndexEndpoint
         private InteractionViewInterface $interactions,
     ) {}
 
-    public function __invoke(callable $input, callable $responder): ResponseInterface|iterable
+    public function __invoke(callable $input, callable $responder): ResponseInterface
     {
         $query = $input('input');
 
@@ -28,16 +28,21 @@ final class IndexEndpoint
 
         $complete = $query->isComplete();
 
-        $body = [
+        $data = [
             'code' => 200,
             'success' => true,
             'status' => $complete ? self::SUCCESS : self:: INCOMPLETE,
+            'data' => $complete
+                ? $this->interactions->all($query)->fetchAll()
+                : [],
         ];
 
-        if ($complete) {
-            $body['data'] = $this->interactions->all($query)->fetchAll();
-        }
+        $contents = json_encode($data, JSON_THROW_ON_ERROR);
 
-        return $responder(200, $body);
+        $response = $responder(200)->withHeader('content-type', 'application/json');
+
+        $response->getBody()->write($contents);
+
+        return $response;
     }
 }

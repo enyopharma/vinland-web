@@ -12,10 +12,14 @@ final class ShowEndpoint
         private ProteinViewInterface $proteins,
     ) {}
 
-    public function __invoke(callable $input): array|false
+    public function __invoke(callable $input): array|null
     {
         $protein_id = (int) $input('protein_id');
 
-        return $this->proteins->id($protein_id)->fetch();
+        if (!$protein = $this->proteins->id($protein_id)->fetch()) {
+            return null;
+        }
+
+        return $protein;
     }
 }

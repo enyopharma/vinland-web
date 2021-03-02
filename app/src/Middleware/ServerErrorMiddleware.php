@@ -30,7 +30,7 @@ final class ServerErrorMiddleware implements MiddlewareInterface
 
     public function serverErrorResponse(\Throwable $e): ResponseInterface
     {
-        $error = ! $this->debug ? [] : [
+        $error = !$this->debug ? [] : [
             'error' => [
                 'code' => $e->getCode(),
                 'type' => get_class($e),
@@ -41,11 +41,9 @@ final class ServerErrorMiddleware implements MiddlewareInterface
             ],
         ];
 
-        $contents = json_encode(['code' => 500, 'success' => false, 'data' => []] + $error);
+        $data = ['code' => 500, 'success' => false, 'data' => []] + $error;
 
-        if ($contents === false) {
-            throw new \Exception(json_last_error_msg());
-        }
+        $contents = json_encode($data, JSON_THROW_ON_ERROR);
 
         $response = $this->factory->createResponse(500);
 

@@ -14,12 +14,14 @@ final class IndexEndpoint
         private IsoformViewInterface $isoforms,
     ) {}
 
-    public function __invoke(callable $input): iterable|false
+    public function __invoke(callable $input): iterable|null
     {
         $protein_id = (int) $input('protein_id');
 
-        return $this->proteins->id($protein_id)->fetch()
-            ? $this->isoforms->all($protein_id)
-            : false;
+        if (!$this->proteins->id($protein_id)->fetch()) {
+            return null;
+        }
+
+        return $this->isoforms->all($protein_id);
     }
 }

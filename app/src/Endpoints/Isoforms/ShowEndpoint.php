@@ -14,13 +14,19 @@ final class ShowEndpoint
         private IsoformViewInterface $isoforms,
     ) {}
 
-    public function __invoke(callable $input): array|false
+    public function __invoke(callable $input): array|null
     {
         $protein_id = (int) $input('protein_id');
         $isoform_id = (int) $input('isoform_id');
 
-        return $this->proteins->id($protein_id)->fetch()
-            ? $this->isoforms->id($protein_id, $isoform_id)->fetch()
-            : false;
+        if (!$this->proteins->id($protein_id)->fetch()) {
+            return null;
+        }
+
+        if (!$isoform = $this->isoforms->id($protein_id, $isoform_id)->fetch()) {
+            return null;
+        }
+
+        return $isoform;
     }
 }
