@@ -33,7 +33,7 @@ $factory = $container->get(Psr\Http\Message\ResponseFactoryInterface::class);
 /**
  * Get the fast route dispatcher and build a router.
  */
-$router = new App\Adapters\FastRouteRouter(
+$router = new Quanta\Http\FastRouteRouter(
     $container->get(FastRoute\Dispatcher::class)
 );
 
