@@ -2,7 +2,7 @@
 FROM composer:2.0 as build-deps
 WORKDIR /var/www/html
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-suggest --no-interaction --prefer-dist --optimize-autoloader
+RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-req=php
 COPY . ./
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
