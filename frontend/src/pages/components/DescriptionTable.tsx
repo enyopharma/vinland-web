@@ -66,19 +66,19 @@ const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isofor
                     </span>
                 </td>
                 <td className="text-center">
-                    {clx1.length === 0 ? '-' : <MappingImg type={type1} width={width1} mappings={clx1[0]} />}
+                    {clx1.length === 0 ? '-' : <MappingImg type={type1} width={width1} mappables={clx1[0]} />}
                 </td>
                 <td className="text-center">
-                    {clx2.length === 0 ? '-' : <MappingImg type={type2} width={width2} mappings={clx2[0]} />}
+                    {clx2.length === 0 ? '-' : <MappingImg type={type2} width={width2} mappables={clx2[0]} />}
                 </td>
             </tr>
             {maxclx > 0 && [...Array(maxclx - 1)].map((_, i) => (
                 <tr key={i + 1}>
                     <td className="text-center">
-                        {clx1[i + 1] && <MappingImg type={type1} width={width1} mappings={clx1[i + 1]} />}
+                        {clx1[i + 1] && <MappingImg type={type1} width={width1} mappables={clx1[i + 1]} />}
                     </td>
                     <td className="text-center">
-                        {clx2[i + 1] && <MappingImg type={type2} width={width2} mappings={clx2[i + 1]} />}
+                        {clx2[i + 1] && <MappingImg type={type2} width={width2} mappables={clx2[i + 1]} />}
                     </td>
                 </tr>
             ))}

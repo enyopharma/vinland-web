@@ -65,3 +65,17 @@ export type Mapping = {
     identity: number
     sequence: string
 }
+
+export type Feature = {
+    type: string
+    description: string
+    sequence: string
+    start: number
+    stop: number
+}
+
+export type Mappable = {
+    start: number
+    stop: number
+    sequence: string
+}

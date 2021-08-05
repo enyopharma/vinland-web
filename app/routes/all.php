@@ -45,6 +45,13 @@ return function (ContainerInterface $container): array {
                 $container->get(App\ReadModel\IsoformViewInterface::class),
             ))),
 
+        Route::matching('/proteins/{protein_id:\d+}/isoforms/{isoform_id:\d+}/features')
+            ->get($endpoint(new App\Endpoints\Features\IndexEndpoint(
+                $container->get(App\ReadModel\ProteinViewInterface::class),
+                $container->get(App\ReadModel\IsoformViewInterface::class),
+                $container->get(App\ReadModel\FeatureViewInterface::class),
+            ))),
+
         Route::matching('/proteins/{protein_id:\d+}/interactors/{type:h|v}')
             ->get($endpoint(new App\Endpoints\Interactors\IndexEndpoint(
                 $container->get(App\ReadModel\ProteinViewInterface::class),

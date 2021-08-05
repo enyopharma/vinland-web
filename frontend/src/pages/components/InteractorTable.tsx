@@ -106,13 +106,13 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ type, isoform, interactor
                     </span>
                 </td>
                 <td className="text-center">
-                    {clx.length === 0 ? '-' : <MappingImg type={type} width={width} mappings={clx[0]} />}
+                    {clx.length === 0 ? '-' : <MappingImg type={type} width={width} mappables={clx[0]} />}
                 </td>
             </tr>
             {clx.slice(1).map((mappings, m) => (
                 <tr key={m + 1}>
                     <td className="text-center">
-                        <MappingImg type={type} width={width} mappings={mappings} />
+                        <MappingImg type={type} width={width} mappables={mappings} />
                     </td>
                 </tr>
             ))}

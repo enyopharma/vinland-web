@@ -1,42 +1,44 @@
 import React, { useState } from 'react'
 import Modal from 'react-bootstrap4-modal';
 
-import { Mapping } from '../types'
+import { Mappable } from '../types'
 
 const colors = {
     h: '#6CC3D5',
     v: '#FF7851',
+    f: '#FFCE67',
 }
 
 const btnclasses = {
     h: 'btn btn-block btn-info',
     v: 'btn btn-block btn-danger',
+    f: 'btn btn-block btn-warning',
 }
 
 type MappingImgProps = {
-    type: 'h' | 'v'
+    type: 'h' | 'v' | 'f'
     width: number
-    mappings: Mapping[]
+    mappables: Mappable[]
 }
 
-export const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappings }) => {
+export const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappables }) => {
     const [visible, setVisible] = useState<boolean>(false)
 
     return (
         <React.Fragment>
             <svg width="100%" height="30" onClick={() => setVisible(true)}>
                 <rect width="100%" y="14" height="2" style={{ fill: '#eee', strokeWidth: 0 }} />
-                {mappings.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
+                {mappables.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
             </svg>
-            <MappingModal type={type} visible={visible} mappings={mappings} close={() => setVisible(false)} />
+            <MappingModal type={type} visible={visible} mappables={mappables} close={() => setVisible(false)} />
         </React.Fragment>
     )
 }
 
 type MappingRectProps = {
-    type: 'h' | 'v'
+    type: 'h' | 'v' | 'f'
     width: number
-    mapping: Mapping
+    mapping: Mappable
 }
 
 const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
@@ -58,18 +60,18 @@ const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
 }
 
 type MappingModalProps = {
-    type: 'h' | 'v'
+    type: 'h' | 'v' | 'f'
     visible: boolean
-    mappings: Mapping[]
+    mappables: Mappable[]
     close: () => void
 }
 
-const MappingModal: React.FC<MappingModalProps> = ({ type, visible, mappings, close }) => (
+const MappingModal: React.FC<MappingModalProps> = ({ type, visible, mappables, close }) => (
     <Modal visible={visible} dialogClassName="modal-lg modal-dialog-centered" onClickBackdrop={close}>
         <div className="modal-header">
             <h5 className="modal-title">Mappings</h5>
         </div>
-        {mappings.map((mapping, i) => (
+        {mappables.map((mapping, i) => (
             <div key={i} className="modal-body text-left">
                 <h6>Sequence [{mapping.start} - {mapping.stop}]</h6>
                 <div className="form-group">
@@ -80,7 +82,7 @@ const MappingModal: React.FC<MappingModalProps> = ({ type, visible, mappings, cl
         <div className="modal-footer">
             <button type="button" className={btnclasses[type]} onClick={() => close()}>
                 close
-        </button>
+            </button>
         </div>
     </Modal>
 )

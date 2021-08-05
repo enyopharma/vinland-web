@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\ReadModel\TaxonViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
+use App\ReadModel\FeatureViewInterface;
 use App\ReadModel\AnnotationViewInterface;
 use App\ReadModel\InteractorViewInterface;
 use App\ReadModel\InteractionViewInterface;
@@ -20,6 +21,10 @@ return [
     ),
 
     IsoformViewInterface::class => fn ($c) => new App\ReadModel\IsoformViewSql(
+        $c->get(PDO::class),
+    ),
+
+    FeatureViewInterface::class => fn ($c) => new App\ReadModel\FeatureViewSql(
         $c->get(PDO::class),
     ),
 

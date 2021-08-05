@@ -2,13 +2,14 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { Protein, Isoform, Interactor, Interaction, Description } from './types'
+import { Protein, Isoform, Feature, Interactor, Interaction, Description } from './types'
 
 const limit = 20
 
 const protein = cache<Protein>()
 const proteins = cache<Protein[]>()
 const isoforms = cache<Isoform[]>()
+const features = cache<Feature[]>()
 const interactors = cache<Interactor[]>()
 const interaction = cache<Interaction>()
 const descriptions = cache<Description[]>()
@@ -27,6 +28,10 @@ export const resources = {
 
     isoforms: (id: number) => {
         return isoforms.resource(id, () => fetchIsoforms(id))
+    },
+
+    features: (protein_id: number, isoform_id: number) => {
+        return features.resource(`${protein_id}:${isoform_id}`, () => fetchFeatures(protein_id, isoform_id))
     },
 
     interactors: (protein_id: number, type: 'h' | 'v') => {
@@ -73,6 +78,19 @@ const fetchIsoforms = async (protein_id: number): Promise<Isoform[]> => {
     const params = { headers: { accept: 'application/json' } }
 
     const response = await fetch(`/api/proteins/${protein_id}/isoforms`, params)
+    const json = await response.json()
+
+    if (!json.success) {
+        throw new Error(json)
+    }
+
+    return json.data
+}
+
+const fetchFeatures = async (protein_id: number, isoform_id: number): Promise<Feature[]> => {
+    const params = { headers: { accept: 'application/json' } }
+    console.log(`/api/proteins/${protein_id}/isoforms/${isoform_id}/features`)
+    const response = await fetch(`/api/proteins/${protein_id}/isoforms/${isoform_id}/features`, params)
     const json = await response.json()
 
     if (!json.success) {
