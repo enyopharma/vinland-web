@@ -21,6 +21,7 @@ final class IndexEndpoint
     {
         $protein_id = (int) $input('protein_id');
         $isoform_id = (int) $input('isoform_id');
+        $types = array_values((array) $input('types', []));
 
         if (!$this->proteins->id($protein_id)->fetch()) {
             return null;
@@ -30,6 +31,6 @@ final class IndexEndpoint
             return null;
         }
 
-        return $this->features->all($isoform_id);
+        return $this->features->all($isoform_id, ...$types);
     }
 }
