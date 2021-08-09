@@ -6,5 +6,5 @@ namespace App\ReadModel;
 
 interface FeatureViewInterface
 {
-    public function all(int $isoform_id): Statement;
+    public function all(int $isoform_id, string ...$types): Statement;
 }
