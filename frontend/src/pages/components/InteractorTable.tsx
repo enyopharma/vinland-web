@@ -30,12 +30,12 @@ export const InteractorTable: React.FC<InteractorTableProps> = ({ type, isoform,
             <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
-                        <th className="text-center">-</th>
-                        <th className="text-center">Accession</th>
-                        <th className="text-center">Name</th>
+                        <th className="text-center" style={{ width: '8%' }}>-</th>
+                        <th className="text-center" style={{ width: '10%' }}>Accession</th>
+                        <th className="text-center" style={{ width: '10%' }}>Name</th>
                         <th className="text-center" style={{ width: '16%' }}>Taxon</th>
-                        <th className="text-center" style={{ width: '24%' }}>Description</th>
-                        <th className="text-center" style={{ width: '32%' }}>Mapping</th>
+                        <th className="text-center" style={{ width: '16%' }}>Description</th>
+                        <th className="text-center" style={{ width: '40%' }}>Mapping</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,18 +100,19 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ type, isoform, interactor
                         {interactor.protein.taxon}
                     </span>
                 </td>
-                <td className="ellipsis" rowSpan={rowspan}>
+                <td className="text-center ellipsis" rowSpan={rowspan}>
                     <span title={interactor.protein.description}>
                         {interactor.protein.description}
                     </span>
                 </td>
-                <td className="text-center">
-                    {clx.length === 0 ? '-' : <MappingImg type={type} width={width} mappables={clx[0]} />}
-                </td>
+                {clx.length === 0
+                    ? <td className="text-center">-</td>
+                    : <td><MappingImg type={type} width={width} mappables={clx[0]} /></td>
+                }
             </tr>
             {clx.slice(1).map((mappings, m) => (
                 <tr key={m + 1}>
-                    <td className="text-center">
+                    <td>
                         <MappingImg type={type} width={width} mappables={mappings} />
                     </td>
                 </tr>

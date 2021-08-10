@@ -52,6 +52,12 @@ return function (ContainerInterface $container): array {
                 $container->get(App\ReadModel\FeatureViewInterface::class),
             ))),
 
+        Route::matching('/proteins/{protein_id:\d+}/mappings/targeting')
+            ->get($endpoint(new App\Endpoints\Mappings\IndexEndpoint(
+                $container->get(App\ReadModel\ProteinViewInterface::class),
+                $container->get(App\ReadModel\MappingViewInterface::class),
+            ))),
+
         Route::matching('/proteins/{protein_id:\d+}/interactors/{type:h|v}')
             ->get($endpoint(new App\Endpoints\Interactors\IndexEndpoint(
                 $container->get(App\ReadModel\ProteinViewInterface::class),

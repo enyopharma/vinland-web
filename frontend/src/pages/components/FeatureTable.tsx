@@ -28,10 +28,10 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features })
             <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
-                        <th className="text-center">-</th>
-                        <th className="text-center">Type</th>
-                        <th className="text-center">Description</th>
-                        <th className="text-center" style={{ width: '32%' }}>Mapping</th>
+                        <th className="text-center" style={{ width: '8%' }}>-</th>
+                        <th className="text-center" style={{ width: '20%' }}>Type</th>
+                        <th className="text-center" style={{ width: '32%' }}>Description</th>
+                        <th className="text-center" style={{ width: '40%' }}>Mapping</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,22 +68,20 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ isoform, feature }) => {
     const width = isoform.sequence.length
 
     return (
-        <React.Fragment>
-            <tr key={0}>
-                <td className="text-center">
-                    -
-                </td>
-                <td className="text-center ellipsis">
-                    {feature.type}
-                </td>
-                <td className="ellipsis">
-                    <span title={feature.description}>{feature.description}</span>
-                </td>
-                <td className="text-center">
-                    <MappingImg type="f" width={width} mappables={[feature]} />
-                </td>
-            </tr>
-        </React.Fragment>
+        <tr key={0}>
+            <td className="text-center">
+                -
+            </td>
+            <td className="text-center ellipsis">
+                <span title={feature.type}>{feature.type}</span>
+            </td>
+            <td className="text-center ellipsis">
+                <span title={feature.description}>{feature.description}</span>
+            </td>
+            <td>
+                <MappingImg type="f" width={width} mappables={[feature]} />
+            </td>
+        </tr>
     )
 }
 

@@ -79,3 +79,19 @@ export type Mappable = {
     stop: number
     sequence: string
 }
+
+export type TargetingSequence = {
+    sequence: string
+    interaction: {
+        type: 'hh' | 'vh'
+        id: number
+    }
+    source: {
+        type: 'h' | 'v'
+        id: number
+        accession: string
+        name: string
+        ncbi_taxon_id: number
+        taxon: string
+    }
+}

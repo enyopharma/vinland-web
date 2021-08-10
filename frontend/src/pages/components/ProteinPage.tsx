@@ -5,70 +5,22 @@ import { ProteinLinkImg, Timeout, Dots } from 'partials'
 
 import { resources } from '../api'
 import { canonicalIndex } from '../utils'
-import { Resource, Protein, Isoform, Feature, Interactor } from '../types'
+import { Resource, Protein, Isoform, Feature, TargetingSequence, Interactor } from '../types'
 
 const FeatureTable = React.lazy(() => import('./FeatureTable').then(module => ({ default: module.FeatureTable })))
 const InteractorTable = React.lazy(() => import('./InteractorTable').then(module => ({ default: module.InteractorTable })))
 const IsoformSelectbox = React.lazy(() => import('./IsoformSelectbox').then(module => ({ default: module.IsoformSelectbox })))
-
-type RemoteData = {
-    protein: Protein
-    isoforms: Isoform[]
-}
-
-const getRemoteDataResource = (protein_id: number): Resource<RemoteData> => {
-    const p = resources.protein(protein_id)
-    const i = resources.isoforms(protein_id)
-
-    return {
-        read: () => ({
-            protein: p.read(),
-            isoforms: i.read(),
-        })
-    }
-}
-
-type RemoteDataH = {
-    features: Feature[]
-    hh: Interactor[]
-    vh: Interactor[]
-}
-
-const getRemoteDataResourceH = (protein_id: number, isoform_id: number): Resource<RemoteDataH> => {
-    const f = resources.features(protein_id, isoform_id);
-    const hh = resources.interactors(protein_id, 'h');
-    const vh = resources.interactors(protein_id, 'v');
-
-    return {
-        read: () => ({
-            features: f.read(),
-            hh: hh.read(),
-            vh: vh.read(),
-        })
-    }
-}
-
-type RemoteDataV = {
-    features: Feature[]
-    vh: Interactor[]
-}
-
-const getRemoteDataResourceV = (protein_id: number, isoform_id: number): Resource<RemoteDataV> => {
-    const f = resources.features(protein_id, isoform_id);
-    const vh = resources.interactors(protein_id, 'h');
-
-    return {
-        read: () => ({
-            features: f.read(),
-            vh: vh.read(),
-        })
-    }
-}
+const TargetingSequenceTable = React.lazy(() => import('./TargetingSequenceTable').then(module => ({ default: module.TargetingSequenceTable })))
 
 export const ProteinPage: React.FC = () => {
     const { id } = useParams<{ id: string }>()
 
-    const resource = getRemoteDataResource(parseInt(id))
+    const protein_id = parseInt(id)
+
+    const p = resources.protein(protein_id)
+    const i = resources.isoforms(protein_id)
+
+    const resource = { read: () => ({ protein: p.read(), isoforms: i.read() }) }
 
     return (
         <div className="container">
@@ -88,7 +40,7 @@ const Fallback: React.FC = () => (
 )
 
 type ProteinSectionProps = {
-    resource: Resource<RemoteData>
+    resource: Resource<{ protein: Protein, isoforms: Isoform[] }>
 }
 
 const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
@@ -97,31 +49,62 @@ const ProteinSection: React.FC<ProteinSectionProps> = ({ resource }) => {
     const [selected, setSelected] = useState<number>(canonicalIndex(isoforms))
 
     switch (protein.type) {
-        case 'h':
-            const resourceh = getRemoteDataResourceH(protein.id, isoforms[selected].id)
+        case 'h': {
+            const fs = resources.features(protein.id, isoforms[selected].id)
+            const hh = resources.interactors(protein.id, 'h');
+            const vh = resources.interactors(protein.id, 'v');
+            const ts = resources.tsequences(protein.id);
+
+            const resource = {
+                read: () => ({
+                    fs: fs.read(),
+                    hh: hh.read(),
+                    vh: vh.read(),
+                    ts: ts.read(),
+                })
+            }
 
             return (
                 <ProteinHSection
                     protein={protein}
                     isoforms={isoforms}
-                    resource={resourceh}
+                    resource={resource}
                     selected={selected}
                     update={setSelected}
                 />
             )
-        case 'v':
-            const resourcev = getRemoteDataResourceV(protein.id, isoforms[selected].id)
+        }
+        case 'v': {
+            const fs = resources.features(protein.id, isoforms[selected].id)
+            const vh = resources.interactors(protein.id, 'h');
+            const ts = resources.tsequences(protein.id);
+
+            const resource = {
+                read: () => ({
+                    fs: fs.read(),
+                    vh: vh.read(),
+                    ts: ts.read(),
+                })
+            }
 
             return (
                 <ProteinVSection
                     protein={protein}
                     isoforms={isoforms}
-                    resource={resourcev}
+                    resource={resource}
                     selected={selected}
                     update={setSelected}
                 />
             )
+        }
     }
+}
+
+type RemoteDataH = {
+    fs: Feature[]
+    hh: Interactor[]
+    vh: Interactor[]
+    ts: TargetingSequence[]
 }
 
 type ProteinHSectionProps = {
@@ -134,7 +117,7 @@ type ProteinHSectionProps = {
 
 const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, resource, selected, update }) => {
     const isoform = isoforms[selected]
-    const { features, hh, vh } = resource.read()
+    const { fs, hh, vh, ts } = resource.read()
 
     return (
         <React.Fragment>
@@ -142,17 +125,18 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
             <hr />
             <ul>
                 <li><a href="#sequence">Sequence</a></li>
-                <li><a href="#features">Sequence features</a></li>
+                <li><a href="#fs">Sequence features</a></li>
                 <li><a href="#vh">VH interactions</a></li>
                 <li><a href="#hh">HH interactions</a></li>
+                <li><a href="#ts">Targeting sequences</a></li>
             </ul>
             <hr />
             <SequenceSection isoform={isoform} />
             <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="features">Sequence features</h2>
-            {features.length === 0
+            <h2 id="fs">Sequence features</h2>
+            {fs.length === 0
                 ? <EmptyTable type="f" />
-                : <FeatureTable isoform={isoform} features={features} />
+                : <FeatureTable isoform={isoform} features={fs} />
             }
             <div className="float-right">[<a href="#top">top</a>]</div>
             <h2 id="vh">VH interactions</h2>
@@ -166,8 +150,20 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
                 ? <EmptyTable type="h" />
                 : <InteractorTable type={protein.type} isoform={isoform} interactors={hh} />
             }
+            <div className="float-right">[<a href="#top">top</a>]</div>
+            <h2 id="ts">Targeting sequences</h2>
+            {ts.length === 0
+                ? <EmptyTable type="t" />
+                : <TargetingSequenceTable mappings={ts} />
+            }
         </React.Fragment>
     )
+}
+
+type RemoteDataV = {
+    fs: Feature[]
+    vh: Interactor[]
+    ts: TargetingSequence[]
 }
 
 type ProteinVSectionProps = {
@@ -180,7 +176,7 @@ type ProteinVSectionProps = {
 
 const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, resource, selected, update }) => {
     const isoform = isoforms[selected]
-    const { features, vh } = resource.read()
+    const { fs, vh, ts } = resource.read()
 
     return (
         <React.Fragment>
@@ -188,22 +184,28 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
             <hr />
             <ul>
                 <li><a href="#sequence">Sequence</a></li>
-                <li><a href="#features">Sequence features</a></li>
+                <li><a href="#fs">Sequence features</a></li>
                 <li><a href="#vh">VH interactions</a></li>
+                <li><a href="#ts">Targeting sequences</a></li>
             </ul>
             <hr />
             <SequenceSection isoform={isoforms[selected]} />
             <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="features">Sequence features</h2>
-            {features.length === 0
+            <h2 id="fs">Sequence features</h2>
+            {fs.length === 0
                 ? <EmptyTable type="f" />
-                : <FeatureTable isoform={isoform} features={features} />
+                : <FeatureTable isoform={isoform} features={fs} />
             }
             <div className="float-right">[<a href="#top">top</a>]</div>
             <h2 id="vh">VH interactions</h2>
             {vh.length === 0
                 ? <EmptyTable type="h" />
                 : <InteractorTable type={protein.type} isoform={isoform} interactors={vh} />
+            }
+            <h2 id="ts">Targeting sequences</h2>
+            {ts.length === 0
+                ? <EmptyTable type="t" />
+                : <TargetingSequenceTable mappings={ts} />
             }
         </React.Fragment>
     )
@@ -245,7 +247,7 @@ const SequenceSection: React.FC<SequenceSectionProps> = ({ isoform }) => (
 )
 
 type EmptyTableProps = {
-    type: 'f' | 'h' | 'v'
+    type: 'f' | 'h' | 'v' | 't'
 }
 
 const EmptyTable: React.FC<EmptyTableProps> = ({ type }) => (
@@ -258,4 +260,5 @@ const empty = {
     'f': 'No sequence feature',
     'h': 'No human interactor',
     'v': 'No viral interactor',
+    't': 'No targeting sequence',
 }

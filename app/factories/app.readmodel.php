@@ -6,6 +6,7 @@ use App\ReadModel\TaxonViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
 use App\ReadModel\FeatureViewInterface;
+use App\ReadModel\MappingViewInterface;
 use App\ReadModel\AnnotationViewInterface;
 use App\ReadModel\InteractorViewInterface;
 use App\ReadModel\InteractionViewInterface;
@@ -25,6 +26,10 @@ return [
     ),
 
     FeatureViewInterface::class => fn ($c) => new App\ReadModel\FeatureViewSql(
+        $c->get(PDO::class),
+    ),
+
+    MappingViewInterface::class => fn ($c) => new App\ReadModel\MappingViewSql(
         $c->get(PDO::class),
     ),
 
