@@ -14,15 +14,27 @@ type FeatureTableProps = {
 }
 
 export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features }) => {
-    const [offset, setOffset] = useState<number>(0)
+    const types = typesf(features)
 
-    const slice = features.sort(sorti).slice(offset, offset + limit)
+    const [{ offset, selected }, setState] = useState<{ offset: number, selected: string[] }>({ offset: 0, selected: types })
+
+    const setOffset = (offset: number) => setState(state => ({ ...state, offset }))
+    const setSelected = (selected: string[]) => setState({ offset: 0, selected })
+
+    const filtered = features.filter(filterf(selected))
+
+    const slice = filtered.sort(sortf).slice(offset, offset + limit)
 
     return (
         <React.Fragment>
             <div className="row">
                 <div className="col">
-                    <Pagination offset={offset} total={features.length} limit={limit} update={setOffset} />
+                    <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
+                </div>
+            </div>
+            <div className="row">
+                <div className="col">
+                    {types.map((type, i) => <TypeButton key={i} type={type} selected={selected} update={setSelected} />)}
                 </div>
             </div>
             <table className="table" style={{ lineHeight: '30px' }}>
@@ -43,7 +55,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features })
             </table>
             <div className="row">
                 <div className="col">
-                    <Pagination offset={offset} total={features.length} limit={limit} update={setOffset} />
+                    <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
                 </div>
             </div>
         </React.Fragment>
@@ -85,7 +97,41 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ isoform, feature }) => {
     )
 }
 
-const sorti = (a: Feature, b: Feature) => {
+type TypeButtonProps = {
+    type: string
+    selected: string[]
+    update: (selected: string[]) => void
+}
+
+const TypeButton: React.FC<TypeButtonProps> = ({ type, selected, update }) => {
+    const classes = selected.includes(type)
+        ? 'm-1 btn btn-sm btn-warning'
+        : 'm-1 btn btn-sm btn-outline-warning'
+
+    const types = selected.includes(type)
+        ? selected.filter(t => t !== type)
+        : [...selected, type]
+
+    return (
+        <button className={classes} onClick={() => update(types)}>
+            {type}
+        </button>
+    )
+}
+
+const typesf = (features: Feature[]) => {
+    const seen: Record<string, number> = {}
+
+    features.forEach(f => seen[f.type]++)
+
+    return Object.keys(seen)
+}
+
+const filterf = (selected: string[]) => (feature: Feature) => {
+    return selected.filter(t => t === feature.type).length > 0
+}
+
+const sortf = (a: Feature, b: Feature) => {
     const lengtha = a.stop - a.start + 1
     const lengthb = b.stop - b.start + 1
 
