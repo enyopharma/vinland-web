@@ -1,5 +1,5 @@
 # Stage 1 - build a new artifact
-FROM node:12 as build-deps
+FROM node:14 as build-deps
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm ci && npm audit fix
