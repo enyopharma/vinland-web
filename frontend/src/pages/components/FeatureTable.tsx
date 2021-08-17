@@ -6,8 +6,6 @@ import { Isoform, Feature } from '../types'
 
 import { MappingImg } from './MappingImg'
 
-const limit = 10
-
 type FeatureTableProps = {
     isoform: Isoform
     features: Feature[]
@@ -16,27 +14,34 @@ type FeatureTableProps = {
 export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features }) => {
     const types = typesf(features)
 
-    const [{ offset, selected }, setState] = useState<{ offset: number, selected: string[] }>({ offset: 0, selected: types })
+    const init = types.includes('domain') ? ['domain'] : []
 
-    const setOffset = (offset: number) => setState(state => ({ ...state, offset }))
-    const setSelected = (selected: string[]) => setState({ offset: 0, selected })
+    const [selected, setSelected] = useState<string[]>(init)
 
-    const filtered = features.filter(filterf(selected))
+    const filtered = features.filter(filterf(selected)).sort(sortf)
 
-    const slice = filtered.sort(sortf).slice(offset, offset + limit)
+    const list = (
+        <div className="row">
+            <div className="col">
+                <TypeButtonList types={types} selected={selected} update={setSelected} />
+            </div>
+        </div>
+    )
+
+    if (selected.length === 0) {
+        return (
+            <React.Fragment>
+                {list}
+                <p className="text-center">
+                    No feature type selected
+                </p>
+            </React.Fragment>
+        )
+    }
 
     return (
         <React.Fragment>
-            <div className="row">
-                <div className="col">
-                    <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
-                </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    {types.map((type, i) => <TypeButton key={i} type={type} selected={selected} update={setSelected} />)}
-                </div>
-            </div>
+            {list}
             <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
@@ -47,29 +52,48 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features })
                     </tr>
                 </thead>
                 <tbody>
-                    {[...Array(limit)].map((_, i) => slice[i]
-                        ? <InteractionTr key={i} isoform={isoform} feature={slice[i]} />
-                        : <SkeletonTr key={i} />
-                    )}
+                    {filtered.map((feature, i) => <InteractionTr key={i} isoform={isoform} feature={feature} />)}
                 </tbody>
             </table>
-            <div className="row">
-                <div className="col">
-                    <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
-                </div>
-            </div>
         </React.Fragment>
     )
 }
 
-const SkeletonTr: React.FC = () => (
-    <tr>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-        <td className="text-center">-</td>
-    </tr>
+type TypeButtonListProps = {
+    types: string[]
+    selected: string[]
+    update: (selected: string[]) => void
+}
+
+const TypeButtonList: React.FC<TypeButtonListProps> = ({ types, selected, update }) => (
+    <div className="row">
+        <div className="col">
+            {types.map((type, i) => <TypeButton key={i} type={type} selected={selected} update={update} />)}
+        </div>
+    </div>
 )
+
+type TypeButtonProps = {
+    type: string
+    selected: string[]
+    update: (selected: string[]) => void
+}
+
+const TypeButton: React.FC<TypeButtonProps> = ({ type, selected, update }) => {
+    const classes = selected.includes(type)
+        ? 'm-1 btn btn-sm btn-warning'
+        : 'm-1 btn btn-sm btn-outline-warning'
+
+    const types = selected.includes(type)
+        ? selected.filter(t => t !== type)
+        : [...selected, type]
+
+    return (
+        <button className={classes} onClick={() => update(types)}>
+            {type}
+        </button>
+    )
+}
 
 type InteractionTrProps = {
     isoform: Isoform
@@ -97,34 +121,14 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ isoform, feature }) => {
     )
 }
 
-type TypeButtonProps = {
-    type: string
-    selected: string[]
-    update: (selected: string[]) => void
-}
-
-const TypeButton: React.FC<TypeButtonProps> = ({ type, selected, update }) => {
-    const classes = selected.includes(type)
-        ? 'm-1 btn btn-sm btn-warning'
-        : 'm-1 btn btn-sm btn-outline-warning'
-
-    const types = selected.includes(type)
-        ? selected.filter(t => t !== type)
-        : [...selected, type]
-
-    return (
-        <button className={classes} onClick={() => update(types)}>
-            {type}
-        </button>
-    )
-}
-
 const typesf = (features: Feature[]) => {
     const seen: Record<string, number> = {}
 
     features.forEach(f => seen[f.type]++)
 
-    return Object.keys(seen)
+    const types = Object.keys(seen)
+
+    return types.sort(a => a === 'domain' ? -1 : 1)
 }
 
 const filterf = (selected: string[]) => (feature: Feature) => {
