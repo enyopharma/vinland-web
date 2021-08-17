@@ -11,10 +11,15 @@ type TargetingSequenceTableProps = {
 }
 
 export const TargetingSequenceTable: React.FC<TargetingSequenceTableProps> = ({ mappings }) => {
-    const [{ offset, length }, setState] = useState<{ offset: number, length: number | null }>({ offset: 0, length: null })
+    const lengths = mappings.map(m => m.sequence.length)
+
+    const min = Math.min(...lengths)
+    const max = Math.max(...lengths)
+
+    const [{ offset, length }, setState] = useState<{ offset: number, length: number }>({ offset: 0, length: max })
 
     const setOffset = (offset: number) => setState(state => ({ ...state, offset }))
-    const setLength = (length: number | null) => setState({ offset: 0, length })
+    const setLength = (length: number) => setState({ offset: 0, length })
 
     const filtered = mappings.filter(filteri(length))
 
@@ -28,8 +33,18 @@ export const TargetingSequenceTable: React.FC<TargetingSequenceTableProps> = ({ 
                 </div>
             </div>
             <div className="row">
-                <div className="col-2">
-                    <LengthInput length={length} update={setLength} />
+                <div className="col">
+                    <label htmlFor="mapping-max-length">Maximum length: {length}</label>
+                    <input
+                        id="mapping-max-length"
+                        type="range"
+                        className="custom-range"
+                        value={length}
+                        min={min}
+                        max={max}
+                        step="1"
+                        onChange={e => setLength(parseInt(e.target.value))}
+                    />
                 </div>
             </div>
             <table className="table" style={{ lineHeight: '30px' }}>
@@ -98,23 +113,8 @@ const InteractionTr: React.FC<InteractionTrProps> = ({ mapping }) => (
     </tr>
 )
 
-type LengthInputProps = {
-    length: number | null
-    update: (length: number | null) => void
-}
-
-const LengthInput: React.FC<LengthInputProps> = ({ length, update }) => {
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        update(e.target.value.trim().length === 0 ? null : parseInt(e.target.value))
-    }
-
-    return (
-        <input type="text" className="form-control" value={length ?? ''} onChange={onChange} placeholder="max length" />
-    )
-}
-
-const filteri = (length: number | null) => (mapping: TargetingSequence) => {
-    return length === null || mapping.sequence.length <= length
+const filteri = (length: number) => (mapping: TargetingSequence) => {
+    return mapping.sequence.length <= length
 }
 
 const sorti = (a: TargetingSequence, b: TargetingSequence) => {
