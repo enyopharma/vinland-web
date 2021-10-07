@@ -14,3 +14,5 @@ services:
             - DB_USERNAME=${DB_USERNAME}
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_PORT=${DB_PORT}
+        extra_hosts:
+            - host.docker.internal:host-gateway
