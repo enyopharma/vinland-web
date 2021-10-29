@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 
-import { Pagination } from 'partials'
-
 import { Isoform, Feature } from '../types'
 
 import { MappingImg } from './MappingImg'

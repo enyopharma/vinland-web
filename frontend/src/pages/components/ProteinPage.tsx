@@ -211,14 +211,14 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
     )
 }
 
-type ProteinInfoSection = {
+type ProteinInfoSectionProps = {
     protein: Protein
     isoforms: Isoform[]
     selected: number
     update: (index: number) => void
 }
 
-const ProteinInfoSection: React.FC<ProteinInfoSection> = ({ protein, isoforms, selected, update }) => (
+const ProteinInfoSection: React.FC<ProteinInfoSectionProps> = ({ protein, isoforms, selected, update }) => (
     <React.Fragment>
         <h1>
             <ProteinLinkImg {...protein} /> Protein ID Card - {protein.accession}/{protein.name}

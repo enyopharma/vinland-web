@@ -29,7 +29,7 @@ export const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions
     </table>
 )
 
-type DescriptionTr = {
+type DescriptionTrProps = {
     type1: 'h' | 'v'
     type2: 'h' | 'v'
     isoform1: Isoform
@@ -37,7 +37,7 @@ type DescriptionTr = {
     description: Description
 }
 
-const DescriptionTr: React.FC<DescriptionTr> = ({ type1, type2, isoform1, isoform2, description }) => {
+const DescriptionTr: React.FC<DescriptionTrProps> = ({ type1, type2, isoform1, isoform2, description }) => {
     const width1 = isoform1.sequence.length
     const width2 = isoform2.sequence.length
     const mappings1 = description.mappings.filter(m => isoform1.id === m.sequence_id)

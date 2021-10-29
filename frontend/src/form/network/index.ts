@@ -43,8 +43,8 @@ export const network = async (interactions: Interaction[]) => {
      * Create layers and add elements to it.
      */
     const nodes = new Konva.Layer()
-    const labels = new Konva.FastLayer()
-    const links = new Konva.FastLayer()
+    const labels = new Konva.Layer({ listening: false })
+    const links = new Konva.Layer({ listening: false })
 
     nodes.add(...display.nodes)
     labels.add(...display.labels)
@@ -113,16 +113,16 @@ export const network = async (interactions: Interaction[]) => {
             stage.add(labels)
 
             ui.register(() => {
-                links.find<Konva.Line>('Line').each(getDrawLink(ui))
-                nodes.find<Konva.Circle>('Circle').each(getDrawNode(ui))
-                labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
+                links.find<Konva.Line>('Line').forEach(getDrawLink(ui))
+                nodes.find<Konva.Circle>('Circle').forEach(getDrawNode(ui))
+                labels.find<Konva.Text>('Text').forEach(getDrawLabel(ui))
                 stage.batchDraw()
             })
 
             simulation.register(() => {
-                links.find<Konva.Line>('Line').each(moveLink)
-                nodes.find<Konva.Circle>('Circle').each(moveNode)
-                labels.find<Konva.Text>('Text').each(getDrawLabel(ui))
+                links.find<Konva.Line>('Line').forEach(moveLink)
+                nodes.find<Konva.Circle>('Circle').forEach(moveNode)
+                labels.find<Konva.Text>('Text').forEach(getDrawLabel(ui))
                 stage.batchDraw()
             })
 
