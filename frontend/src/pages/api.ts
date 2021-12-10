@@ -2,10 +2,11 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { Protein, Isoform, Feature, TargetingSequence, Interactor, Interaction, Description } from './types'
+import { Stats, Protein, Isoform, Feature, TargetingSequence, Interactor, Interaction, Description } from './types'
 
 const limit = 20
 
+const stats = cache<Stats>()
 const protein = cache<Protein>()
 const proteins = cache<Protein[]>()
 const isoforms = cache<Isoform[]>()
@@ -16,6 +17,10 @@ const interaction = cache<Interaction>()
 const descriptions = cache<Description[]>()
 
 export const resources = {
+    stats: () => {
+        return stats.resource('stats', () => fetchStats())
+    },
+
     protein: (id: number) => {
         return protein.resource(id, () => fetchProtein(id))
     },
@@ -50,6 +55,17 @@ export const resources = {
     descriptions: (interaction_id: number) => {
         return descriptions.resource(interaction_id, () => fetchDescriptions(interaction_id))
     },
+}
+
+const fetchStats = async () => {
+    const response = await fetch(`/api/stats`)
+    const json = await response.json()
+
+    if (!json.success) {
+        throw new Error(json)
+    }
+
+    return json.data
 }
 
 const fetchProtein = async (id: number) => {

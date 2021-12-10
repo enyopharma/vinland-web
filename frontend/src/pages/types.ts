@@ -2,6 +2,19 @@ import { AppState } from 'app/store'
 
 export type PageState = AppState['pages']
 
+export type Stats = {
+    hh: {
+        descriptions: number
+        interactions: number
+        publications: number
+    }
+    vh: {
+        descriptions: number
+        interactions: number
+        publications: number
+    }
+}
+
 export type SearchState = {
     type: '' | 'h' | 'v'
     query: string
