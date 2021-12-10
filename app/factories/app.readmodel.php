@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\ReadModel\StatViewInterface;
 use App\ReadModel\TaxonViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
@@ -47,5 +48,10 @@ return [
 
     InteractionViewInterface::class => fn ($c) => new App\ReadModel\InteractionViewSql(
         $c->get(PDO::class),
+    ),
+
+    StatViewInterface::class => fn ($c) => new App\ReadModel\StatViewCache(
+        new App\ReadModel\StatViewSql($c->get(PDO::class)),
+        $c->get(Predis\Client::class),
     ),
 ];

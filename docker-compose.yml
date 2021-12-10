@@ -14,5 +14,10 @@ services:
             - DB_USERNAME=${DB_USERNAME}
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_PORT=${DB_PORT}
+            - REDIS_SCHEME=${REDIS_SCHEME}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PORT=${REDIS_PORT}
         extra_hosts:
             - host.docker.internal:host-gateway
+    redis:
+        image: redis

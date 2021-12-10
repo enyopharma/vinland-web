@@ -23,6 +23,11 @@ return function (ContainerInterface $container): array {
     $endpoint = fn (callable $f) => new Endpoint($factory, $f, $serializer);
 
     return [
+        Route::matching('/stats')
+            ->get($endpoint(new App\Endpoints\Stats\IndexEndpoint(
+                $container->get(App\ReadModel\StatViewInterface::class),
+            ))),
+
         Route::matching('/proteins')
             ->get($endpoint(new App\Endpoints\Proteins\IndexEndpoint(
                 $container->get(App\ReadModel\ProteinViewInterface::class),
