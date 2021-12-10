@@ -61,20 +61,6 @@ const StatsTable: React.FC<StatsTableProps> = ({ stats = null }) => (
             <tbody>
                 <tr>
                     <td className="text-center">
-                        <strong><span className="text-info">HH</span></strong>
-                    </td>
-                    <td className="text-center">
-                        {stats ? stats.hh.descriptions : '-'}
-                    </td>
-                    <td className="text-center">
-                        {stats ? stats.hh.interactions : '-'}
-                    </td>
-                    <td className="text-center">
-                        {stats ? stats.hh.publications : '-'}
-                    </td>
-                </tr>
-                <tr>
-                    <td className="text-center">
                         <strong><span className="text-danger">VH</span></strong>
                     </td>
                     <td className="text-center">
@@ -85,6 +71,20 @@ const StatsTable: React.FC<StatsTableProps> = ({ stats = null }) => (
                     </td>
                     <td className="text-center">
                         {stats ? stats.vh.publications : '-'}
+                    </td>
+                </tr>
+                <tr>
+                    <td className="text-center">
+                        <strong><span className="text-info">HH</span></strong>
+                    </td>
+                    <td className="text-center">
+                        {stats ? stats.hh.descriptions : '-'}
+                    </td>
+                    <td className="text-center">
+                        {stats ? stats.hh.interactions : '-'}
+                    </td>
+                    <td className="text-center">
+                        {stats ? stats.hh.publications : '-'}
                     </td>
                 </tr>
             </tbody>
