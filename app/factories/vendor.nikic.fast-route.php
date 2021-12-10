@@ -11,7 +11,7 @@ return [
         new FastRoute\DataGenerator\GroupCountBased,
     ),
 
-    Dispatcher::class => fn ($container) => new FastRoute\Dispatcher\GroupCountBased(
-        $container->get(FastRoute\RouteCollector::class)->getData(),
+    Dispatcher::class => fn ($c) => new FastRoute\Dispatcher\GroupCountBased(
+        $c->get(FastRoute\RouteCollector::class)->getData(),
     ),
 ];
