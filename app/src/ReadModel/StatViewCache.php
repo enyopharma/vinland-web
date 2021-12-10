@@ -24,7 +24,7 @@ class StatViewCache implements StatViewInterface
             $this->client->setex(self::CACHE_KEY, self::CACHE_TTL, json_encode($stats));
         }
 
-        $stats = $this->client->get(self::CACHE_KEY);
+        $stats = (string) $this->client->get(self::CACHE_KEY);
 
         $iterable = fn () => yield json_decode($stats, true);
 

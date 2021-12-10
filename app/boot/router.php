@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
 return function (ContainerInterface $container) {
     $collector = $container->get(FastRoute\RouteCollector::class);
 
-    $files = glob(__DIR__ . '/../routes/*.php');
+    $files = (array) glob(__DIR__ . '/../routes/*.php');
 
     foreach ($files as $file) {
         $f = require $file;

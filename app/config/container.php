@@ -13,7 +13,7 @@ use Psr\Container\ContainerInterface;
  */
 return function (string $env, bool $debug): ContainerInterface {
     $factories = function () {
-        $files = glob(__DIR__ . '/../factories/*.php');
+        $files = (array) glob(__DIR__ . '/../factories/*.php');
 
         foreach ($files as $file) {
             $factories = require $file;
