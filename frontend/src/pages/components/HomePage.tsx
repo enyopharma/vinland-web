@@ -11,6 +11,8 @@ export const HomePage: React.FC = () => {
                 <h1>Welcome to Vinland!</h1>
                 <p>
                     Vinland is a unique virus-host interaction resource dedicated to drug discovery that structures literature-curated virus-host protein interaction data and integrates this information into the human protein interaction network.
+                </p>
+                <p>
                     Vinland results from an extensive and systematic review of the scientific literature. Our experts manually curate all published descriptions of virus-human protein-protein interactions, since the first reported virus-human protein interaction in the 80’s.
                 </p>
                 <p>
