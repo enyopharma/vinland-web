@@ -2,6 +2,11 @@
 @import "~bootstrap/scss/bootstrap";
 @import "~bootswatch/dist/minty/bootswatch";
 
+@font-face {
+    font-family: 'Maiandra';
+    src: local('Maiandra'), url(./Maiandra-GD-Regular.ttf) format('truetype');
+}
+
 body {
     padding-bottom: $spacer * 50;
 }
