@@ -15,7 +15,7 @@ final class DescriptionViewSql implements DescriptionViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT DISTINCT m.description_id, m.sequence_id, m.start, m.stop, m.identity, m.sequence
+        SELECT DISTINCT m.description_id, m.sequence_id, m.start, m.stop, m.sequence
         FROM edges AS e, mappings AS m
         WHERE e.id = m.edge_id
         AND e.interaction_id = ?
@@ -23,7 +23,8 @@ final class DescriptionViewSql implements DescriptionViewInterface
 
     public function __construct(
         private \PDO $pdo,
-    ) {}
+    ) {
+    }
 
     public function all(int $interaction_id): Statement
     {

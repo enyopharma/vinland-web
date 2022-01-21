@@ -29,7 +29,7 @@ final class InteractorViewSql implements InteractorViewInterface
     SQL;
 
     const SELECT_MAPPINGS_SQL = <<<SQL
-        SELECT DISTINCT e.interaction_id, m.sequence_id, m.start, m.stop, m.identity, m.sequence
+        SELECT DISTINCT e.interaction_id, m.sequence_id, m.start, m.stop, m.sequence
         FROM proteins AS p, edges AS e, mappings AS m
         WHERE p.type = ?
         AND p.id = e.target_id
@@ -39,7 +39,8 @@ final class InteractorViewSql implements InteractorViewInterface
 
     public function __construct(
         private \PDO $pdo,
-    ) {}
+    ) {
+    }
 
     public function all(string $type, int $protein_id): Statement
     {

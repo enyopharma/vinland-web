@@ -75,7 +75,6 @@ export type Mapping = {
     sequence_id: number
     start: number
     stop: number
-    identity: number
     sequence: string
 }
 
