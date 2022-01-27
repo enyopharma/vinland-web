@@ -18,6 +18,22 @@ div.row, div.form-group, div.form-row, div.card, div.alert, div.animation, form,
     }
 }
 
+.bg-dark {
+    background-color: #b41f49 !important;
+}
+
+h1, h2 {
+    color: #b41f49;
+}
+
+legend {
+    color: #165984;
+}
+
+fieldset {
+    margin-bottom: 2rem;
+}
+
 .page-link {
     border-color: $info;
     background-color: $info;
