@@ -1,0 +1,11 @@
+version: '3'
+services:
+    frontend:
+        networks:
+            - default
+            - proxy
+        labels:
+            - traefik.http.routers.vinland.rule=Host(`${APP_HOST}`)
+networks:
+    proxy:
+        external: true

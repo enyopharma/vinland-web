@@ -1,22 +1,19 @@
 version: '3'
 services:
     frontend:
+        restart: always
         build: ./frontend
-        networks:
-            - default
-            - proxy
-        labels:
-            - traefik.http.routers.vinland.rule=Host(`${APP_HOST}`)
         depends_on:
             - backend
     backend:
+        restart: always
         volumes:
             - app:/var/www/html:ro
     app:
+        restart: always
         volumes:
             - app:/var/www/html:rw
+    redis:
+        restart: always
 volumes:
     app:
-networks:
-    proxy:
-        external: true
