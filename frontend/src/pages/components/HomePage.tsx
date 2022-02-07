@@ -8,18 +8,7 @@ export const HomePage: React.FC = () => {
     return (
         <div className="container">
             <div className="row" style={{ margin: '4em 0 4em 0' }}>
-                <div className="col text-center" style={{ fontFamily: 'Maiandra' }}>
-                    <p>
-                        <span style={{ fontSize: '4em' }}>
-                            <span style={{ color: '#740a26' }}>V</span>
-                            <span style={{ color: '#b31e47' }}>in</span>
-                            <span style={{ color: '#e0a9ba' }}>land</span>
-                        </span> <span style={{ fontSize: '2em', color: '#b31e47' }}>The Viral Infection Landscape</span>
-                    </p>
-                    <p style={{ fontSize: '2em', color: '#767171' }}>
-                        Drug Discovery Inspired by Viruses
-                    </p>
-                </div>
+                <img src="./vinland_logo.png" alt="logo" style={{ width: '100%' }} />
             </div>
             <div className="jumbotron">
                 <h1>Welcome to Vinland!</h1>
