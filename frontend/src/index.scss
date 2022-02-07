@@ -6,6 +6,17 @@ body {
     padding-bottom: $spacer * 50;
 }
 
+img.logo {
+    width: 100%;
+    margin: auto;
+}
+
+@include media-breakpoint-up(md) {
+    img.logo {
+        width: 60%;
+    }
+}
+
 div.row, div.form-group, div.form-row, div.card, div.alert, div.animation, form, fieldset, ul, p, table {
     margin-bottom: $spacer;
     &:last-child {

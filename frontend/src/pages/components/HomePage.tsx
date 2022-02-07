@@ -7,8 +7,8 @@ export const HomePage: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="row" style={{ margin: '4em 0 4em 0' }}>
-                <img src="./vinland_logo.png" alt="logo" style={{ width: '100%' }} />
+            <div className="row" style={{ margin: '4em 0' }}>
+                <img src="./vinland_logo.png" alt="logo" className="img-fluid logo" />
             </div>
             <div className="jumbotron">
                 <h1>Welcome to Vinland!</h1>
