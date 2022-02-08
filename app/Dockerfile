@@ -7,7 +7,7 @@ COPY . ./
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
 # Stage 2 - copy the artifacts and start php-fpm
-FROM php:8.0-fpm
+FROM php:8.0.2-fpm
 RUN apt-get update && \
     apt-get install -y libpq-dev && \
     rm -rf /var/lib/apt/lists/* && \
