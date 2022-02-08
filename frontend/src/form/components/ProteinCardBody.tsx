@@ -21,7 +21,7 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins }) =>
 
     return (
         <React.Fragment>
-            <div className="card-body">
+            <div className="card-body pb-0">
                 <div className="row">
                     <div className="col">
                         <TabCheckbox tab="a">
@@ -35,7 +35,7 @@ export const ProteinCardBody: React.FC<ProteinCardBodyProps> = ({ proteins }) =>
                         </TabCheckbox>
                     </div>
                     <div className="col">
-                        <p className="text-right">
+                        <p className="text-right mb-0">
                             <CsvDownloadButton name="proteins.tsv" csv={() => proteins2csv(filtered)} enabled={filtered.length > 0}>
                                 Download as csv
                             </CsvDownloadButton>
@@ -104,7 +104,7 @@ const ProteinTable: React.FC<ProteinTableProps> = ({ proteins }) => {
             <div className="card-body">
                 <Pagination offset={offset} total={proteins.length} limit={limit} update={setOffset} />
             </div>
-            <table className="table card-table table-stripped table-hover">
+            <table className="table card-table table-stripped table-hover mb-0">
                 <thead>
                     <tr>
                         <th className="text-center">-</th>

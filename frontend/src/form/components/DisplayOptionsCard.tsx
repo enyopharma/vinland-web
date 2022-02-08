@@ -6,7 +6,7 @@ import { useSelector, useActionCreator } from '../hooks'
 export const DisplayOptionsCard: React.FC = () => (
     <div className="card">
         <div className="card-body">
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col">
                     <div className="form-check form-check-inline">
                         <HHCheckbox id="hh" />
@@ -20,7 +20,7 @@ export const DisplayOptionsCard: React.FC = () => (
                         <VHCheckbox id="vh" />
                         <label className="form-check-label" htmlFor="vh">
                             Show VH ppi
-                            </label>
+                        </label>
                     </div>
                 </div>
                 <div className="col-6">

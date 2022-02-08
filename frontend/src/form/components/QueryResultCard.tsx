@@ -33,7 +33,7 @@ type SuccessfulQueryResultCardProps = {
 
 const SuccessfulQueryResultCard: React.FC<SuccessfulQueryResultCardProps> = ({ cache }) => (
     <div className="card">
-        <div className="card-header pb-0">
+        <div className="card-header">
             <ul className="nav nav-tabs card-header-tabs">
                 <li className="nav-item">
                     <ResultTabLink tab="interactions">

@@ -15,7 +15,7 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
             <NetworkContainer network={network} />
         </div>
         <div className="card-body">
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col">
                     <button type="button" className="btn btn-block btn-primary" onClick={() => download(network)}>
                         Save image
@@ -40,20 +40,16 @@ export const NetworkCardBody: React.FC<NetworkCardBodyProps> = ({ network }) => 
                     </button>
                 </div>
             </div>
-            <div className="row">
-                <div className="col">
-                    <h3>Viral species on the network</h3>
-                    {network.species.map((species, i) => <SpeciesButton key={i} {...species} />)}
-                </div>
-            </div>
-            <div className="row">
-                <div className="col">
-                    <h3>Viral protein selection</h3>
-                    <SelectionList network={network} />
-                </div>
-            </div>
         </div>
-    </React.Fragment >
+        <div className="card-body">
+            <h3>Viral species on the network</h3>
+            {network.species.map((species, i) => <SpeciesButton key={i} {...species} />)}
+        </div>
+        <div className="card-body">
+            <h3>Viral protein selection</h3>
+            <SelectionList network={network} />
+        </div>
+    </React.Fragment>
 )
 
 type LabelsButtonProps = {
@@ -129,12 +125,12 @@ const SelectionList: React.FC<SelectionListProps> = ({ network }) => {
     useEffect(() => network.onSelection(() => setSelection(network.getSelection())), [network])
 
     return selection.length === 0
-        ? <p>No viral protein selected</p>
+        ? <p className="mb-0">No viral protein selected</p>
         : (
-            <ul>
+            <ul className="mb-0">
                 {selection.map((entry, i) => (
                     <li key={i}>
-                        {entry.name} ({entry.species.name}) =&gt; { entry.proteins
+                        {entry.name} ({entry.species.name}) =&gt; {entry.proteins
                             .map<React.ReactNode>((protein, p) => <ProteinLink key={p} {...protein} target="_blank">{protein.accession}</ProteinLink>)
                             .reduce((prev, curr) => [prev, ', ', curr])}
                     </li>

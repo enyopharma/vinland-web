@@ -10,15 +10,15 @@ export const InteractionSearchPage: React.FC = () => (
     <div className="container">
         <h1>Search for interactions</h1>
         <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
-            <fieldset>
+            <fieldset className="mb-4">
                 <legend>Human protein identifiers</legend>
                 <IdentifierCard />
             </fieldset>
-            <fieldset>
+            <fieldset className="mb-4">
                 <legend>Viral taxonomy</legend>
                 <TaxonomyCard />
             </fieldset>
-            <fieldset>
+            <fieldset className="mb-4">
                 <legend>PPI display options</legend>
                 <DisplayOptionsCard />
             </fieldset>

@@ -50,7 +50,7 @@ const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ sel
     return (
         <div className="card">
             <div className="card-body">
-                <div className="form-group">
+                <div className="form-group mb-0">
                     <div className="input-group">
                         <div className="input-group-prepend">
                             <span className="input-group-text">@</span>
@@ -90,11 +90,11 @@ const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, se
     return (
         <div className="card">
             <div className="card-body">
-                <div className="alert alert-danger">
+                <div className="alert alert-danger mb-4">
                     {taxon.name}
                     <button type="button" className="close" onClick={unselect}>
                         &times;
-                </button>
+                    </button>
                 </div>
                 <React.Suspense fallback={<ProgressBar type="danger" />}>
                     <h4>Browse taxonomy:</h4>
@@ -124,7 +124,7 @@ const RelatedFormRow: React.FC<RelatedFormRowProps> = ({ resource, select }) => 
     }
 
     return (
-        <div className="form-row">
+        <div className="form-row mb-4">
             <div className="col">
                 <select
                     value=""
@@ -164,7 +164,7 @@ const NameList: React.FC<NameListProps> = ({ resource }) => {
         ? 'no interactor associated to this taxon'
         : names.map((name, i) => <NameButton key={i} name={name} selected={selected} />)
 
-    return <p>{buttons}</p>
+    return <p className="mb-0">{buttons}</p>
 }
 
 type NameButtonProps = {

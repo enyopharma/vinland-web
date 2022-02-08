@@ -18,7 +18,7 @@ export const HomePage: React.FC = () => {
 
     return (
         <div className="container">
-            <div className="row" style={{ margin: '4em 0' }}>
+            <div className="row" style={{ margin: '4rem 0 2rem 0' }}>
                 <img src="./vinland_logo.png" alt="logo" className="img-fluid logo" />
             </div>
             <div className="jumbotron">
@@ -69,7 +69,7 @@ type StatsTableProps = {
 }
 
 const StatsTable: React.FC<StatsTableProps> = ({ stats = null }) => (
-    <div className="card">
+    <div className="card mb-4">
         <div className="card-header">
             <h2>Stats</h2>
         </div>

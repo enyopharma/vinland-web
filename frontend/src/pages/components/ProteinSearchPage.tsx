@@ -48,7 +48,7 @@ export const ProteinSearchPage: React.FC = () => {
             <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
                 <div className="card">
                     <div className="card-body">
-                        <div className="form-group">
+                        <div className="form-group mb-0">
                             <div className="input-group">
                                 <div className="input-group-prepend">
                                     <span className="input-group-text">@</span>
@@ -73,18 +73,11 @@ export const ProteinSearchPage: React.FC = () => {
                                 />
                             </div>
                         </div>
-                        {isQueryEmpty && (
-                            <p>
-                                Please enter a search term.
-                            </p>
-                        )}
                     </div>
                     {!isQueryEmpty && (
-                        <div className="card-body">
-                            <React.Suspense fallback={<ProgressBar />}>
-                                <ProteinTableFetcher input={input} resource={resource} />
-                            </React.Suspense>
-                        </div>
+                        <React.Suspense fallback={<div className="card-body pt-0"><ProgressBar /></div>}>
+                            <ProteinTableFetcher input={input} resource={resource} />
+                        </React.Suspense>
                     )}
                 </div>
             </form>
@@ -102,7 +95,7 @@ const ProteinTableFetcher: React.FC<ProteinTableFetcherProps> = ({ input, resour
 
     return proteins.length > 0
         ? <SmartProteinTable input={input} proteins={proteins} />
-        : <p>No protein found.</p>
+        : <div className="card-body pt-0">No protein found.</div>
 }
 
 type SmartProteinTableProps = {

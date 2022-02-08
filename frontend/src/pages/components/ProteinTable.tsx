@@ -9,7 +9,7 @@ type ProteinTableProps = {
 }
 
 export const ProteinTable: React.FC<ProteinTableProps> = ({ proteins }) => (
-    <table className="table card-table table-striped table-hover">
+    <table className="table card-table table-striped table-hover mb-0">
         <thead>
             <tr>
                 <th className="text-center">-</th>

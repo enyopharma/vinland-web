@@ -15,7 +15,7 @@ export const Pagination: React.FC<PaginationProps> = ({ offset, total, limit, up
 
     return (
         <nav>
-            <ul className="pagination justify-content-center">
+            <ul className="pagination justify-content-center mb-0">
                 <PageLi state={cur === 1 ? 'disabled' : null} update={() => page(cur - 1)}>
                     &laquo;
                 </PageLi>

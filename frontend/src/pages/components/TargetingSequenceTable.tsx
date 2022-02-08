@@ -27,7 +27,7 @@ export const TargetingSequenceTable: React.FC<TargetingSequenceTableProps> = ({ 
 
     return (
         <React.Fragment>
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col">
                     <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
                 </div>
@@ -47,7 +47,7 @@ export const TargetingSequenceTable: React.FC<TargetingSequenceTableProps> = ({ 
                     />
                 </div>
             </div>
-            <table className="table" style={{ lineHeight: '30px' }}>
+            <table className="table mb-0" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
                         <th className="text-center" style={{ width: '8%' }}>-</th>
@@ -64,7 +64,7 @@ export const TargetingSequenceTable: React.FC<TargetingSequenceTableProps> = ({ 
                     )}
                 </tbody>
             </table>
-            <div className="row">
+            <div className="row mt-4">
                 <div className="col">
                     <Pagination offset={offset} total={filtered.length} limit={limit} update={setOffset} />
                 </div>

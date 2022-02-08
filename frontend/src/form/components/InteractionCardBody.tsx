@@ -16,8 +16,8 @@ type InteractionCardBodyProps = {
 
 export const InteractionCardBody: React.FC<InteractionCardBodyProps> = ({ interactions }) => (
     <React.Fragment>
-        <div className="card-body">
-            <p className="text-right">
+        <div className="card-body pb-0">
+            <p className="text-right mb-0">
                 <CsvDownloadButton name="interactions.tsv" csv={() => interactions2csv(interactions)} enabled={interactions.length > 0}>
                     Download as csv
                 </CsvDownloadButton>
@@ -53,7 +53,7 @@ const InteractionTable: React.FC<InteractionTableProps> = ({ interactions }) => 
             <div className="card-body">
                 <Pagination offset={offset} total={interactions.length} limit={limit} update={setOffset} />
             </div>
-            <table className="table card-table table-stripped table-hover">
+            <table className="table card-table table-stripped table-hover mb-0">
                 <thead>
                     <tr>
                         <th className="text-center" colSpan={1}>-</th>

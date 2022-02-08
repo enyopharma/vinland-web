@@ -131,31 +131,41 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
                 <li><a href="#ts">Targeting sequences</a></li>
             </ul>
             <hr />
-            <SequenceSection isoform={isoform} />
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="fs">Sequence features</h2>
-            {fs.length === 0
-                ? <EmptyTable type="f" />
-                : <FeatureTable isoform={isoform} features={fs} />
-            }
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="vh">VH interactions</h2>
-            {vh.length === 0
-                ? <EmptyTable type="v" />
-                : <InteractorTable type={protein.type} isoform={isoform} interactors={vh} />
-            }
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="hh">HH interactions</h2>
-            {hh.length === 0
-                ? <EmptyTable type="h" />
-                : <InteractorTable type={protein.type} isoform={isoform} interactors={hh} />
-            }
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="ts">Targeting sequences</h2>
-            {ts.length === 0
-                ? <EmptyTable type="t" />
-                : <TargetingSequenceTable mappings={ts} />
-            }
+            <section className="mb-4">
+                <SequenceSection isoform={isoform} />
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="fs">Sequence features</h2>
+                {fs.length === 0
+                    ? <EmptyTable type="f" />
+                    : <FeatureTable isoform={isoform} features={fs} />
+                }
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="vh">VH interactions</h2>
+                {vh.length === 0
+                    ? <EmptyTable type="v" />
+                    : <InteractorTable type={protein.type} isoform={isoform} interactors={vh} />
+                }
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="hh">HH interactions</h2>
+                {hh.length === 0
+                    ? <EmptyTable type="h" />
+                    : <InteractorTable type={protein.type} isoform={isoform} interactors={hh} />
+                }
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="ts">Targeting sequences</h2>
+                {ts.length === 0
+                    ? <EmptyTable type="t" />
+                    : <TargetingSequenceTable mappings={ts} />
+                }
+            </section>
         </React.Fragment>
     )
 }
@@ -189,24 +199,32 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
                 <li><a href="#ts">Targeting sequences</a></li>
             </ul>
             <hr />
-            <SequenceSection isoform={isoforms[selected]} />
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="fs">Sequence features</h2>
-            {fs.length === 0
-                ? <EmptyTable type="f" />
-                : <FeatureTable isoform={isoform} features={fs} />
-            }
-            <div className="float-right">[<a href="#top">top</a>]</div>
-            <h2 id="vh">VH interactions</h2>
-            {vh.length === 0
-                ? <EmptyTable type="h" />
-                : <InteractorTable type={protein.type} isoform={isoform} interactors={vh} />
-            }
-            <h2 id="ts">Targeting sequences</h2>
-            {ts.length === 0
-                ? <EmptyTable type="t" />
-                : <TargetingSequenceTable mappings={ts} />
-            }
+            <section className="mb-4">
+                <SequenceSection isoform={isoform} />
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="fs">Sequence features</h2>
+                {fs.length === 0
+                    ? <EmptyTable type="f" />
+                    : <FeatureTable isoform={isoform} features={fs} />
+                }
+            </section>
+            <section className="mb-4">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2 id="vh">VH interactions</h2>
+                {vh.length === 0
+                    ? <EmptyTable type="h" />
+                    : <InteractorTable type={protein.type} isoform={isoform} interactors={vh} />
+                }
+            </section>
+            <section className="mb-4">
+                <h2 id="ts">Targeting sequences</h2>
+                {ts.length === 0
+                    ? <EmptyTable type="t" />
+                    : <TargetingSequenceTable mappings={ts} />
+                }
+            </section>
         </React.Fragment>
     )
 }

@@ -74,7 +74,7 @@ const MappingModal: React.FC<MappingModalProps> = ({ type, visible, mappables, c
         {mappables.map((mapping, i) => (
             <div key={i} className="modal-body text-left">
                 <h6>Sequence [{mapping.start} - {mapping.stop}]</h6>
-                <div className="form-group">
+                <div className="form-group mb-0">
                     <textarea value={mapping.sequence} className="form-control" readOnly={true} />
                 </div>
             </div>

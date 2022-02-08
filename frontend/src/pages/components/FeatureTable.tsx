@@ -18,18 +18,10 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features })
 
     const filtered = features.filter(filterf(selected)).sort(sortf)
 
-    const list = (
-        <div className="row">
-            <div className="col">
-                <TypeButtonList types={types} selected={selected} update={setSelected} />
-            </div>
-        </div>
-    )
-
     if (selected.length === 0) {
         return (
             <React.Fragment>
-                {list}
+                <TypeButtonList types={types} selected={selected} update={setSelected} />
                 <p className="text-center">
                     No feature type selected
                 </p>
@@ -39,7 +31,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({ isoform, features })
 
     return (
         <React.Fragment>
-            {list}
+            <TypeButtonList types={types} selected={selected} update={setSelected} />
             <table className="table" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
@@ -64,7 +56,7 @@ type TypeButtonListProps = {
 }
 
 const TypeButtonList: React.FC<TypeButtonListProps> = ({ types, selected, update }) => (
-    <div className="row">
+    <div className="row mb-2">
         <div className="col">
             {types.map((type, i) => <TypeButton key={i} type={type} selected={selected} update={update} />)}
         </div>

@@ -112,7 +112,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                     </p>
                 </div>
             </div>
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col offset-4">
                     <IsoformSelectbox isoforms={isoforms1} selected={selected1} update={setSelected1} />
                 </div>
@@ -120,7 +120,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                     <IsoformSelectbox isoforms={isoforms2} selected={selected2} update={setSelected2} />
                 </div>
             </div>
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col offset-4">
                     <h3>{isoform1.accession} [{isoform1.start} - {isoform1.stop}]</h3>
                     <div className="form-group">

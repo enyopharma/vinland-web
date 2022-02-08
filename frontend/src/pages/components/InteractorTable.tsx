@@ -22,12 +22,12 @@ export const InteractorTable: React.FC<InteractorTableProps> = ({ type, isoform,
 
     return (
         <React.Fragment>
-            <div className="row">
+            <div className="row mb-4">
                 <div className="col">
                     <Pagination offset={offset} total={interactors.length} limit={limit} update={setOffset} />
                 </div>
             </div>
-            <table className="table" style={{ lineHeight: '30px' }}>
+            <table className="table mb-0" style={{ lineHeight: '30px' }}>
                 <thead>
                     <tr>
                         <th className="text-center" style={{ width: '8%' }}>-</th>
@@ -45,7 +45,7 @@ export const InteractorTable: React.FC<InteractorTableProps> = ({ type, isoform,
                     )}
                 </tbody>
             </table>
-            <div className="row">
+            <div className="row mt-4">
                 <div className="col">
                     <Pagination offset={offset} total={interactors.length} limit={limit} update={setOffset} />
                 </div>
