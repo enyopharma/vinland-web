@@ -32,7 +32,7 @@ export const App: React.FC = () => (
 const ScrollToTop: React.FC = () => {
     const { pathname } = useLocation()
 
-    useEffect(() => window.scrollTo(0, 0), [pathname])
+    useEffect(() => { window.scrollTo(0, 0) }, [pathname])
 
     return null
 }
@@ -69,9 +69,9 @@ const Navbar: React.FC = () => (
                 </ul>
                 <ul className="navbar-nav ml-auto">
                     <li className="nav-item">
-                        <Link className="nav-link" to="/">
+                        <a className="nav-link" rel="noreferrer" href="/#contact">
                             Contact
-                        </Link>
+                        </a>
                     </li>
                 </ul>
             </div>

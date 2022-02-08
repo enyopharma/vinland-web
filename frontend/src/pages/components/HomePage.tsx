@@ -1,9 +1,20 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { resources } from '../api'
 import { Resource, Stats } from '../types'
 
 export const HomePage: React.FC = () => {
     const stats = resources.stats()
+
+    useEffect(() => {
+        const { hash } = window.location
+
+        if (hash.trim().length === 0) return
+
+        const id = hash.replace('#', '')
+        const element = window.document.getElementById(id)
+
+        if (element) element.scrollIntoView()
+    }, [])
 
     return (
         <div className="container">
@@ -25,7 +36,19 @@ export const HomePage: React.FC = () => {
             <Suspense fallback={<EmptyStatsTable />}>
                 <FullStatsTable resource={stats} />
             </Suspense>
-        </div >
+            <div id="contact" className="card">
+                <div className="card-header">
+                    <h2>Contact</h2>
+                </div>
+                <div className="card-body">
+                    Send us general questions and feedback at <a
+                        href="mailto:bioinformatics@enyopharma.com"
+                        target="_blank"
+                        rel="noreferrer"
+                    >bioinformatics@enyopharma.com</a>.
+                </div>
+            </div>
+        </div>
     )
 }
 
