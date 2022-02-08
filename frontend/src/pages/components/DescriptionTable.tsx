@@ -47,16 +47,17 @@ const DescriptionTr: React.FC<DescriptionTrProps> = ({ type1, type2, isoform1, i
     const maxclx = Math.max(clx1.length, clx2.length)
     const rowspan = maxclx > 1 ? maxclx : undefined
 
+    const url = `https://pubmed.ncbi.nlm.nih.gov/${description.publication.pmid}/`
+
+    const title = description.publication.year && description.publication.title
+        ? `${description.publication.year} - ${description.publication.title}`
+        : ''
+
     return (
         <React.Fragment>
             <tr key={0}>
                 <td className="text-center" rowSpan={rowspan}>
-                    <a
-                        href={`https://pubmed.ncbi.nlm.nih.gov/${description.publication.pmid}/`}
-                        title={`${description.publication.year} - ${description.publication.title}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a href={url} title={title} target="_blank" rel="noreferrer">
                         {description.publication.pmid}
                     </a>
                 </td>

@@ -7,10 +7,9 @@ namespace App\ReadModel;
 final class DescriptionViewSql implements DescriptionViewInterface
 {
     const SELECT_DESCRIPTIONS_SQL = <<<SQL
-        SELECT d.id, p.pmid, p.title, p.year, m.psimi_id, m.name
-        FROM descriptions AS d, publications AS p, methods AS m
+        SELECT d.id, d.pmid, p.title, p.year, m.psimi_id, m.name
+        FROM descriptions AS d LEFT JOIN publications AS p ON d.pmid = p.pmid, methods AS m
         WHERE d.interaction_id = ?
-        AND p.pmid = d.pmid
         AND m.id = d.method_id
     SQL;
 
@@ -51,8 +50,8 @@ final class DescriptionViewSql implements DescriptionViewInterface
             yield [
                 'publication' => [
                     'pmid' => $row['pmid'],
-                    'title' => $row['title'],
-                    'year' => $row['year'],
+                    'title' => $row['title'] ?? '',
+                    'year' => $row['year'] ?? '',
                 ],
                 'method' => [
                     'psimi_id' => $row['psimi_id'],
