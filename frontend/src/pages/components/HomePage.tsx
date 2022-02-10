@@ -36,7 +36,7 @@ export const HomePage: React.FC = () => {
             <Suspense fallback={<EmptyStatsTable />}>
                 <FullStatsTable resource={stats} />
             </Suspense>
-            <div id="contact" className="card mb-4">
+            <div className="card mb-4">
                 <div className="card-header">
                     <h2>Examples</h2>
                 </div>
