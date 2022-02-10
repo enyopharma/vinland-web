@@ -51,7 +51,7 @@ export const HomePage: React.FC = () => {
                         <div className="col-md">
                             <figure className="figure mb-0">
                                 <img src="./examples/hepatitis-c-cropped.png" className="figure-img img-fluid" alt="Hepatitis C - VH network" />
-                                <figcaption className="figure-caption">Hepatits C - VH network</figcaption>
+                                <figcaption className="figure-caption">Hepatitis C - VH network</figcaption>
                             </figure>
                         </div>
                     </div>
