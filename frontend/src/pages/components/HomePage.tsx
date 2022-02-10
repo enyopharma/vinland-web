@@ -36,6 +36,27 @@ export const HomePage: React.FC = () => {
             <Suspense fallback={<EmptyStatsTable />}>
                 <FullStatsTable resource={stats} />
             </Suspense>
+            <div id="contact" className="card mb-4">
+                <div className="card-header">
+                    <h2>Examples</h2>
+                </div>
+                <div className="card-body">
+                    <div className="row">
+                        <div className="col-md">
+                            <figure className="figure mb-4 mb-md-0">
+                                <img src="./examples/autophagy-cropped.png" className="figure-img img-fluid" alt="Autophagy - VH network" />
+                                <figcaption className="figure-caption">Autophagy - VH network</figcaption>
+                            </figure>
+                        </div>
+                        <div className="col-md">
+                            <figure className="figure mb-0">
+                                <img src="./examples/hepatitis-c-cropped.png" className="figure-img img-fluid" alt="Hepatitis C - VH network" />
+                                <figcaption className="figure-caption">Hepatits C - VH network</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="contact" className="card">
                 <div className="card-header">
                     <h2>Contact</h2>
