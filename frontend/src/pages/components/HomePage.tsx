@@ -20,7 +20,7 @@ export const HomePage: React.FC = () => {
             <div className="row" style={{ margin: '4rem 0 2rem 0' }}>
                 <img src="./vinland_logo.png" alt="logo" className="img-fluid logo" />
             </div>
-            <div className="jumbotron">
+            <div id="top" className="jumbotron">
                 <h1>Welcome to Vinland!</h1>
                 <p>
                     Vinland is a unique virus-host interaction resource dedicated to drug discovery that structures literature-curated virus-host protein interaction data and integrates this information into the human protein interaction network.
@@ -30,6 +30,12 @@ export const HomePage: React.FC = () => {
                 </p>
                 <p>
                     Vinland provides original information on protein interaction sequences. The viral protein interfaces of 5 to 20 amino acids are peptides that can be used as new chemical entities to manipulate cellular functions.
+                </p>
+                <p className="mb-0">
+                    <a href="#stats">Stats</a>&nbsp;-&nbsp;
+                    <a href="#annotation">Viral annotation</a>&nbsp;-&nbsp;
+                    <a href="#network">Network visualization</a>&nbsp;-&nbsp;
+                    <a href="#contact">Contact</a>
                 </p>
             </div>
             <StatsCard />
@@ -44,8 +50,9 @@ const StatsCard: React.FC = () => {
     const resource = resources.stats()
 
     return (
-        <div className="card mb-4">
+        <div id="stats" className="card mb-4">
             <div className="card-header">
+                <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2>Stats</h2>
             </div>
             <Suspense fallback={<StatsCardTable />}>
@@ -138,8 +145,9 @@ const MatureCard: React.FC = () => {
     }
 
     return (
-        <div className="card mb-4">
+        <div id="annotation" className="card mb-4">
             <div className="card-header">
+                <div className="float-right">[<a href="#top">top</a>]</div>
                 <h2>Viral annotation examples</h2>
                 <ul className="nav nav-tabs card-header-tabs">
                     {taxa.map((taxon, i) => (
@@ -189,8 +197,9 @@ const MatureCardTable: React.FC<MatureCardTableProps> = ({ resource = null }) =>
 }
 
 const NetworkCard: React.FC = () => (
-    <div className="card mb-4">
+    <div id="network" className="card mb-4">
         <div className="card-header">
+            <div className="float-right">[<a href="#top">top</a>]</div>
             <h2>Network visualization examples</h2>
         </div>
         <div className="card-body">
@@ -215,6 +224,7 @@ const NetworkCard: React.FC = () => (
 const ContactCard: React.FC = () => (
     <div id="contact" className="card">
         <div className="card-header">
+            <div className="float-right">[<a href="#top">top</a>]</div>
             <h2>Contact</h2>
         </div>
         <div className="card-body">
