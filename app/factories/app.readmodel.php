@@ -23,10 +23,6 @@ return [
         $c->get(PDO::class),
     ),
 
-    MatureViewInterface::class => fn ($c) => new App\ReadModel\MatureViewSql(
-        $c->get(PDO::class),
-    ),
-
     IsoformViewInterface::class => fn ($c) => new App\ReadModel\IsoformViewSql(
         $c->get(PDO::class),
     ),
@@ -57,6 +53,11 @@ return [
 
     StatViewInterface::class => fn ($c) => new App\ReadModel\StatViewCache(
         new App\ReadModel\StatViewSql($c->get(PDO::class)),
+        $c->get(Predis\Client::class),
+    ),
+
+    MatureViewInterface::class => fn ($c) => new App\ReadModel\MatureViewCache(
+        new App\ReadModel\MatureViewSql($c->get(PDO::class)),
         $c->get(Predis\Client::class),
     ),
 ];
