@@ -13,7 +13,7 @@ final class IndexEndpoint
     ) {
     }
 
-    public function __invoke(): iterable
+    public function __invoke(): iterable|false
     {
         return $this->stats->all()->fetch();
     }
