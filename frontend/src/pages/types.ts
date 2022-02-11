@@ -107,3 +107,8 @@ export type TargetingSequence = {
         taxon: string
     }
 }
+
+export type Mature = {
+    name: string
+    proteins: Array<{ id: number, accession: string }>
+}

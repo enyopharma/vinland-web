@@ -1,10 +1,9 @@
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { resources } from '../api'
-import { Resource, Stats } from '../types'
+import { Resource, Stats, Mature } from '../types'
+import { ProteinLink } from 'partials'
 
 export const HomePage: React.FC = () => {
-    const stats = resources.stats()
-
     useEffect(() => {
         const { hash } = window.location
 
@@ -33,12 +32,11 @@ export const HomePage: React.FC = () => {
                     Vinland provides original information on protein interaction sequences. The viral protein interfaces of 5 to 20 amino acids are peptides that can be used as new chemical entities to manipulate cellular functions.
                 </p>
             </div>
-            <Suspense fallback={<EmptyStatsTable />}>
-                <FullStatsTable resource={stats} />
-            </Suspense>
+            <StatsCard />
+            <MatureCard />
             <div className="card mb-4">
                 <div className="card-header">
-                    <h2>Examples</h2>
+                    <h2>Network visualization examples</h2>
                 </div>
                 <div className="card-body">
                     <div className="row">
@@ -73,27 +71,29 @@ export const HomePage: React.FC = () => {
     )
 }
 
-const EmptyStatsTable: React.FC = () => <StatsTable />
+const StatsCard: React.FC = () => {
+    const resource = resources.stats()
 
-type FullStatsTableProps = {
-    resource: Resource<Stats>
-}
-
-const FullStatsTable: React.FC<FullStatsTableProps> = ({ resource }) => {
-    const stats = resource.read()
-
-    return <StatsTable stats={stats} />
-}
-
-type StatsTableProps = {
-    stats?: Stats
-}
-
-const StatsTable: React.FC<StatsTableProps> = ({ stats = null }) => (
-    <div className="card mb-4">
-        <div className="card-header">
-            <h2>Stats</h2>
+    return (
+        <div className="card mb-4">
+            <div className="card-header">
+                <h2>Stats</h2>
+            </div>
+            <Suspense fallback={<StatsCardTable />}>
+                <StatsCardTable resource={resource} />
+            </Suspense>
         </div>
+    )
+}
+
+type StatsCardTableProps = {
+    resource?: Resource<Stats>
+}
+
+const StatsCardTable: React.FC<StatsCardTableProps> = ({ resource = null }) => {
+    const stats = resource ? resource.read() : null
+
+    return (
         <table className="table card-table">
             <thead>
                 <tr>
@@ -142,5 +142,77 @@ const StatsTable: React.FC<StatsTableProps> = ({ stats = null }) => (
                 </tr>
             </tbody>
         </table>
-    </div>
-)
+    )
+}
+
+const taxa = [
+    { ncbi_taxon_id: 11320, name: 'Flua' },
+    { ncbi_taxon_id: 11676, name: 'HIV1' },
+    { ncbi_taxon_id: 64320, name: 'Zika' },
+    { ncbi_taxon_id: 10407, name: 'HBV' },
+    { ncbi_taxon_id: 11103, name: 'HCV' },
+    { ncbi_taxon_id: 12637, name: 'Dengue' },
+    { ncbi_taxon_id: 10359, name: 'HHV5' },
+    { ncbi_taxon_id: 10376, name: 'EBV' },
+    { ncbi_taxon_id: 694009, name: 'SARS' },
+    { ncbi_taxon_id: 11234, name: 'Measles' },
+]
+
+const MatureCard: React.FC = () => {
+    const [active, setActive] = useState<number>(taxa[0].ncbi_taxon_id)
+    const [resource, setResource] = useState<Resource<Mature[]>>(resources.matures(taxa[0].ncbi_taxon_id))
+
+    const handleChangeTab = (e: React.MouseEvent, ncbi_taxon_id: number) => {
+        e.preventDefault()
+        setActive(ncbi_taxon_id)
+        setResource(resources.matures(ncbi_taxon_id))
+    }
+
+    return (
+        <div className="card mb-4">
+            <div className="card-header">
+                <h2>Viral annotation examples</h2>
+                <ul className="nav nav-tabs card-header-tabs">
+                    {taxa.map((taxon, i) => (
+                        <li key={i} className="nav-item">
+                            <a
+                                href="/"
+                                className={`nav-link ${active === taxon.ncbi_taxon_id ? 'active' : ''}`}
+                                onClick={e => handleChangeTab(e, taxon.ncbi_taxon_id)}
+                            >
+                                {taxon.name}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <Suspense fallback={<MatureCardTable />}>
+                <MatureCardTable resource={resource} />
+            </Suspense>
+        </div>
+    )
+}
+
+type MatureCardTableProps = {
+    resource?: Resource<Mature[]>
+}
+
+const MatureCardTable: React.FC<MatureCardTableProps> = ({ resource = null }) => {
+    const matures = resource ? resource.read() : null
+
+    if (!matures) return null
+
+    return (
+        <div className="card-body" style={{ height: "300px", overflowY: 'auto' }}>
+            <ul className="mb-0">
+                {matures.map((mature, i) => (
+                    <li key={i}>
+                        {mature.name} =&gt; {mature.proteins
+                            .map<React.ReactNode>((protein, j) => <ProteinLink key={j} id={protein.id} target="_blank">{protein.accession}</ProteinLink>)
+                            .reduce((prev, curr) => [prev, ', ', curr])}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+}

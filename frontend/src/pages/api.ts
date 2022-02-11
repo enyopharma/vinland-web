@@ -2,11 +2,12 @@ import qs from 'querystring'
 import fetch from 'cross-fetch'
 import { cache } from 'app/cache'
 
-import { Stats, Protein, Isoform, Feature, TargetingSequence, Interactor, Interaction, Description } from './types'
+import { Stats, Protein, Isoform, Feature, TargetingSequence, Interactor, Interaction, Description, Mature } from './types'
 
 const limit = 20
 
 const stats = cache<Stats>()
+const matures = cache<Mature[]>()
 const protein = cache<Protein>()
 const proteins = cache<Protein[]>()
 const isoforms = cache<Isoform[]>()
@@ -19,6 +20,10 @@ const descriptions = cache<Description[]>()
 export const resources = {
     stats: () => {
         return stats.resource('stats', () => fetchStats())
+    },
+
+    matures: (ncbi_taxon_id: number) => {
+        return matures.resource(ncbi_taxon_id, () => fetchMatures(ncbi_taxon_id))
     },
 
     protein: (id: number) => {
@@ -59,6 +64,19 @@ export const resources = {
 
 const fetchStats = async () => {
     const response = await fetch(`/api/stats`)
+    const json = await response.json()
+
+    if (!json.success) {
+        throw new Error(json)
+    }
+
+    return json.data
+}
+
+const fetchMatures = async (ncbi_taxon_id: number) => {
+    const params = { headers: { accept: 'application/json' } }
+
+    const response = await fetch(`/api/matures/${ncbi_taxon_id}`, params)
     const json = await response.json()
 
     if (!json.success) {
