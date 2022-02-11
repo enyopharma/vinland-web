@@ -34,39 +34,8 @@ export const HomePage: React.FC = () => {
             </div>
             <StatsCard />
             <MatureCard />
-            <div className="card mb-4">
-                <div className="card-header">
-                    <h2>Network visualization examples</h2>
-                </div>
-                <div className="card-body">
-                    <div className="row">
-                        <div className="col-md">
-                            <figure className="figure mb-4 mb-md-0">
-                                <img src="./examples/autophagy-cropped.png" className="figure-img img-fluid" alt="Autophagy - VH network" />
-                                <figcaption className="figure-caption">Autophagy - VH network</figcaption>
-                            </figure>
-                        </div>
-                        <div className="col-md">
-                            <figure className="figure mb-0">
-                                <img src="./examples/hepatitis-c-cropped.png" className="figure-img img-fluid" alt="Hepatitis C - VH network" />
-                                <figcaption className="figure-caption">Hepatitis C - VH network</figcaption>
-                            </figure>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="contact" className="card">
-                <div className="card-header">
-                    <h2>Contact</h2>
-                </div>
-                <div className="card-body">
-                    Send us general questions and feedback at <a
-                        href="mailto:bioinformatics@enyopharma.com"
-                        target="_blank"
-                        rel="noreferrer"
-                    >bioinformatics@enyopharma.com</a>.
-                </div>
-            </div>
+            <NetworkCard />
+            <ContactCard />
         </div>
     )
 }
@@ -186,9 +155,11 @@ const MatureCard: React.FC = () => {
                     ))}
                 </ul>
             </div>
-            <Suspense fallback={<MatureCardTable />}>
-                <MatureCardTable resource={resource} />
-            </Suspense>
+            <div style={{ height: "400px", overflowY: 'auto' }}>
+                <Suspense fallback={<MatureCardTable />}>
+                    <MatureCardTable resource={resource} />
+                </Suspense>
+            </div>
         </div>
     )
 }
@@ -203,7 +174,7 @@ const MatureCardTable: React.FC<MatureCardTableProps> = ({ resource = null }) =>
     if (!matures) return null
 
     return (
-        <div className="card-body" style={{ height: "300px", overflowY: 'auto' }}>
+        <div className="card-body">
             <ul className="mb-0">
                 {matures.map((mature, i) => (
                     <li key={i}>
@@ -216,3 +187,42 @@ const MatureCardTable: React.FC<MatureCardTableProps> = ({ resource = null }) =>
         </div>
     )
 }
+
+const NetworkCard: React.FC = () => (
+    <div className="card mb-4">
+        <div className="card-header">
+            <h2>Network visualization examples</h2>
+        </div>
+        <div className="card-body">
+            <div className="row">
+                <div className="col-md">
+                    <figure className="figure mb-4 mb-md-0">
+                        <img src="./examples/autophagy-cropped.png" className="figure-img img-fluid" alt="Autophagy - VH network" />
+                        <figcaption className="figure-caption">Autophagy - VH network</figcaption>
+                    </figure>
+                </div>
+                <div className="col-md">
+                    <figure className="figure mb-0">
+                        <img src="./examples/hepatitis-c-cropped.png" className="figure-img img-fluid" alt="Hepatitis C - VH network" />
+                        <figcaption className="figure-caption">Hepatitis C - VH network</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+)
+
+const ContactCard: React.FC = () => (
+    <div id="contact" className="card">
+        <div className="card-header">
+            <h2>Contact</h2>
+        </div>
+        <div className="card-body">
+            Send us general questions and feedback at <a
+                href="mailto:bioinformatics@enyopharma.com"
+                target="_blank"
+                rel="noreferrer"
+            >bioinformatics@enyopharma.com</a>.
+        </div>
+    </div>
+)
