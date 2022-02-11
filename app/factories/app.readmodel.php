@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\ReadModel\StatViewInterface;
 use App\ReadModel\TaxonViewInterface;
+use App\ReadModel\MatureViewInterface;
 use App\ReadModel\ProteinViewInterface;
 use App\ReadModel\IsoformViewInterface;
 use App\ReadModel\FeatureViewInterface;
@@ -19,6 +20,10 @@ return [
     ),
 
     ProteinViewInterface::class => fn ($c) => new App\ReadModel\ProteinViewSql(
+        $c->get(PDO::class),
+    ),
+
+    MatureViewInterface::class => fn ($c) => new App\ReadModel\MatureViewSql(
         $c->get(PDO::class),
     ),
 

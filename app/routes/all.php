@@ -95,6 +95,12 @@ return function (ContainerInterface $container): array {
                 $container->get(App\ReadModel\TaxonViewInterface::class),
             ))),
 
+        Route::matching('/matures/{ncbi_taxon_id:\d+}')
+            ->get($endpoint(new App\Endpoints\Matures\IndexEndpoint(
+                $container->get(App\ReadModel\TaxonViewInterface::class),
+                $container->get(App\ReadModel\MatureViewInterface::class),
+            ))),
+
         Route::matching('/interactions')
             ->middleware(new App\Middleware\InputValidationMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
