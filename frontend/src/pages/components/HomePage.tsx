@@ -1,7 +1,6 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { resources } from '../api'
-import { Resource, Stats, Mature } from '../types'
-import { ProteinLink } from 'partials'
+import { Resource, Stats } from '../types'
 
 export const HomePage: React.FC = () => {
     useEffect(() => {
@@ -39,7 +38,7 @@ export const HomePage: React.FC = () => {
                 </p>
             </div>
             <StatsCard />
-            <MatureCard />
+            {/** <MatureCard /> */}
             <NetworkCard />
             <ContactCard />
         </div>
@@ -121,6 +120,7 @@ const StatsCardTable: React.FC<StatsCardTableProps> = ({ resource = null }) => {
     )
 }
 
+/**
 const taxa = [
     { ncbi_taxon_id: 11320, name: 'Flua' },
     { ncbi_taxon_id: 11676, name: 'HIV1' },
@@ -195,6 +195,7 @@ const MatureCardTable: React.FC<MatureCardTableProps> = ({ resource = null }) =>
         </div>
     )
 }
+*/
 
 const NetworkCard: React.FC = () => (
     <div id="network" className="card mb-4">
