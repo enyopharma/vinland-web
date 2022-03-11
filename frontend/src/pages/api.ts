@@ -128,7 +128,7 @@ const fetchIsoforms = async (protein_id: number): Promise<Isoform[]> => {
 
 const fetchFeatures = async (protein_id: number, isoform_id: number): Promise<Feature[]> => {
     const params = { headers: { accept: 'application/json' } }
-    console.log(`/api/proteins/${protein_id}/isoforms/${isoform_id}/features`)
+
     const response = await fetch(`/api/proteins/${protein_id}/isoforms/${isoform_id}/features`, params)
     const json = await response.json()
 
