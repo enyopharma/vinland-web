@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, Link, useLocation } from 'react-router-dom';
+import Analytics from 'react-ga';
 
 import { store } from 'app/store'
 import { Timeout, Dots } from 'partials'
@@ -14,6 +15,7 @@ const InteractionSearchPage = React.lazy(() => import('form').then(module => ({ 
 export const App: React.FC = () => (
     <Provider store={store}>
         <BrowserRouter basename="/">
+            <WithAnalytics />
             <ScrollToTop />
             <Navbar />
             <React.Suspense fallback={<Fallback />}>
@@ -28,6 +30,15 @@ export const App: React.FC = () => (
         </BrowserRouter>
     </Provider>
 )
+
+const WithAnalytics: React.FC = () => {
+    const { pathname } = useLocation()
+
+    useEffect(() => { Analytics.initialize('G-13D60DCHDX') }, [])
+    useEffect(() => { Analytics.pageview(pathname) }, [pathname])
+
+    return null
+}
 
 const ScrollToTop: React.FC = () => {
     const { pathname } = useLocation()
