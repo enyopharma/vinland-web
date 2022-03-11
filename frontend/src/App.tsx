@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
-import { BrowserRouter, Switch, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Link, useHistory, useLocation } from 'react-router-dom';
 import Analytics from 'react-ga';
 
 import { store } from 'app/store'
@@ -15,7 +15,7 @@ const InteractionSearchPage = React.lazy(() => import('form').then(module => ({ 
 export const App: React.FC = () => (
     <Provider store={store}>
         <BrowserRouter basename="/">
-            <WithAnalytics />
+            <TrackPath />
             <ScrollToTop />
             <Navbar />
             <React.Suspense fallback={<Fallback />}>
@@ -31,7 +31,7 @@ export const App: React.FC = () => (
     </Provider>
 )
 
-const WithAnalytics: React.FC = () => {
+const TrackPath: React.FC = () => {
     const { pathname } = useLocation()
 
     useEffect(() => { Analytics.initialize('G-13D60DCHDX') }, [])
@@ -58,34 +58,48 @@ const Fallback: React.FC = () => (
     </Timeout>
 )
 
-const Navbar: React.FC = () => (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div className="container">
-            <Link className="navbar-brand" to="/">Vinland</Link>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navcontent">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div id="navcontent" className="collapse navbar-collapse">
-                <ul className="navbar-nav">
-                    <li>
-                        <Link className="nav-link" to="/proteins">
-                            Proteins
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="nav-link" to="/interactions">
-                            Interactions
-                        </Link>
-                    </li>
-                </ul>
-                <ul className="navbar-nav ml-auto">
-                    <li className="nav-item">
-                        <a className="nav-link" rel="noreferrer" href="/#contact">
-                            Contact
-                        </a>
-                    </li>
-                </ul>
+const Navbar: React.FC = () => {
+    const history = useHistory()
+    const { pathname } = useLocation()
+
+    const handleContactClick = () => {
+        if (pathname === '/') {
+            document.getElementById('contact')?.scrollIntoView()
+            return
+        }
+
+        history.push('/#contact')
+    }
+
+    return (
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div className="container">
+                <Link className="navbar-brand" to="/">Vinland</Link>
+                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navcontent">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div id="navcontent" className="collapse navbar-collapse">
+                    <ul className="navbar-nav">
+                        <li>
+                            <Link className="nav-link" to="/proteins">
+                                Proteins
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="nav-link" to="/interactions">
+                                Interactions
+                            </Link>
+                        </li>
+                    </ul>
+                    <ul className="navbar-nav ml-auto">
+                        <li className="nav-item">
+                            <button className="nav-link btn-contact" onClick={() => { handleContactClick() }}>
+                                Contact
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-)
+        </nav>
+    )
+}
