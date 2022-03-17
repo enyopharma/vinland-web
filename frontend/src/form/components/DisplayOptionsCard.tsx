@@ -32,6 +32,24 @@ export const DisplayOptionsCard: React.FC = () => (
                     </div>
                 </div>
             </div>
+            <div className="row mb-4">
+                <div className="col">
+                    <div className="form-check form-check-inline">
+                        <IsGoldCheckbox id="is_gold" />
+                        <label className="form-check-label" htmlFor="is_gold">
+                            Gold interactions (&gt; 1 publication or &gt; 1 detection method)
+                        </label>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="form-check form-check-inline">
+                        <IsBinaryCheckbox id="is_binary" />
+                        <label className="form-check-label" htmlFor="is_binary">
+                            Binary interactions (at least one binary detection method)
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div className="row">
                 <div className="col">
                     <PublicationsLabel id="publications" />
@@ -100,6 +118,44 @@ const NeighborsCheckbox: React.FC<NeighborsCheckboxProps> = ({ id }) => {
             className="form-check-input"
             checked={checked}
             disabled={disabled}
+            onChange={e => update(e.target.checked)}
+        />
+    )
+}
+
+type IsGoldCheckboxProps = {
+    id: string
+}
+
+const IsGoldCheckbox: React.FC<IsGoldCheckboxProps> = ({ id }) => {
+    const checked = useSelector(state => state.options.is_gold)
+    const update = useActionCreator(actions.setIsGold)
+
+    return (
+        <input
+            id={id}
+            type="checkbox"
+            className="form-check-input"
+            checked={checked}
+            onChange={e => update(e.target.checked)}
+        />
+    )
+}
+
+type IsBinaryCheckboxProps = {
+    id: string
+}
+
+const IsBinaryCheckbox: React.FC<IsBinaryCheckboxProps> = ({ id }) => {
+    const checked = useSelector(state => state.options.is_binary)
+    const update = useActionCreator(actions.setIsBinary)
+
+    return (
+        <input
+            id={id}
+            type="checkbox"
+            className="form-check-input"
+            checked={checked}
             onChange={e => update(e.target.checked)}
         />
     )

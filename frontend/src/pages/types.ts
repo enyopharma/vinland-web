@@ -67,6 +67,7 @@ export type Description = {
     method: {
         psimi_id: string
         name: string
+        is_binary: boolean
     }
     mappings: Mapping[]
 }

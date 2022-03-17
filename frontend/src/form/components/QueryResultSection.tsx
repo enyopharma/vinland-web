@@ -55,5 +55,7 @@ export const state2resource = (state: PageState) => ({
         neighbors: state.options.neighbors,
         publications: state.options.publications,
         methods: state.options.methods,
+        is_gold: state.options.is_gold,
+        is_binary: state.options.is_binary,
     })
 })

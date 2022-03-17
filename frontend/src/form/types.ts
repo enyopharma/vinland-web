@@ -57,6 +57,8 @@ export type DisplayOptions = {
     neighbors: boolean
     publications: number
     methods: number
+    is_gold: boolean
+    is_binary: boolean
 }
 
 export type ResultNav = {
@@ -90,6 +92,8 @@ export type Query = {
     neighbors: boolean
     publications: number
     methods: number
+    is_gold: boolean
+    is_binary: boolean
 }
 
 export type QueryResult =

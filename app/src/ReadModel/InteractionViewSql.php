@@ -32,7 +32,7 @@ final class InteractionViewSql implements InteractionViewInterface
     SQL;
 
     const SELECT_HH_INTERACTIONS_SQL = <<<SQL
-        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods,
+        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods, i.is_gold, i.is_binary,
             p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1,
             p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2
         FROM edges AS e, interactions AS i, proteins AS p1, proteins AS p2
@@ -42,12 +42,14 @@ final class InteractionViewSql implements InteractionViewInterface
         AND i.type = 'hh'
         AND i.nb_publications >= ?
         AND i.nb_methods >= ?
+        AND (NOT(?) OR i.is_gold)
+        AND (NOT(?) OR i.is_binary)
         AND e.source_id = ANY (?::int[]) AND (? OR e.target_id = ANY (?::int[]))
         ORDER BY i.id ASC
     SQL;
 
     const SELECT_VH_INTERACTIONS_SQL = <<<SQL
-        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods,
+        SELECT DISTINCT i.id, i.type, i.nb_publications, i.nb_methods, i.is_gold, i.is_binary,
             p1.id AS id1, p1.type AS type1, p1.accession AS accession1, p1.name AS name1, p1.description AS description1,
             p2.id AS id2, p2.type AS type2, p2.accession AS accession2, p2.name AS name2, p2.description AS description2,
             t.ncbi_taxon_id, t.name AS taxon_name,
@@ -60,6 +62,8 @@ final class InteractionViewSql implements InteractionViewInterface
         AND s.ncbi_taxon_id = t.ncbi_species_id
         AND i.nb_publications >= ?
         AND i.nb_methods >= ?
+        AND (NOT(?) OR i.is_gold)
+        AND (NOT(?) OR i.is_binary)
         AND (? OR p1.id = ANY (?::int[]))
         AND (? OR p2.id = ANY (?::int[]))
         ORDER BY i.id ASC
@@ -67,7 +71,8 @@ final class InteractionViewSql implements InteractionViewInterface
 
     public function __construct(
         private \PDO $pdo,
-    ) {}
+    ) {
+    }
 
     public function id(int $id): Statement
     {
@@ -85,17 +90,17 @@ final class InteractionViewSql implements InteractionViewInterface
         $neighbors = $input->neighbors();
         [$identifiers] = $input->human();
         [$ncbi_taxon_id, $names] = $input->virus();
-        [$nb_publications, $nb_methods] = $input->filters();
+        [$nb_publications, $nb_methods, $is_gold, $is_binary] = $input->filters();
 
         $idhs = $this->humanProteinIds(...$identifiers);
         $idvs = $this->viralProteinIds($ncbi_taxon_id, ...$names);
 
         $hhinteractions = $hh
-            ? $this->HHInteractions($idhs, $nb_publications, $nb_methods, $neighbors)
+            ? $this->HHInteractions($idhs, $neighbors, $nb_publications, $nb_methods, $is_gold, $is_binary)
             : [];
 
         $vhinteractions = $vh
-            ? $this->VHInteractions($idhs, $idvs, $ncbi_taxon_id, $nb_publications, $nb_methods)
+            ? $this->VHInteractions($idhs, $idvs, $ncbi_taxon_id, $nb_publications, $nb_methods, $is_gold, $is_binary)
             : [];
 
         return Statement::from($this->merged($hhinteractions, $vhinteractions));
@@ -154,8 +159,14 @@ final class InteractionViewSql implements InteractionViewInterface
         return $proteins;
     }
 
-    private function HHInteractions(array $ids, int $nb_publications, int $nb_methods, bool $neighbors): iterable
-    {
+    private function HHInteractions(
+        array $ids,
+        bool $neighbors,
+        int $nb_publications,
+        int $nb_methods,
+        bool $is_gold,
+        bool $is_binary,
+    ): iterable {
         if (count($ids) == 0) {
             return [];
         }
@@ -165,6 +176,8 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_interactions_sth->execute([
             $nb_publications,
             $nb_methods,
+            (int) $is_gold,
+            (int) $is_binary,
             '{' . implode(',', $ids) . '}',
             (int) $neighbors,
             '{' . implode(',', $ids) . '}',
@@ -173,8 +186,15 @@ final class InteractionViewSql implements InteractionViewInterface
         return $this->generator($select_interactions_sth);
     }
 
-    private function VHInteractions(array $idhs, array $idvs, int $ncbi_taxon_id, int $nb_publications, int $nb_methods): iterable
-    {
+    private function VHInteractions(
+        array $idhs,
+        array $idvs,
+        int $ncbi_taxon_id,
+        int $nb_publications,
+        int $nb_methods,
+        bool $is_gold,
+        bool $is_binary,
+    ): iterable {
         if ((count($idhs) == 0 || $ncbi_taxon_id > 0) && count($idvs) == 0) {
             return [];
         }
@@ -184,6 +204,8 @@ final class InteractionViewSql implements InteractionViewInterface
         $select_interactions_sth->execute([
             $nb_publications,
             $nb_methods,
+            (int) $is_gold,
+            (int) $is_binary,
             (int) (count($idhs) == 0),
             '{' . implode(',', $idhs) . '}',
             (int) (count($idvs) == 0),
@@ -244,6 +266,8 @@ final class InteractionViewSql implements InteractionViewInterface
                 'methods' => [
                     'nb' => $row['nb_methods'],
                 ],
+                'is_gold' => $row['is_gold'],
+                'is_binary' => $row['is_binary'],
             ];
         }
     }

@@ -18,9 +18,10 @@ export const DescriptionTable: React.FC<DescriptionTableProps> = ({ descriptions
         <thead>
             <tr>
                 <th className="text-center">Publication</th>
-                <th className="text-center" style={{ width: '24%' }}>Method</th>
-                <th className="text-center" style={{ width: '32%' }}>Mapping 1</th>
-                <th className="text-center" style={{ width: '32%' }}>Mapping 2</th>
+                <th className="text-center" style={{ width: '20%' }}>Method</th>
+                <th className="text-center" style={{ width: '8%' }}>Binary</th>
+                <th className="text-center" style={{ width: '30%' }}>Mapping 1</th>
+                <th className="text-center" style={{ width: '30%' }}>Mapping 2</th>
             </tr>
         </thead>
         <tbody>
@@ -67,23 +68,28 @@ const DescriptionTr: React.FC<DescriptionTrProps> = ({ type1, type2, isoform1, i
                     </span>
                 </td>
                 <td className="text-center">
+                    {description.method.is_binary && <>&#10003;</>}
+                </td>
+                <td className="text-center">
                     {clx1.length === 0 ? '-' : <MappingImg type={type1} width={width1} mappables={clx1[0]} />}
                 </td>
                 <td className="text-center">
                     {clx2.length === 0 ? '-' : <MappingImg type={type2} width={width2} mappables={clx2[0]} />}
                 </td>
             </tr>
-            {maxclx > 0 && [...Array(maxclx - 1)].map((_, i) => (
-                <tr key={i + 1}>
-                    <td className="text-center">
-                        {clx1[i + 1] && <MappingImg type={type1} width={width1} mappables={clx1[i + 1]} />}
-                    </td>
-                    <td className="text-center">
-                        {clx2[i + 1] && <MappingImg type={type2} width={width2} mappables={clx2[i + 1]} />}
-                    </td>
-                </tr>
-            ))}
-        </React.Fragment>
+            {
+                maxclx > 0 && [...Array(maxclx - 1)].map((_, i) => (
+                    <tr key={i + 1}>
+                        <td className="text-center">
+                            {clx1[i + 1] && <MappingImg type={type1} width={width1} mappables={clx1[i + 1]} />}
+                        </td>
+                        <td className="text-center">
+                            {clx2[i + 1] && <MappingImg type={type2} width={width2} mappables={clx2[i + 1]} />}
+                        </td>
+                    </tr>
+                ))
+            }
+        </React.Fragment >
     )
 }
 

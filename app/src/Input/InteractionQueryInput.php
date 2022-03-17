@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Input;
 
@@ -21,7 +23,8 @@ final class InteractionQueryInput
         $is_str = OfType::guard('string');
         $is_arr = OfType::guard('array');
 
-        return new ArrayFactory([self::class, 'from'],
+        return new ArrayFactory(
+            [self::class, 'from'],
             Field::required('key', $is_str)->focus(),
             Field::required('identifiers', $is_arr)->focus(),
             Field::required('ncbi_taxon_id', $is_int)->focus(),
@@ -31,6 +34,8 @@ final class InteractionQueryInput
             Field::required('neighbors', $is_bln)->focus(),
             Field::required('publications', $is_int)->focus(),
             Field::required('methods', $is_int)->focus(),
+            Field::required('is_gold', $is_bln)->focus(),
+            Field::required('is_binary', $is_bln)->focus(),
         );
     }
 
@@ -44,11 +49,13 @@ final class InteractionQueryInput
         bool $neighbors,
         int $publications,
         int $methods,
+        bool $is_gold,
+        bool $is_binary,
     ): self {
         $sanitized_ids = array_unique(array_map('strtoupper', array_filter($identifiers, 'is_string')));
         $sanitized_names = array_unique(array_filter($names, 'is_string'));
 
-        $input = new self($key, $sanitized_ids, $ncbi_taxon_id, $sanitized_names, $hh, $vh, $neighbors, $publications, $methods);
+        $input = new self($key, $sanitized_ids, $ncbi_taxon_id, $sanitized_names, $hh, $vh, $neighbors, $publications, $methods, $is_gold, $is_binary);
 
         $errors = $input->validate($identifiers, $names);
 
@@ -69,7 +76,10 @@ final class InteractionQueryInput
         private bool $neighbors,
         private int $publications,
         private int $methods,
-    ) {}
+        private bool $is_gold,
+        private bool $is_binary,
+    ) {
+    }
 
     public function key(): string
     {
@@ -91,11 +101,6 @@ final class InteractionQueryInput
         return [$this->ncbi_taxon_id, $this->names];
     }
 
-    public function neighbors(): bool
-    {
-        return $this->neighbors;
-    }
-
     public function hh(): bool
     {
         return $this->hh;
@@ -106,9 +111,14 @@ final class InteractionQueryInput
         return $this->vh;
     }
 
+    public function neighbors(): bool
+    {
+        return $this->neighbors;
+    }
+
     public function filters(): array
     {
-        return [$this->publications, $this->methods];
+        return [$this->publications, $this->methods, $this->is_gold, $this->is_binary];
     }
 
     private function validate(array $raw_identifiers, array $raw_names): array

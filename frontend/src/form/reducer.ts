@@ -54,6 +54,8 @@ const makeKey = (parsed: string[], taxonomy: Taxonomy, options: DisplayOptions) 
     if (options.hh && options.neighbors) parts.push('NEIGHBORS')
     parts.push(options.publications.toString())
     parts.push(options.methods.toString())
+    if (options.is_gold) parts.push('GOLD')
+    if (options.is_binary) parts.push('BINARY')
     parts.push(ncbi_taxon_id.toString())
     parts.push(...[...taxonomy.names].sort((a: string, b: string) => a.localeCompare(b))) // sort is mutating the readonly array
     parts.push(...parsed.sort((a: string, b: string) => a.localeCompare(b)))

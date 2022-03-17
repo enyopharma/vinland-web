@@ -85,11 +85,11 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
 
     return (
         <React.Fragment>
-            <h1>
+            <h1 className="mb-4">
                 <InteractionLinkImg {...interaction} /> {interaction.type.toUpperCase()} Interaction ID card
             </h1>
             <div className="row">
-                <div className="col offset-4">
+                <div className="col">
                     <h2>
                         <ProteinLinkImg {...protein1} /> {protein1.accession}/{protein1.name}
                     </h2>
@@ -101,7 +101,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                 </div>
             </div>
             <div className="row">
-                <div className="col offset-4">
+                <div className="col">
                     <p>
                         {protein1.taxon} - {protein1.description}
                     </p>
@@ -113,7 +113,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                 </div>
             </div>
             <div className="row mb-4">
-                <div className="col offset-4">
+                <div className="col">
                     <IsoformSelectbox isoforms={isoforms1} selected={selected1} update={setSelected1} />
                 </div>
                 <div className="col">
@@ -121,7 +121,7 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
                 </div>
             </div>
             <div className="row mb-4">
-                <div className="col offset-4">
+                <div className="col">
                     <h3>{isoform1.accession} [{isoform1.start} - {isoform1.stop}]</h3>
                     <div className="form-group">
                         <textarea className="form-control" value={isoform1.sequence} rows={3} readOnly={true} />

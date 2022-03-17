@@ -9,6 +9,8 @@ const initialState: DisplayOptions = {
     neighbors: false,
     publications: 1,
     methods: 1,
+    is_gold: false,
+    is_binary: false,
 }
 
 export const { reducer, actions } = createSlice({
@@ -43,6 +45,18 @@ export const { reducer, actions } = createSlice({
             prepare: (methods: number) => ({ payload: { methods } }),
             reducer: (state, action: PayloadAction<{ methods: number }>) => {
                 state.methods = Math.max(1, action.payload.methods)
+            },
+        },
+        setIsGold: {
+            prepare: (is_gold: boolean) => ({ payload: { is_gold } }),
+            reducer: (state, action: PayloadAction<{ is_gold: boolean }>) => {
+                state.is_gold = action.payload.is_gold
+            },
+        },
+        setIsBinary: {
+            prepare: (is_binary: boolean) => ({ payload: { is_binary } }),
+            reducer: (state, action: PayloadAction<{ is_binary: boolean }>) => {
+                state.is_binary = action.payload.is_binary
             },
         },
     },

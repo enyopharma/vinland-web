@@ -7,7 +7,7 @@ namespace App\ReadModel;
 final class DescriptionViewSql implements DescriptionViewInterface
 {
     const SELECT_DESCRIPTIONS_SQL = <<<SQL
-        SELECT d.id, d.pmid, p.title, p.year, m.psimi_id, m.name
+        SELECT d.id, d.pmid, p.title, p.year, m.psimi_id, m.name, m.is_binary
         FROM descriptions AS d LEFT JOIN publications AS p ON d.pmid = p.pmid, methods AS m
         WHERE d.interaction_id = ?
         AND m.id = d.method_id
@@ -56,6 +56,7 @@ final class DescriptionViewSql implements DescriptionViewInterface
                 'method' => [
                     'psimi_id' => $row['psimi_id'],
                     'name' => $row['name'],
+                    'is_binary' => $row['is_binary'],
                 ],
                 'mappings' => array_values(array_filter($mappings, function (array $mapping) use ($row) {
                     return $row['id'] == $mapping['description_id'];
