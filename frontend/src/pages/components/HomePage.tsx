@@ -31,9 +31,8 @@ export const HomePage: React.FC = () => {
                     Vinland provides original information on protein interaction sequences. The viral protein interfaces of 5 to 20 amino acids are peptides that can be used as new chemical entities to manipulate cellular functions.
                 </p>
                 <p className="mb-0">
-                    <a href="#stats">Stats</a>&nbsp;-&nbsp;
-                    <a href="#annotation">Viral annotation</a>&nbsp;-&nbsp;
-                    <a href="#network">Network visualization</a>&nbsp;-&nbsp;
+                    <a href="#stats">Stats</a>{' - '}
+                    <a href="#network">Network visualization</a>{' - '}
                     <a href="#contact">Contact</a>
                 </p>
             </div>
