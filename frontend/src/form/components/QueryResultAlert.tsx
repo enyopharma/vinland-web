@@ -20,7 +20,7 @@ export const QueryResultAlert: React.FC<QueryResultAlertProps> = ({ result }) =>
 }
 
 const AlertIncomplete: React.FC = () => (
-    <div className="alert alert-info">
+    <div className="alert alert-primary">
         Not enough information to query vinland.
     </div>
 )
