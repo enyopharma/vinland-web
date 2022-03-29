@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import { Timeout, Dots } from 'partials'
 
@@ -135,9 +136,7 @@ const NetworkCardBodyFetcher: React.FC<NetworkCardBodyFetcherProps> = ({ cache }
         return (
             <div className="card-body">
                 Displaying a network of {cache.interactions.length} interactions can be very slow.
-                <button type="button" className="btn btn-link" onClick={() => bypass()}>
-                    Display anyway.
-                </button>
+                {' '}<Link to="#" onClick={() => bypass()}>Display anyway</Link>.
             </div>
         )
     }
