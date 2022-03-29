@@ -35,14 +35,14 @@ export const IdentifierCard: React.FC = () => {
     return (
         <div className="card">
             <div className="card-body">
-                <div className="alert alert-primary">
+                <p className="text-muted">
                     Many lists of uniprot accession number or uniprot name can be used to filter human proteins.
                     {' '}Predefined <Link to="#" onClick={setExample}>annotations</Link> are available.
-                </div>
+                </p>
                 <AnnotationInput select={select} />
                 <hr />
                 <IdentifierListFormGroupCollection />
-                <button type="button" className="btn btn-info btn-block" onClick={add}>
+                <button type="button" className="btn btn-primary btn-block" onClick={add}>
                     Add a new identifier list
                 </button>
             </div>

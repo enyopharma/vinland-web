@@ -27,20 +27,24 @@ const useTaxon = (): [Taxon | null, Resource<[RelatedTaxa, Name[]]>, (taxon: Tax
 export const TaxonomyCard: React.FC = () => {
     const [taxon, resource, setTaxon] = useTaxon()
 
+    const setExample = useCallback(() => { setTaxon(example) }, [setTaxon])
+
+    const Alert = <ExampleAlert setExample={setExample} />
+
     return taxon === null
-        ? <CardWithoutSelectedTaxon select={setTaxon} />
-        : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={setTaxon} />
+        ? <CardWithoutSelectedTaxon select={setTaxon}>{Alert}</CardWithoutSelectedTaxon>
+        : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={setTaxon}>{Alert}</CardWithSelectedTaxon>
 }
 
-const ExampleAlert: React.FC = () => {
-    const select = useActionCreator(actions.select)
+type ExampleAlertProps = {
+    setExample: () => void
+}
 
-    const setExample = useCallback(() => { select(example) }, [])
-
+const ExampleAlert: React.FC<ExampleAlertProps> = ({ setExample }) => {
     return (
-        <div className="alert alert-primary">
+        <p className="text-muted">
             Any <Link to="#" onClick={setExample}>viral taxon</Link> can be selected to filter viral protein.
-        </div>
+        </p>
     )
 }
 
@@ -58,14 +62,14 @@ const useQuery = (init: string = ''): [string, Resource<SearchResult<Taxon>[]>, 
     }]
 }
 
-const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ select }) => {
+const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ select, children }) => {
     const input = useRef<HTMLInputElement>(null)
     const [query, resource, setQuery] = useQuery('')
 
     return (
         <div className="card">
             <div className="card-body">
-                <ExampleAlert />
+                {children}
                 <div className="form-group mb-0">
                     <div className="input-group">
                         <div className="input-group-prepend">
@@ -100,13 +104,13 @@ type CardWithSelectedTaxonProps = {
     select: (taxon: Taxon) => void
 }
 
-const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, select, resource }) => {
+const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, select, resource, children }) => {
     const unselect = useActionCreator(actions.unselect)
 
     return (
         <div className="card">
             <div className="card-body">
-                <ExampleAlert />
+                {children}
                 <div className="alert alert-danger mb-4">
                     {taxon.name}
                     <button type="button" className="close" onClick={unselect}>

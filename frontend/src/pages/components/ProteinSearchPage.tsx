@@ -70,12 +70,12 @@ export const ProteinSearchPage: React.FC = () => {
             <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
                 <div className="card">
                     <div className="card-body">
-                        <div className="alert alert-primary">
+                        <p className="text-muted">
                             A protein can be found using its
                             {' '}<Link to="#" onClick={setAccessionExample}>uniprot accession number</Link>
                             {' '}or
                             {' '}<Link to="#" onClick={setNameExample}>uniprot name</Link>.
-                        </div>
+                        </p>
                         <div className="form-group mb-0">
                             <div className="input-group">
                                 <div className="input-group-prepend">
