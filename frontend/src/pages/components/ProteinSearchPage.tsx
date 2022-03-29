@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 
 import { ProgressBar } from 'partials'
 
@@ -10,7 +10,19 @@ import { useSelector, useActionCreator } from '../hooks'
 
 const ProteinTable = React.lazy(() => import('./ProteinTable').then(module => ({ default: module.ProteinTable })))
 
-const useSearch = (): [string, string, Resource<Protein[]>, (t: string) => void, (q: string) => void] => {
+const example = { type: 'h' as 'h', accession: 'P27986', name: 'pik3r1' }
+
+type UseSearchState = [
+    string,
+    string,
+    Resource<Protein[]>,
+    (t: string) => void,
+    (q: string) => void,
+    () => void,
+    () => void,
+]
+
+const useSearch = (): UseSearchState => {
     const type = useSelector(state => state.proteins.type)
     const query = useSelector(state => state.proteins.query)
     const setType = useActionCreator(actions.setType)
@@ -29,13 +41,23 @@ const useSearch = (): [string, string, Resource<Protein[]>, (t: string) => void,
         (query: string) => {
             setQuery(query)
             setResource(resources.proteins(type, query))
-        }
+        },
+        () => {
+            setType(example.type)
+            setQuery(example.accession)
+            setResource(resources.proteins(example.type, example.accession))
+        },
+        () => {
+            setType(example.type)
+            setQuery(example.name)
+            setResource(resources.proteins(example.type, example.name))
+        },
     ]
 }
 
 export const ProteinSearchPage: React.FC = () => {
     const input = useRef<HTMLInputElement>(null)
-    const [type, query, resource, setType, setQuery] = useSearch()
+    const [type, query, resource, setType, setQuery, setAccessionExample, setNameExample] = useSearch()
 
     const isTypeEmpty = type.length === 0
     const isQueryEmpty = query.trim().length === 0
@@ -48,6 +70,12 @@ export const ProteinSearchPage: React.FC = () => {
             <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
                 <div className="card">
                     <div className="card-body">
+                        <div className="alert alert-primary">
+                            A protein can be found using its
+                            {' '}<Link to="#" onClick={setAccessionExample}>uniprot accession number</Link>
+                            {' '}or
+                            {' '}<Link to="#" onClick={setNameExample}>uniprot name</Link>.
+                        </div>
                         <div className="form-group mb-0">
                             <div className="input-group">
                                 <div className="input-group-prepend">
