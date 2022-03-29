@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { ProgressBar } from 'partials'
 
@@ -9,6 +10,8 @@ import { Resource, SearchResult, Taxon, RelatedTaxa, Name } from '../types'
 
 import { SearchOverlay } from './SearchOverlay'
 import { SearchResultList } from './SearchResultList'
+
+const example: Taxon = { ncbi_taxon_id: 11103, name: 'Hepacivirus C' }
 
 const useTaxon = (): [Taxon | null, Resource<[RelatedTaxa, Name[]]>, (taxon: Taxon) => void] => {
     const taxon = useSelector(state => state.taxonomy.taxon)
@@ -27,6 +30,18 @@ export const TaxonomyCard: React.FC = () => {
     return taxon === null
         ? <CardWithoutSelectedTaxon select={setTaxon} />
         : <CardWithSelectedTaxon taxon={taxon} resource={resource} select={setTaxon} />
+}
+
+const ExampleAlert: React.FC = () => {
+    const select = useActionCreator(actions.select)
+
+    const setExample = useCallback(() => { select(example) }, [])
+
+    return (
+        <div className="alert alert-primary">
+            Any <Link to="#" onClick={setExample}>viral taxon</Link> can be selected to filter viral protein.
+        </div>
+    )
 }
 
 type CardWithoutSelectedTaxonProps = {
@@ -50,6 +65,7 @@ const CardWithoutSelectedTaxon: React.FC<CardWithoutSelectedTaxonProps> = ({ sel
     return (
         <div className="card">
             <div className="card-body">
+                <ExampleAlert />
                 <div className="form-group mb-0">
                     <div className="input-group">
                         <div className="input-group-prepend">
@@ -90,6 +106,7 @@ const CardWithSelectedTaxon: React.FC<CardWithSelectedTaxonProps> = ({ taxon, se
     return (
         <div className="card">
             <div className="card-body">
+                <ExampleAlert />
                 <div className="alert alert-danger mb-4">
                     {taxon.name}
                     <button type="button" className="close" onClick={unselect}>
