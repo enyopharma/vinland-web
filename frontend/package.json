@@ -29,7 +29,6 @@
     "jquery": "^3.6.0",
     "konva": "^8.2.3",
     "md5": "^2.3.0",
-    "node-sass": "^4.14.1",
     "popper.js": "^1.16.1",
     "react": "^17.0.0",
     "react-bootstrap4-modal": "^1.7.6",
@@ -41,6 +40,7 @@
     "react-scripts": "^4.0.0",
     "react-spring": "^8.0.27",
     "react-toastify": "^5.5.0",
+    "sass": "^1.52.2",
     "typescript": "^4.4.4"
   },
   "scripts": {
