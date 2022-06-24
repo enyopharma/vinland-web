@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux'
 import { BrowserRouter, Switch, Route, Link, useHistory, useLocation } from 'react-router-dom';
-import Analytics from 'react-ga';
+import ReactGA from 'react-ga';
 
 import { store } from 'app/store'
 import { Timeout, Dots } from 'partials'
+
+ReactGA.initialize('G-13D60DCHDX')
 
 const HomePage = React.lazy(() => import('pages').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinPage })))
@@ -34,8 +36,7 @@ export const App: React.FC = () => (
 const TrackPath: React.FC = () => {
     const { pathname } = useLocation()
 
-    useEffect(() => { Analytics.initialize('G-13D60DCHDX') }, [])
-    useEffect(() => { Analytics.pageview(pathname) }, [pathname])
+    useEffect(() => { ReactGA.pageview(pathname) }, [pathname])
 
     return null
 }
