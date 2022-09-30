@@ -102,9 +102,8 @@ return function (ContainerInterface $container): array {
             ))),
 
         Route::matching('/interactions')
-            ->middleware(new App\Middleware\InputValidationMiddleware(
+            ->middleware(new App\Middleware\ValidateInteractionQueryMiddleware(
                 $container->get(Psr\Http\Message\ResponseFactoryInterface::class),
-                App\Input\InteractionQueryInput::factory(),
             ))
             ->post($endpoint(new App\Endpoints\Interactions\IndexEndpoint(
                 $container->get(App\ReadModel\InteractionViewInterface::class),

@@ -4,81 +4,98 @@ declare(strict_types=1);
 
 namespace App\Input;
 
+use Quanta\Validation;
 use Quanta\Validation\Error;
-use Quanta\Validation\Field;
-use Quanta\Validation\OfType;
-use Quanta\Validation\ArrayFactory;
+use Quanta\Validation\Factory;
+use Quanta\Validation\AbstractInput;
 use Quanta\Validation\InvalidDataException;
 
-final class InteractionQueryInput
+final class InteractionQueryInput extends AbstractInput
 {
     private const KEY_PATTERN = '/^[a-z0-9]{32}$/i';
 
     private const MAX_ID_THRESHOLD = 500;
 
-    public static function factory(): callable
+    protected static function validation(Factory $factory, Validation $v): Factory
     {
-        $is_bln = OfType::guard('boolean');
-        $is_int = OfType::guard('integer');
-        $is_str = OfType::guard('string');
-        $is_arr = OfType::guard('array');
-
-        return new ArrayFactory(
-            [self::class, 'from'],
-            Field::required('key', $is_str)->focus(),
-            Field::required('identifiers', $is_arr)->focus(),
-            Field::required('ncbi_taxon_id', $is_int)->focus(),
-            Field::required('names', $is_arr)->focus(),
-            Field::required('hh', $is_bln)->focus(),
-            Field::required('vh', $is_bln)->focus(),
-            Field::required('neighbors', $is_bln)->focus(),
-            Field::required('publications', $is_int)->focus(),
-            Field::required('methods', $is_int)->focus(),
-            Field::required('is_gold', $is_bln)->focus(),
-            Field::required('is_binary', $is_bln)->focus(),
+        return $factory->validation(
+            $v->key('key')->string(),
+            $v->key('identifiers')->array(),
+            $v->key('ncbi_taxon_id')->int(),
+            $v->key('names')->array(),
+            $v->key('publications')->int(),
+            $v->key('methods')->int(),
+            $v->key('hh')->bool(),
+            $v->key('vh')->bool(),
+            $v->key('neighbors')->bool(),
+            $v->key('is_gold')->bool(),
+            $v->key('is_binary')->bool(),
         );
     }
 
-    public static function from(
+    private string $key;
+
+    private array $identifiers;
+
+    private int $ncbi_taxon_id;
+
+    private array $names;
+
+    private int $publications;
+
+    private int $methods;
+
+    public function __construct(
         string $key,
         array $identifiers,
         int $ncbi_taxon_id,
         array $names,
-        bool $hh,
-        bool $vh,
-        bool $neighbors,
         int $publications,
         int $methods,
-        bool $is_gold,
-        bool $is_binary,
-    ): self {
-        $sanitized_ids = array_unique(array_map('strtoupper', array_filter($identifiers, 'is_string')));
-        $sanitized_names = array_unique(array_filter($names, 'is_string'));
-
-        $input = new self($key, $sanitized_ids, $ncbi_taxon_id, $sanitized_names, $hh, $vh, $neighbors, $publications, $methods, $is_gold, $is_binary);
-
-        $errors = $input->validate($identifiers, $names);
-
-        if (count($errors) == 0) {
-            return $input;
-        }
-
-        throw new InvalidDataException(...$errors);
-    }
-
-    private function __construct(
-        private string $key,
-        private array $identifiers,
-        private int $ncbi_taxon_id,
-        private array $names,
         private bool $hh,
         private bool $vh,
         private bool $neighbors,
-        private int $publications,
-        private int $methods,
         private bool $is_gold,
         private bool $is_binary,
     ) {
+        $errors = [];
+
+        if (preg_match(self::KEY_PATTERN, $key) === 0) {
+            $errors[] = Error::from(sprintf('key must match %s', self::KEY_PATTERN));
+        }
+
+        if (count($identifiers) > count(array_filter($identifiers, 'is_string'))) {
+            $errors[] = Error::from('identifiers must be strings');
+        } elseif (count($identifiers) > self::MAX_ID_THRESHOLD) {
+            $errors[] = Error::from(sprintf('identifiers must be %s unique max', self::MAX_ID_THRESHOLD));
+        }
+
+        if ($ncbi_taxon_id < 0) {
+            $errors[] = Error::from('ncbi_taxon_id must be positive');
+        }
+
+        if (count($names) > count(array_filter($names, 'is_string'))) {
+            $errors[] = Error::from('names must be strings');
+        }
+
+        if ($publications < 1) {
+            $errors[] = Error::from('publications must be greater than 0');
+        }
+
+        if ($methods < 1) {
+            $errors[] = Error::from('methods must be greater than 0');
+        }
+
+        if (count($errors) > 0) {
+            throw new InvalidDataException(...$errors);
+        }
+
+        $this->key = $key;
+        $this->identifiers = array_unique(array_map('strtoupper', $identifiers));
+        $this->ncbi_taxon_id = $ncbi_taxon_id;
+        $this->names = array_unique($names);
+        $this->publications = $publications;
+        $this->methods = $methods;
     }
 
     public function key(): string
@@ -119,38 +136,5 @@ final class InteractionQueryInput
     public function filters(): array
     {
         return [$this->publications, $this->methods, $this->is_gold, $this->is_binary];
-    }
-
-    private function validate(array $raw_identifiers, array $raw_names): array
-    {
-        $errors = [];
-
-        if (preg_match(self::KEY_PATTERN, $this->key) === 0) {
-            $errors[] = Error::nested('key', sprintf('must match %s', self::KEY_PATTERN));
-        }
-
-        if (count($raw_identifiers) > count(array_filter($raw_identifiers, 'is_string'))) {
-            $errors[] = Error::nested('identifiers', 'must be strings');
-        } elseif (count($this->identifiers) > self::MAX_ID_THRESHOLD) {
-            $errors[] = Error::nested('identifiers', sprintf('must be %s unique max', self::MAX_ID_THRESHOLD));
-        }
-
-        if ($this->ncbi_taxon_id < 0) {
-            $errors[] = Error::nested('ncbi_taxon_id', 'must be positive');
-        }
-
-        if (count($raw_names) > count(array_filter($raw_names, 'is_string'))) {
-            $errors[] = Error::nested('names', 'must be strings');
-        }
-
-        if ($this->publications < 1) {
-            $errors[] = Error::nested('publications', 'must be greater than 0');
-        }
-
-        if ($this->methods < 1) {
-            $errors[] = Error::nested('methods', 'must be greater than 0');
-        }
-
-        return $errors;
     }
 }

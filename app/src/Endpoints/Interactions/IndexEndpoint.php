@@ -16,11 +16,12 @@ final class IndexEndpoint
 
     public function __construct(
         private InteractionViewInterface $interactions,
-    ) {}
+    ) {
+    }
 
     public function __invoke(callable $input, callable $responder): ResponseInterface
     {
-        $query = $input('input');
+        $query = $input(InteractionQueryInput::class);
 
         if (!$query instanceof InteractionQueryInput) {
             throw new \LogicException;
@@ -31,7 +32,7 @@ final class IndexEndpoint
         $data = [
             'code' => 200,
             'success' => true,
-            'status' => $complete ? self::SUCCESS : self:: INCOMPLETE,
+            'status' => $complete ? self::SUCCESS : self::INCOMPLETE,
             'data' => $complete
                 ? $this->interactions->all($query)->fetchAll()
                 : [],
