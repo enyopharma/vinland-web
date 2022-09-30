@@ -26,5 +26,5 @@ return function (string $env, bool $debug): ContainerInterface {
         }
     };
 
-    return Quanta\Container::factories($factories());
+    return new Quanta\Container($factories());
 };

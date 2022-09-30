@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5f902a51bfe37b97727f4cda89ab44cd",
+    "content-hash": "0ec62360c5232f24da80a72aee30538e",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -554,22 +554,27 @@
         },
         {
             "name": "psr/container",
-            "version": "1.1.2",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/container.git",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea"
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/container/zipball/513e0666f7216c7459170d56df27dfcefe1689ea",
-                "reference": "513e0666f7216c7459170d56df27dfcefe1689ea",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/c71ecc56dfe541dbd90c5360474fbc405f8d5963",
+                "reference": "c71ecc56dfe541dbd90c5360474fbc405f8d5963",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.4.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Psr\\Container\\": "src/"
@@ -596,9 +601,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/1.1.2"
+                "source": "https://github.com/php-fig/container/tree/2.0.2"
             },
-            "time": "2021-11-05T16:50:12+00:00"
+            "time": "2021-11-05T16:47:00+00:00"
         },
         {
             "name": "psr/http-factory",
@@ -824,26 +829,24 @@
         },
         {
             "name": "quanta/container",
-            "version": "0.6.0",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/quantaphp/container.git",
-                "reference": "ddb995d0d61351e48d7343e7684e8632b5a1ceb8"
+                "reference": "68482410c294d47c5046ba4cd7f43dd0239f74bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/quantaphp/container/zipball/ddb995d0d61351e48d7343e7684e8632b5a1ceb8",
-                "reference": "ddb995d0d61351e48d7343e7684e8632b5a1ceb8",
+                "url": "https://api.github.com/repos/quantaphp/container/zipball/68482410c294d47c5046ba4cd7f43dd0239f74bd",
+                "reference": "68482410c294d47c5046ba4cd7f43dd0239f74bd",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.4",
-                "psr/container": "^1.0"
+                "psr/container": "^2.0"
             },
             "require-dev": {
-                "eloquent/phony-kahlan": "^4.0",
-                "kahlan/kahlan": "^5.0",
-                "phpstan/phpstan": "^0.12.27"
+                "phpstan/phpstan": "^1.8",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -872,7 +875,7 @@
                 "issues": "https://github.com/quantaphp/container/issues",
                 "source": "https://github.com/quantaphp/container"
             },
-            "time": "2021-03-17T16:01:56+00:00"
+            "time": "2022-09-13T11:14:31+00:00"
         },
         {
             "name": "quanta/http-dispatcher",
