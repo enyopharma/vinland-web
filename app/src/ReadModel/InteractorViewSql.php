@@ -56,10 +56,6 @@ final class InteractorViewSql implements InteractorViewInterface
 
         $mappings = $select_mappings_sth->fetchAll();
 
-        if ($mappings === false) {
-            throw new \Exception('fetchall ?');
-        }
-
         return Statement::from($this->generator($select_interactors_sth, $mappings));
     }
 

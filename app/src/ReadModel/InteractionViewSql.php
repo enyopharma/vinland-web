@@ -118,10 +118,6 @@ final class InteractionViewSql implements InteractionViewInterface
 
         $proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
 
-        if ($proteins === false) {
-            throw new \Exception('fetchall ?');
-        }
-
         return $proteins;
     }
 
@@ -151,10 +147,6 @@ final class InteractionViewSql implements InteractionViewInterface
         ]);
 
         $proteins = $select_proteins_sth->fetchAll(\PDO::FETCH_COLUMN);
-
-        if ($proteins === false) {
-            throw new \Exception('fetchall ?');
-        }
 
         return $proteins;
     }

@@ -38,7 +38,8 @@ final class TaxonViewSql implements TaxonViewInterface
 
     public function __construct(
         private \PDO $pdo,
-    ) {}
+    ) {
+    }
 
     public function id(int $ncbi_taxon_id, string ...$with): Statement
     {
@@ -95,10 +96,6 @@ final class TaxonViewSql implements TaxonViewInterface
 
         $taxa = $select_children_sth->fetchAll();
 
-        if ($taxa === false) {
-            throw new \Exception('fetchall ?');
-        }
-
         return $taxa;
     }
 
@@ -109,10 +106,6 @@ final class TaxonViewSql implements TaxonViewInterface
         $select_names_sth->execute([$left_value, $right_value]);
 
         $names = $select_names_sth->fetchAll(\PDO::FETCH_COLUMN);
-
-        if ($names === false) {
-            throw new \Exception('fetchall ?');
-        }
 
         return $names;
     }
