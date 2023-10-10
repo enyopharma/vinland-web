@@ -1,3 +1,3 @@
 #!/bin/bash
 docker-compose -f docker-compose.yml -f production-base.yml -f production-enyo.yml down -v --remove-orphans
-docker-compose -f docker-compose.yml -f production-base.yml -f production-enyo.yml up -d --build --force-recreate
+docker-compose -f docker-compose.yml -f production-base.yml -f production-enyo.yml up -d

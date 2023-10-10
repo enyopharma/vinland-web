@@ -1,3 +1,3 @@
 #!/bin/bash
 docker-compose -f docker-compose.yml -f production-base.yml -f production-public.yml down -v --remove-orphans
-docker-compose -f docker-compose.yml -f production-base.yml -f production-public.yml up -d --build --force-recreate --scale frontend=4 --scale backend=4 --scale app=4 --scale redis=4
+docker-compose -f docker-compose.yml -f production-base.yml -f production-public.yml up -d --scale frontend=4 --scale backend=4 --scale app=4 --scale redis=4

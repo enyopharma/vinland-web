@@ -10,4 +10,4 @@ services:
             - /var/run/docker.sock:/var/run/docker.sock
     frontend:
         labels:
-            - traefik.http.routers.vinland.rule=Host(`${APP_HOST}`)
+            - traefik.http.routers.vinland.rule=(Host(`${APP_HOST_PRIMARY}`) || Host(`${APP_HOST_SECONDARY}`))
