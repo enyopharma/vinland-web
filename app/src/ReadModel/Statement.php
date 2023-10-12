@@ -59,7 +59,7 @@ final class Statement implements \IteratorAggregate
         return iterator_to_array($this->iterator);
     }
 
-    public function getIterator(): \Iterator
+    public function getIterator(): \Traversable
     {
         return $this->iterator;
     }
