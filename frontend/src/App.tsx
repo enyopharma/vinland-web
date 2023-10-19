@@ -6,7 +6,7 @@ import ReactGA from 'react-ga4';
 import { store } from 'app/store'
 import { Timeout, Dots } from 'partials'
 
-ReactGA.initialize('G-YKS420026W')
+ReactGA.initialize('G-JPQR1HHYFZ')
 
 const HomePage = React.lazy(() => import('pages').then(module => ({ default: module.HomePage })))
 const ProteinPage = React.lazy(() => import('pages').then(module => ({ default: module.ProteinPage })))
