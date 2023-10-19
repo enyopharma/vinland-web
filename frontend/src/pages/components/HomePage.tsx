@@ -229,10 +229,10 @@ const ContactCard: React.FC = () => (
         </div>
         <div className="card-body">
             Send us general questions and feedback at <a
-                href="mailto:bioinformatics@enyopharma.com"
+                href="mailto:contact@vinland.network"
                 target="_blank"
                 rel="noreferrer"
-            >bioinformatics@enyopharma.com</a>.
+            >contact@vinland.network</a>.
         </div>
     </div>
 )
