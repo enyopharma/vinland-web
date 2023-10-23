@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useHistory, Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 
 import { ProgressBar } from 'partials'
 
@@ -66,6 +67,10 @@ export const ProteinSearchPage: React.FC = () => {
 
     return (
         <div className="container">
+            <Helmet>
+                <title>Vinland - Proteins</title>
+                <meta name="description" content="Vinland protein search page" />
+            </Helmet>
             <h1>Search for proteins</h1>
             <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
                 <div className="card">

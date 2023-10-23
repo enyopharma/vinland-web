@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 
 import { InteractionLinkImg, ProteinLinkImg, Timeout, Dots } from 'partials'
 
@@ -85,6 +86,10 @@ const InteractionSection: React.FC<InteractionSectionProps> = ({ resource }) => 
 
     return (
         <React.Fragment>
+            <Helmet>
+                <title>Vinland - Interaction between {protein1.accession}/{protein1.name} and {protein2.accession}/{protein2.name}</title>
+                <meta name="description" content={`Vinland protein-protein interaction between ${protein1.accession}/${protein1.name} and ${protein2.accession}/${protein2.name}`} />
+            </Helmet>
             <h1 className="mb-4">
                 <InteractionLinkImg {...interaction} /> {interaction.type.toUpperCase()} Interaction ID card
             </h1>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 
 import { ProteinLinkImg, Timeout, Dots } from 'partials'
 
@@ -121,6 +122,10 @@ const ProteinHSection: React.FC<ProteinHSectionProps> = ({ protein, isoforms, re
 
     return (
         <React.Fragment>
+            <Helmet>
+                <title>Vinland - {protein.accession}/{protein.name}</title>
+                <meta name="description" content={`Vinland protein-protein interactions of ${protein.accession}/${protein.name}`} />
+            </Helmet>
             <ProteinInfoSection protein={protein} isoforms={isoforms} selected={selected} update={update} />
             <hr />
             <ul>
@@ -190,6 +195,10 @@ const ProteinVSection: React.FC<ProteinVSectionProps> = ({ protein, isoforms, re
 
     return (
         <React.Fragment>
+            <Helmet>
+                <title>Vinland - {protein.accession}/{protein.name} ({protein.taxon})</title>
+                <meta name="description" content={`Vinland protein-protein interactions of ${protein.accession}/${protein.name} (${protein.taxon})`} />
+            </Helmet>
             <ProteinInfoSection protein={protein} isoforms={isoforms} selected={selected} update={update} />
             <hr />
             <ul>

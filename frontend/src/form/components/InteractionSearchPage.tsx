@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 
 import { ToastContainer } from '../toast'
 import { TaxonomyCard } from './TaxonomyCard'
@@ -8,6 +9,10 @@ import { QueryResultSection } from './QueryResultSection'
 
 export const InteractionSearchPage: React.FC = () => (
     <div className="container">
+        <Helmet>
+            <title>Vinland - Protein-protein interactions</title>
+            <meta name="description" content="Vinland protein-protein interaction search page" />
+        </Helmet>
         <h1>Search for interactions</h1>
         <form action="#" className="form-horizontal" onSubmit={e => e.preventDefault()}>
             <fieldset className="mb-4">

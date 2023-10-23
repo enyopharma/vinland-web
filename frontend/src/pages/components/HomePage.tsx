@@ -1,4 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
+
 import { resources } from '../api'
 import { Resource, Stats } from '../types'
 
@@ -16,6 +18,10 @@ export const HomePage: React.FC = () => {
 
     return (
         <div className="container">
+            <Helmet>
+                <title>Vinland - Protein protein interaction database</title>
+                <meta name="description" content="Vinland is a unique virus-host interaction resource dedicated to drug discovery that structures literature-curated virus-host protein interaction data and integrates this information into the human protein interaction network." />
+            </Helmet>
             <div className="row" style={{ margin: '4rem 0 2rem 0' }}>
                 <img src="./vinland_logo.png" alt="logo" className="img-fluid logo" />
             </div>
