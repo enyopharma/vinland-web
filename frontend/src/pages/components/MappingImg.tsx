@@ -26,7 +26,7 @@ export const MappingImg: React.FC<MappingImgProps> = ({ type, width, mappables }
 
     return (
         <React.Fragment>
-            <svg width="100%" height="30" onClick={() => setVisible(true)}>
+            <svg width="100%" height="30" onClick={() => setVisible(true)} style={{ cursor: "pointer" }}>
                 <rect width="100%" y="14" height="2" style={{ fill: '#eee', strokeWidth: 0 }} />
                 {mappables.map((mapping, i) => <MappingRect key={i} type={type} width={width} mapping={mapping} />)}
             </svg>
@@ -47,7 +47,7 @@ const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
     const widthp = (((mapping.stop - mapping.start + 1) / width) * 100) + '%'
 
     return (
-        <React.Fragment>
+        <g>
             <text x={startp} y="10" textAnchor="start" style={{ fontSize: '10px' }}>
                 {mapping.start}
             </text>
@@ -55,7 +55,7 @@ const MappingRect: React.FC<MappingRectProps> = ({ type, width, mapping }) => {
                 {mapping.stop}
             </text>
             <rect width={widthp} x={startp} y="13" height="4" style={{ fill: colors[type], strokeWidth: 0 }} />
-        </React.Fragment>
+        </g>
     )
 }
 
