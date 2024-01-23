@@ -67,13 +67,11 @@ const ReferenceCard: React.FC = () => {
                     <strong>
                         Viruses traverse the human proteome through peptide interfaces that can be biomimetically leveraged for drug discovery
                     </strong>
-                </p>
-                <p>
+                    <br />
                     Meyniel-Schicklin L. et al
                     <br />
                     PNAS 2024
-                </p>
-                <p>
+                    <br />
                     DOI: <a href="https://doi.org/10.1073/pnas.2308776121" target="_blank" rel="noreferrer">
                         10.1073/pnas.2308776121
                     </a>
