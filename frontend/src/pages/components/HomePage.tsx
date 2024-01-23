@@ -37,15 +37,52 @@ export const HomePage: React.FC = () => {
                     Vinland provides original information on protein interaction sequences. The viral protein interfaces of 5 to 20 amino acids are peptides that can be used as new chemical entities to manipulate cellular functions.
                 </p>
                 <p className="mb-0">
+                    <a href="#reference">Reference</a>{' - '}
                     <a href="#stats">Stats</a>{' - '}
                     <a href="#network">Network visualization</a>{' - '}
                     <a href="#contact">Contact</a>
                 </p>
             </div>
+            <ReferenceCard />
             <StatsCard />
             {/** <MatureCard /> */}
             <NetworkCard />
             <ContactCard />
+        </div>
+    )
+}
+
+const ReferenceCard: React.FC = () => {
+    return (
+        <div id="reference" className="card mb-4">
+            <div className="card-header">
+                <div className="float-right">[<a href="#top">top</a>]</div>
+                <h2>Reference</h2>
+            </div>
+            <div className="card-body">
+                <p>
+                    Please cite the publication describing Vinland in any article using data extracted here:
+                </p>
+                <p>
+                    <strong>
+                        Viruses traverse the human proteome through peptide interfaces that can be biomimetically leveraged for drug discovery
+                    </strong>
+                </p>
+                <p>
+                    Meyniel-Schicklin L. et al
+                    <br />
+                    PNAS 2024
+                </p>
+                <p>
+                    DOI: <a href="https://doi.org/10.1073/pnas.2308776121" target="_blank" rel="noreferrer">
+                        10.1073/pnas.2308776121
+                    </a>
+                    <br />
+                    PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38252831/" target="_blank" rel="noreferrer">
+                        38252831
+                    </a>
+                </p>
+            </div>
         </div>
     )
 }
